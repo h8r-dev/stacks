@@ -1,0 +1,23 @@
+plan:
+    package: ./plans
+name: abc
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1ykm7at97kme5ft4e0qlzmartpcjxfzmxumz3pmhtfrgx068s3qks6pe2z8
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBHazlIQitHMHM1bVJxeGh4
+            VzhtZS90ZW4rWmtlQ01jRzliTTF4ZGpWYTBRCnFSWU0zUFJmMGJBMWdWWjVBdDZZ
+            SFFMZUdpaGxZVDluTWxSc0htamdIU0kKLS0tIHF2SnVFQktFT2RZQVNuMGRxYXV0
+            QkJHN1pvZytRaWRiVmpSZ3FsclRLYmcKAzU86wNFX/t78ADpj3L6sCUd0yauSxs5
+            rO4tW4ebGe7PQ+J/wriUrYhhJtuLnQUHCQNYOkptiTnkx1T3/V9FJw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2022-02-16T09:29:19Z"
+    mac: ENC[AES256_GCM,data:y9VG4Qzb420X+/rIfUdzJSNrC2hJnc9bRbsM/ehLsO3gQFxaAm3KK1L26jgfJuagoQYoncr9q9QRDlp/ZDPrxvnZ8LBfUAkKoSDrOGeOX9gJYzRn52N3Qy+3WBxr2rLw+8oP8EB+ROmAwfvZ7vewOXWQeIc6r5+SCwZnFXurT+Y=,iv:875YW9RSDu4/mM0g0PJ2jvx62Z4Xhh3CrbOZt7imheM=,tag:Ggw2bfSQi5cMnuhksVkWSA==,type:str]
+    pgp: []
+    encrypted_suffix: secret
+    version: 3.7.1
