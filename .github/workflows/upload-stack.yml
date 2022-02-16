@@ -32,8 +32,10 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
+          rm -rf .git
+          rm -rf .github
           coscmd config -a ${{ secrets.TENCENT_SECRET_ID }} -s ${{ secrets.TENCENT_SECRET_KEY }} -b h8r-stack-1309519128 -r ap-hongkong --retry 5
           mkdir ~/tars
           find . -maxdepth 1 -mindepth 1 -type d -exec tar cvf ~/tars/{}-latest.tar.gz {}  \;
-          coscmd upload . .
+          coscmd upload ./tars/* .
           
