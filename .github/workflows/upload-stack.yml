@@ -37,5 +37,6 @@ jobs:
           coscmd config -a ${{ secrets.TENCENT_SECRET_ID }} -s ${{ secrets.TENCENT_SECRET_KEY }} -b h8r-stack-1309519128 -r ap-hongkong --retry 5
           mkdir ~/tars
           find . -maxdepth 1 -mindepth 1 -type d -exec tar cvf ~/tars/{}-latest.tar.gz {}  \;
-          coscmd upload ./tars .
+          cd ~/tars
+          coscmd upload -r --delete --include *.tar.gz -y . .
           
