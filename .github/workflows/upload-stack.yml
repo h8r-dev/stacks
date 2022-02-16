@@ -38,5 +38,6 @@ jobs:
           mkdir ~/tars
           find . -maxdepth 1 -mindepth 1 -type d -exec tar cvf ~/tars/{}-latest.tar.gz {}  \;
           cd ~/tars
+          ls
           coscmd upload -r --delete --include *.tar.gz -y . .
           
