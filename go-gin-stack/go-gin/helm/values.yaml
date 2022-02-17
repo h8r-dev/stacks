@@ -1,36 +1,9 @@
 # Default values for go-gin-stack.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-dev:
-  dev.nocalhost: |-
-    containers:
-      - name: go-gin-stack
-        dev:
-          gitUrl: git@github.com:h8r-dev/stack-hub.git
-          image: nocalhost-docker.pkg.coding.net/nocalhost/dev-images/golang:latest
-          shell: bash
-          workDir: /home/nocalhost-dev
-          command:
-            run: [ "go", "run", "main.go" ]
-            debug: [ "dlv", "--headless", "--log", "--listen", ":9009", "--api-version", "2", "--accept-multiclient", "debug", "main.go" ]
-          debug:
-            remoteDebugPort: 9009
-          hotReload: true
-          sync:
-            type: send
-            filePattern:
-              - ./
-            ignoreFilePattern:
-              - ".git"
-              - ".idea"
-              - ".github"
-          resources:
-            limits:
-              cpu: "2"
-              memory: 2Gi
-            requests:
-              cpu: "0.2"
-              memory: 256Mi
+nocalhost:
+  annotations: 
+    path: conf/nocalhost.yaml 
 
 replicaCount: 1
 

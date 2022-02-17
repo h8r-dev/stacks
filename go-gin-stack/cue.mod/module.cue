@@ -1,1 +1,1 @@
-module: "github.com/h8r-dev/stack-hub"
+module: "github.com/h8r-dev"

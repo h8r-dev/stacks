@@ -1,4 +1,4 @@
-// package h8r
+package main
 
 // import(
 //   "alpha.dagger.io/dagger"

@@ -5,7 +5,8 @@ metadata:
   labels:
     {{- include "go-gin-stack.labels" . | nindent 4 }}
   annotations:
-    {{- toYaml .Values.dev | nindent 4 }}
+    nocalhost.dev: |-
+      {{ .Files.Get .Values.nocalhost.annotations.path | nindent 6 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}

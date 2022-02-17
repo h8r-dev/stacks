@@ -13,7 +13,6 @@ RUN npm install && npm run build
 FROM ubuntu:latest as prod
 WORKDIR /root/
 COPY --from=builder /root/app .
-COPY conf conf
 COPY --from=front-builder /root/dist ./front/dist
 
 EXPOSE 8000
