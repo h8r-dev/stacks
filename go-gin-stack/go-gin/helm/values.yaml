@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 nocalhost:
   annotations: 
-    path: conf/nocalhost.yaml 
+    path: conf/nocalhost.yaml
 
 replicaCount: 1
 
