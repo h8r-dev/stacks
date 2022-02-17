@@ -7,6 +7,19 @@
 3. 部署
 4. Nocalhost 一键开发和调试
 
+### Stack 参数
+```
+Input                     Value             Set by user  Description
+deploy.ingressHostName    string            true         Ingress host name
+deploy.ghcrName           string            true         Ghcr name
+deploy.kubeconfig         dagger.#Artifact  true         TODO Kubeconfig path, set infra/kubeconfig and fill kubeconfig to infra/kubeconfig/config.yaml file
+deploy.namespace          string            true         Deploy namespace
+initRepo.applicationName  string            true         Application name, will be set as repo name
+initRepo.accessToken      dagger.#Secret    true         Github personal access token, and will also use to pull ghcr.io image
+initRepo.organization     string            true         Github organization name, can be set with username
+initRepo.sourceCodeDir    dagger.#Artifact  true         TODO default repoDir path, now you can set "." with dagger dir type
+```
+
 ### check.cue
 前置检查 `infra`，是否配置了 `kubeconfig`，将来增加 `kubeconfig` 连通性检查。
 
