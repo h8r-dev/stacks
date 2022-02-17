@@ -9,7 +9,7 @@
 **注意：目前只能创建公开类型的仓库**
 
 ### deploy.cue
-使用目标仓库的 `Helm Chart` 部署到集群制定的 `Namespace`。
+使用目标仓库的 `Helm Chart` 部署到集群指定的 `Namespace`。
 
 ### Stack 执行结果
 
