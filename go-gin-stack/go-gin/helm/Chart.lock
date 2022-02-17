@@ -1,0 +1,9 @@
+dependencies:
+- name: mariadb
+  repository: https://nocalhost-helm.pkg.coding.net/nocalhost/helm
+  version: 9.0.1
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.4.0
+digest: sha256:ed0e55fb0475ce38b87f8416d7b35f24568639112820e44b88541de8803a039f
+generated: "2022-02-10T17:18:55.227478+08:00"
