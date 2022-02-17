@@ -5,5 +5,5 @@ import(
 )
 
 initRepo: h8r.#InitRepo & {
-    
+    checkInfra: check_infra.check
 }

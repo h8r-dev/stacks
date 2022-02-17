@@ -8,19 +8,22 @@ import (
 
 // Init git repo
 #InitRepo: {
-	// Application name, same as git repo name
+    // Infra check success
+    checkInfra: dagger.#Input & {string}
+
+	// Application name, will be set as repo name
 	applicationName: dagger.#Input & {string}
 
-	// Github personal access token
+	// Github personal access token, and will also use to pull ghcr.io image
 	accessToken: dagger.#Input & {dagger.#Secret}
 
 	// Github organization name, can be set with username
 	organization: dagger.#Input & {string}
 
-	// TODO default repoDir path, now is go-gin
-	repoDir: dagger.#Artifact @dagger(input)
+	// TODO default repoDir path, now you can set "." with dagger dir type
+	sourceCodeDir: dagger.#Artifact @dagger(input)
 
-	create: {
+	gitUrl: {
 		string
 
 		#up: [
@@ -37,7 +40,7 @@ import (
 
 			op.#Exec & {
 				mount: "/run/secrets/github": secret: accessToken
-				mount: "/root/go-gin": from:                repoDir
+				mount: "/root": from:                sourceCodeDir
 				dir: "/root"
 				env: {
 					REPO_NAME:    applicationName
@@ -73,7 +76,7 @@ import (
                             echo $GIT_URL
                             cd go-gin && git init && git remote add origin $GIT_URL
                             
-                            echo $(cat /create.json | jq .clone_url) > /create.json
+                            echo $SSH_URL > /create.json
 
                             export GITHUB_TOKEN="$(cat /run/secrets/github)"
                             # add action secret

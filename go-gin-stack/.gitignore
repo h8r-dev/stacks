@@ -1,3 +1,4 @@
 .dagger
 .idea
 .DS_Store
+infra/kubeconfig/*

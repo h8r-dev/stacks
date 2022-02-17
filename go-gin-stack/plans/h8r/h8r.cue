@@ -209,13 +209,13 @@ import (
 	ghcrName: dagger.#Input & {string}
 
 	// Ghcr password
-	ghcrPassword: dagger.#Input & {string}
+	ghcrPassword: dagger.#Input & {dagger.#Secret}
 
 	//Release name
 	releaseName: dagger.#Input & {string}
 
-	// SSH key
-	sshDir: dagger.#Artifact @dagger(input)
+	// Github SSH private key
+	// sshDir: dagger.#Artifact @dagger(input)
 
 	// Helm chart path
 	helmPath: dagger.#Input & {string}
@@ -223,7 +223,7 @@ import (
 	// Git repo url
 	repoUrl: dagger.#Input & {string}
 
-	// Kubeconfig path
+	// TODO Kubeconfig path, set infra/kubeconfig and fill kubeconfig to infra/kubeconfig/config.yaml file
 	kubeconfig: dagger.#Artifact @dagger(input)
 
 	// Deploy namespace
@@ -249,7 +249,8 @@ import (
 
 			op.#Exec & {
 				mount: "/run/secrets/kubeconfig": from: kubeconfig
-				mount: "/root/.ssh/": from:             sshDir
+                mount: "/run/secrets/github": secret: ghcrPassword
+				// mount: "/root/.ssh/": from:             sshDir
 				dir: "/"
 				env: {
 					REPO_URL:        repoUrl
@@ -257,7 +258,6 @@ import (
 					RELEASE_NAME:    releaseName
 					NAMESPACE:       namespace
 					GHCRNAME:        ghcrName
-					GHCRPASSWORD:    ghcrPassword
 					INGRESSHOSTNAME: ingressHostName
 				}
 				args: [
@@ -268,19 +268,19 @@ import (
 					"pipefail",
 					"-c",
 					#"""
-						    # use setup avoid download everytime
-						    export KUBECONFIG=/run/secrets/kubeconfig/config
-						    git clone $REPO_URL
-						    cd $RELEASE_NAME/$HELM_PATH
-						    kubectl create secret docker-registry h8r-secret \
-						    --docker-server=ghcr.io \
-						    --docker-username=$GHCRNAME \
-						    --docker-password=$GHCRPASSWORD \
-						    -o yaml --dry-run=client | kubectl apply -f -
-						    helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific" > /end_point.txt
-						    # wait for deployment ready
-						    # kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME-go-gin-stack -n $NAMESPACE
-						"""#,
+                        # use setup avoid download everytime
+                        export KUBECONFIG=/run/secrets/kubeconfig/config.yaml
+                        git clone $REPO_URL
+                        cd $RELEASE_NAME/$HELM_PATH
+                        kubectl create secret docker-registry h8r-secret \
+                        --docker-server=ghcr.io \
+                        --docker-username=$GHCRNAME \
+                        --docker-password=$(cat /run/secrets/github) \
+                        -o yaml --dry-run=client | kubectl apply -f -
+                        helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific" > /end_point.txt
+                        # wait for deployment ready
+                        # kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME-go-gin-stack -n $NAMESPACE
+                    """#,
 				]
 				always: true
 			},
@@ -291,4 +291,45 @@ import (
 			},
 		]
 	} @dagger(output)
+}
+
+#CheckInfra: {
+    // TODO default repoDir path, now you can set "." with dagger dir type
+    sourceCodeDir: dagger.#Artifact @dagger(input)
+
+    check: {
+        string
+
+        #up: [
+            op.#FetchContainer & {
+				ref: "docker.io/lyzhang1999/alpine:v1"
+			},
+
+            op.#Exec & {
+				mount: "/root": from: sourceCodeDir
+                args: [
+					"/bin/bash",
+					"--noprofile",
+					"--norc",
+					"-eo",
+					"pipefail",
+					"-c",
+                    #"""
+                    FILE=/root/infra/kubeconfig/config.yaml
+                    if [ ! -f "$FILE" ] || [ ! -s "$FILE" ]; then
+                        echo "Please add your kubeconfig to infra/kubeconfig/config.yaml file"
+                        exit 1
+                    fi
+                    echo "OK!" >  /success
+                    """#,
+				]
+				always: true
+            },
+
+            op.#Export & {
+				source: "/success"
+				format: "string"
+			},
+        ]
+    } @dagger(output)
 }
