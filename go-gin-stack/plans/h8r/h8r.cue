@@ -228,7 +228,8 @@ import (
 
 	// Deploy namespace
 	namespace: dagger.#Input & {string}
-
+    
+    // Application URL
 	install: {
 		string
 
@@ -270,16 +271,17 @@ import (
 					#"""
                         # use setup avoid download everytime
                         export KUBECONFIG=/run/secrets/kubeconfig/config.yaml
-                        git clone $REPO_URL
+                        GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
                         cd $RELEASE_NAME/$HELM_PATH
                         kubectl create secret docker-registry h8r-secret \
                         --docker-server=ghcr.io \
                         --docker-username=$GHCRNAME \
                         --docker-password=$(cat /run/secrets/github) \
                         -o yaml --dry-run=client | kubectl apply -f -
-                        helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific" > /end_point.txt
+                        helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
                         # wait for deployment ready
-                        # kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME-go-gin-stack -n $NAMESPACE
+                        kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME -n $NAMESPACE
+                        echo $INGRESSHOSTNAME > /end_point.txt
                     """#,
 				]
 				always: true
