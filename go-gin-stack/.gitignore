@@ -1,4 +1,4 @@
 .dagger
 .idea
 .DS_Store
-infra/kubeconfig/*
+infra/kubeconfig/config.yaml
