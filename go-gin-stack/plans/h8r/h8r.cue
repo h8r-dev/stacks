@@ -224,10 +224,13 @@ import (
 	repoUrl: dagger.#Input & {string}
 
 	// TODO Kubeconfig path, set infra/kubeconfig and fill kubeconfig to infra/kubeconfig/config.yaml file
-	kubeconfig: dagger.#Artifact @dagger(input)
+	kubeconfigPath: dagger.#Input & {string}
 
 	// Deploy namespace
 	namespace: dagger.#Input & {string}
+
+	// TODO default repoDir path, now you can set "." with dagger dir type
+	sourceCodeDir: dagger.#Artifact @dagger(input)
     
     // Application URL
 	install: {
@@ -249,9 +252,8 @@ import (
 			},
 
 			op.#Exec & {
-				mount: "/run/secrets/kubeconfig": from: kubeconfig
                 mount: "/run/secrets/github": secret: ghcrPassword
-				// mount: "/root/.ssh/": from:             sshDir
+				mount: "/root": from:             sourceCodeDir
 				dir: "/"
 				env: {
 					REPO_URL:        repoUrl
@@ -269,20 +271,21 @@ import (
 					"pipefail",
 					"-c",
 					#"""
-                        # use setup avoid download everytime
-                        export KUBECONFIG=/run/secrets/kubeconfig/config.yaml
-                        GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
-                        cd $RELEASE_NAME/$HELM_PATH
-                        kubectl create secret docker-registry h8r-secret \
-                        --docker-server=ghcr.io \
-                        --docker-username=$GHCRNAME \
-                        --docker-password=$(cat /run/secrets/github) \
-                        -o yaml --dry-run=client | kubectl apply -f -
-                        helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "nocalhost.dev.gitUrl=$REPO_URL" --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
-                        # wait for deployment ready
-                        kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME -n $NAMESPACE
-                        echo $INGRESSHOSTNAME > /end_point.txt
-                    """#,
+							# use setup avoid download everytime
+							export KUBECONFIG=/root/infra/kubeconfig/config.yaml
+							mkdir /root/.ssh && cp /root/infra/ssh/id_rsa /root/.ssh/id_rsa
+							GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
+							cd $RELEASE_NAME-helm
+							kubectl create secret docker-registry h8r-secret \
+							--docker-server=ghcr.io \
+							--docker-username=$GHCRNAME \
+							--docker-password=$(cat /run/secrets/github) \
+							-o yaml --dry-run=client | kubectl apply -f -
+							helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
+							# wait for deployment ready
+							kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME -n $NAMESPACE
+							echo $INGRESSHOSTNAME > /end_point.txt
+						"""#,
 				]
 				always: true
 			},
@@ -318,13 +321,13 @@ import (
 					"pipefail",
 					"-c",
                     #"""
-                    FILE=/root/infra/kubeconfig/config.yaml
-                    if [ ! -f "$FILE" ] || [ ! -s "$FILE" ]; then
-                        echo "Please add your kubeconfig to infra/kubeconfig/config.yaml file"
-                        exit 1
-                    fi
-                    echo "OK!" >  /success
-                    """#,
+						FILE=/root/infra/kubeconfig/config.yaml
+						if [ ! -f "$FILE" ] || [ ! -s "$FILE" ]; then
+							echo "Please add your kubeconfig to infra/kubeconfig/config.yaml file"
+							exit 1
+						fi
+						echo "OK!" >  /success
+						"""#,
 				]
 				always: true
             },

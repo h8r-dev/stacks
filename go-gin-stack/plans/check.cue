@@ -5,5 +5,5 @@ import(
 )
 
 check_infra: h8r.#CheckInfra & {
-    sourceCodeDir: initRepo.sourceCodeDir
+    sourceCodeDir: sourceCodeDir
 }
