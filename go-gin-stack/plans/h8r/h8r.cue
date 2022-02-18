@@ -178,7 +178,7 @@ import (
 						    export VERIFY_CHECKSUM=false
 						    curl "https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3" | bash
 						    export KUBECONFIG=/run/secrets/kubeconfig/cluster_kubeocnfig
-						    git clone $REPO_URL
+						    export GIT_SSH="ssh -vvv"  git clone $REPO_URL
 						    cd $RELEASE_NAME/$HELM_PATH
 						    helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --create-namespace --install
 						    # wait for deployment ready
@@ -271,7 +271,7 @@ import (
 					#"""
                         # use setup avoid download everytime
                         export KUBECONFIG=/run/secrets/kubeconfig/config.yaml
-                        GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
+                        GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
                         cd $RELEASE_NAME/$HELM_PATH
                         kubectl create secret docker-registry h8r-secret \
                         --docker-server=ghcr.io \
