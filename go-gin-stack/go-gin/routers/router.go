@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,6 @@ import (
 	"h8r.io/middleware/jwt"
 	"h8r.io/pkg/export"
 	"h8r.io/pkg/qrcode"
-	"h8r.io/pkg/setting"
 	"h8r.io/pkg/upload"
 	"h8r.io/routers/api"
 	v1 "h8r.io/routers/api/v1"
@@ -31,9 +29,6 @@ func InitRouter() *gin.Engine {
 	r.GET("/health", func(c *gin.Context) {
 		c.String(http.StatusOK, "Health123")
 	})
-	r.StaticFS("/assets", http.Dir(setting.AppSetting.FrontRootPath+"/assets"))
-	r.StaticFile("/", setting.AppSetting.FrontRootPath+"/index.html")
-	fmt.Println(setting.AppSetting.FrontRootPath)
 	r.POST("/auth", api.GetAuth)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

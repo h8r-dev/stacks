@@ -1,0 +1,41 @@
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{.appName}}-front
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: {{.appName}}-front
+    spec:
+      containers:
+      - name: {{.appName}}-front
+        image: github.com/{{.orgName}}/{{appName}}-front:main
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d
+          readOnly: true
+          name: nginx-conf
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: default.conf
+              path: default.conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.appName}}-front
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: {{.appName}}-front
