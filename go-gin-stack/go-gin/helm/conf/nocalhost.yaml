@@ -1,8 +1,8 @@
 containers:
-  - name: go-gin-stack
+  - name: {{ .Chart.Name }}
     dev:
-      gitUrl: git@github.com:h8r-dev/stack-hub.git
-      image: nocalhost-docker.pkg.coding.net/nocalhost/dev-images/golang:latest
+      gitUrl: {{ .Values.nocalhost.dev.gitUrl }}
+      image: h8r-docker.pkg.coding.net/go-stack/dev-container/golang-nodejs:latest
       shell: bash
       workDir: /home/nocalhost-dev
       command:

@@ -2,6 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 nocalhost:
+  dev:
+    gitUrl: ""
   annotations: 
     path: conf/nocalhost.yaml
 

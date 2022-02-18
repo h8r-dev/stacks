@@ -100,8 +100,8 @@ import (
                             # TODO download different architecture binary
                             wget "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_arm64" -O /usr/bin/yq && chmod +x /usr/bin/yq
                             yq w -i helm/values.yaml image.repository ghcr.io/$GITHUB_ID/$REPO_NAME
-                            yq w -i helm/conf/nocalhost.yaml containers.[0].dev.gitUrl $SSH_URL
-                            yq w -i helm/conf/nocalhost.yaml containers.[0].name $REPO_NAME
+                            # yq w -i helm/conf/nocalhost.yaml containers.[0].dev.gitUrl $SSH_URL
+                            # yq w -i helm/conf/nocalhost.yaml containers.[0].name $REPO_NAME
                             yq w -i helm/Chart.yaml name $REPO_NAME
 
                             git add .

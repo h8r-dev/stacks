@@ -6,7 +6,7 @@ metadata:
     {{- include "go-gin-stack.labels" . | nindent 4 }}
   annotations:
     dev.nocalhost: |-
-      {{ .Files.Get .Values.nocalhost.annotations.path | nindent 6 }}
+      {{ tpl (.Files.Get .Values.nocalhost.annotations.path) . | nindent 6 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}

@@ -278,7 +278,7 @@ import (
                         --docker-username=$GHCRNAME \
                         --docker-password=$(cat /run/secrets/github) \
                         -o yaml --dry-run=client | kubectl apply -f -
-                        helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
+                        helm upgrade $RELEASE_NAME . --dependency-update --namespace $NAMESPACE --install --set "nocalhost.dev.gitUrl=$REPO_URL" --set "ingress.hosts[0].host=$INGRESSHOSTNAME,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
                         # wait for deployment ready
                         kubectl wait --for=condition=available --timeout=600s deployment/$RELEASE_NAME -n $NAMESPACE
                         echo $INGRESSHOSTNAME > /end_point.txt
