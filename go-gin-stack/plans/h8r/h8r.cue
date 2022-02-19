@@ -273,7 +273,7 @@ import (
 					#"""
 							# use setup avoid download everytime
 							export KUBECONFIG=/root/infra/kubeconfig/config.yaml
-							mkdir /root/.ssh && cp /root/infra/ssh/id_rsa /root/.ssh/id_rsa
+							mkdir /root/.ssh && cp /root/infra/ssh/id_rsa /root/.ssh/id_rsa && chmod 400 /root/.ssh/id_rsa
 							GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone $REPO_URL
 							cd $RELEASE_NAME-helm
 							kubectl create secret docker-registry h8r-secret \
