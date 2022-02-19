@@ -8,3 +8,4 @@ runtime/*
 front/dist
 front/node_modules
 .dagger
+.vscode
