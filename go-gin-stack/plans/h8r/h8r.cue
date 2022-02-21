@@ -237,18 +237,8 @@ import (
 		string
 
 		#up: [
-			// op.#Load & {
-			//     from: alpine.#Image & {
-			//   package: bash: true
-			//   package: jq:   true
-			//   package: git:  true
-			//         package: curl: true
-			//         package: openssh: true
-			//  }
-			// },
-
 			op.#FetchContainer & {
-				ref: "docker.io/lyzhang1999/alpine:v1"
+				ref: "docker.io/lyzhang1999/ubuntu:latest"
 			},
 
 			op.#Exec & {
@@ -308,7 +298,7 @@ import (
 
         #up: [
             op.#FetchContainer & {
-				ref: "docker.io/lyzhang1999/alpine:v1"
+				ref: "ubuntu:latest"
 			},
 
             op.#Exec & {

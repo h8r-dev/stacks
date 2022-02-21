@@ -3,7 +3,8 @@ package h8r
 import (
 	"alpha.dagger.io/dagger"
 	"alpha.dagger.io/dagger/op"
-	"alpha.dagger.io/alpine"
+    "alpha.dagger.io/os"
+    "alpha.dagger.io/docker"
 )
 
 // Init git repo
@@ -35,14 +36,28 @@ import (
 
 		#up: [
 			op.#Load & {
-				from: alpine.#Image & {
-					package: bash:         true
-					package: jq:           true
-					package: git:          true
-					package: curl:         true
-					package: sed:          true
-					package: "github-cli": true
-				}
+                // from: alpine.#Image & {
+				// 	package: bash:         true
+				// 	package: jq:           true
+				// 	package: git:          true
+				// 	package: curl:         true
+				// 	package: sed:          true
+				// 	package: "github-cli": true
+				// }
+                from: os.#Container & {
+                    image: docker.#Pull & {
+                        from: "ubuntu:latest"
+                    }
+                    shell: path: "/bin/bash"
+                    setup: [
+                        "apt-get update",
+                        "apt-get install jq -y",
+                        "apt-get install git -y",
+                        "apt-get install curl -y",
+                        "apt-get install wget -y",
+                        "apt-get clean"
+                    ]
+                }
 			},
 
 			op.#Exec & {
@@ -112,7 +127,7 @@ import (
                             if [ "$ISHELMCHART" == "true" ]; then
                                 # edit helm chart image, yq 4.0 not working here
                                 # TODO download different architecture binary
-                                wget "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_arm64" -O /usr/bin/yq && chmod +x /usr/bin/yq
+                                wget "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_$(dpkg --print-architecture)" -O /usr/bin/yq && chmod +x /usr/bin/yq
                                 yq w -i /root/helm/values.yaml image.repository ghcr.io/$GITHUB_ID/$BACKEND_NAME
                                 yq w -i /root/helm/values.yaml frontImage.repository ghcr.io/$GITHUB_ID/$FRONTEND_NAME
                                 yq w -i /root/helm/values.yaml nocalhost.backend.dev.gitUrl git@github.com:$GITHUB_ID/$BACKEND_NAME.git
