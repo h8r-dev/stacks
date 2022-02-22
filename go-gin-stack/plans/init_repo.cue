@@ -1,7 +1,7 @@
 package main
 
 import(
-    "github.com/h8r-dev/cue/git/github"
+    "github.com/h8r-dev/cuelib/git/github"
 )
 
 initRepo: github.#InitRepo & {

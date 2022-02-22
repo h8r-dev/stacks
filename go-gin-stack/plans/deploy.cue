@@ -1,7 +1,7 @@
 package main
 
 import(
-  "github.com/h8r-dev/cue/deploy/helm"
+  "github.com/h8r-dev/cuelib/deploy/helm"
 )
 
 deploy: helm.#Deploy & {
