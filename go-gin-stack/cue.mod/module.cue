@@ -1,1 +1,1 @@
-module: "github.com/h8r-dev"
+module: "github.com/h8r-dev/go-gin-stack"

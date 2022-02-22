@@ -1,9 +1,9 @@
 package main
 
 import(
-  "github.com/h8r-dev/plans/h8r"
+  "github.com/h8r-dev/go-gin-stack/plans/check"
 )
 
-check_infra: h8r.#CheckInfra & {
+check_infra: check.#CheckInfra & {
     sourceCodeDir: sourceCodeDir
 }

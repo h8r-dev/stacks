@@ -1,10 +1,10 @@
 package main
 
 import(
-  "github.com/h8r-dev/plans/h8r"
+  "github.com/h8r-dev/cue/deploy/helm"
 )
 
-deploy: h8r.#Deploy & {
+deploy: helm.#Deploy & {
   helmPath: "helm"
   releaseName: initRepo.applicationName
   repoUrl: initHelmRepo.gitUrl

@@ -1,20 +1,15 @@
 package main
 
 import(
-    "github.com/h8r-dev/plans/h8r"
-    // "alpha.dagger.io/io"
+    "github.com/h8r-dev/cue/git/github"
 )
 
-// sourceCodeDir: io.#Dir & {
-//     read: tree: "."
-// }
-
-initRepo: h8r.#InitRepo & {
+initRepo: github.#InitRepo & {
     checkInfra: check_infra.check
     sourceCodePath: "code/go-gin"
 }
 
-initFrontendRepo: h8r.#InitRepo & {
+initFrontendRepo: github.#InitRepo & {
     applicationName: initRepo.applicationName + "-front"
     accessToken: initRepo.accessToken
     organization: initRepo.organization
@@ -23,7 +18,7 @@ initFrontendRepo: h8r.#InitRepo & {
     sourceCodeDir: initRepo.sourceCodeDir
 }
 
-initHelmRepo: h8r.#InitRepo & {
+initHelmRepo: github.#InitRepo & {
     applicationName: initRepo.applicationName
     accessToken: initRepo.accessToken
     organization: initRepo.organization
