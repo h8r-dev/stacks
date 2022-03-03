@@ -67,7 +67,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: go-gin.h8r.app
+    - host: dev.go-gin.h8r.app
       paths:
         - path: /
           pathType: ImplementationSpecific
