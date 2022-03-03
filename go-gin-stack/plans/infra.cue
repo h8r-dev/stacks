@@ -1,88 +1,87 @@
-// package main
+package main
 
-// import(
-//     "alpha.dagger.io/kubernetes"
-//     "alpha.dagger.io/kubernetes/helm"
-//     "alpha.dagger.io/dagger"
-//     "alpha.dagger.io/random"
-//     "github.com/h8r-dev/go-gin-stack/plans/check"
-// )
+import(
+    "alpha.dagger.io/kubernetes"
+    "github.com/h8r-dev/cuelib/deploy/helm"
+    "alpha.dagger.io/random"
+    ingressNginx "github.com/h8r-dev/cuelib/infra/ingress"
+    "github.com/h8r-dev/cuelib/infra/h8r"
+    //"github.com/h8r-dev/cuelib/infra/loki"
+)
 
-// myKubeconfig: dagger.#Input & {dagger.#Secret}
+suffix: random.#String & {
+    seed: ""
+    length: 6
+}
 
-// suffix: random.#String & {
-//     seed: ""
-//     length: 6
-// }
+// Infra domain
+infraDomain: ".stack.h8r.io"
 
-// // random domain
-// domain: ".stack.h8r.io"
+// Nocalhost URL
+nocalhostDomain: suffix.out + ".nocalhost" + infraDomain @dagger(output)
 
-// // Nocalhost URL
-// nocalhostDomain: suffix.out + ".nocalhost" + domain @dagger(output)
+// Grafana URL
+grafanaDomain: suffix.out + ".grafana" + infraDomain @dagger(output)
 
-// // Grafana URL
-// grafanaDomain: suffix.out + ".grafana" + domain @dagger(output)
+// Prometheus URL
+prometheusDomain: suffix.out + ".prom" + infraDomain @dagger(output)
 
-// // Prometheus URL
-// prometheusDomain: suffix.out + ".prom" + domain @dagger(output)
+// Alertmanager URL
+alertmanagerDomain: suffix.out + ".alert" + infraDomain @dagger(output)
 
-// // Alertmanager URL
-// alertmanagerDomain: suffix.out + ".alert" + domain @dagger(output)
+installIngress: {
+    install: helm.#Chart & {
+        name: "ingress-nginx"
+        repository: "https://h8r-helm.pkg.coding.net/release/helm"
+        chart: "ingress-nginx"
+        namespace: "ingress-nginx"
+        action: "installOrUpgrade"
+        kubeconfig: helmDeploy.myKubeconfig
+        wait: true
+    }
 
-// installIngress: {
-//     install: helm.#Chart & {
-//         name: "ingress-nginx"
-//         repository: "https://h8r-helm.pkg.coding.net/release/helm"
-//         chart: "ingress-nginx"
-//         namespace: "ingress-nginx"
-//         action: "installOrUpgrade"
-//         kubeconfig: myKubeconfig
-//         wait: true
-//     }
+    targetIngressEndpoint: ingressNginx.#GetIngressEndpoint & {
+        kubeconfig: helmDeploy.myKubeconfig
+    }
+}
 
-//     targetIngressEndpoint: check.#GetIngressEndpoint & {
-//         kubeconfig: myKubeconfig
-//     }
-// }
+installNocalhost: {
+    installNamespace: "nocalhost"
 
-// installNocalhost: {
-//     installNamespace: "nocalhost"
+    nocalhost: helm.#Chart & {
+        name: "nocalhost"
+        repository: "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
+        chart: "nocalhost"
+        namespace: installNamespace
+        action: "installOrUpgrade"
+        kubeconfig: helmDeploy.myKubeconfig
+        wait: true
+    }
 
-//     nocalhost: helm.#Chart & {
-//         name: "nocalhost"
-//         repository: "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
-//         chart: "nocalhost"
-//         namespace: installNamespace
-//         action: "installOrUpgrade"
-//         kubeconfig: myKubeconfig
-//         wait: true
-//     }
+    nocalhostIngress: ingressNginx.#Ingress & {
+        name: suffix.out + "-nocalhost"
+        className: "nginx"
+        hostName: nocalhostDomain
+        path: "/"
+        namespace: installNamespace
+        backendServiceName: "nocalhost-web"
+    }
 
-//     nocalhostIngress: check.#Ingress & {
-//         name: suffix.out + "-nocalhost"
-//         className: "nginx"
-//         hostName: nocalhostDomain
-//         path: "/"
-//         namespace: installNamespace
-//         backendServiceName: "nocalhost-web"
-//     }
+    deploy: kubernetes.#Resources & {
+        kubeconfig: helmDeploy.myKubeconfig
+        manifest: nocalhostIngress.manifestStream
+        namespace: installNamespace
+    }
 
-//     deploy: kubernetes.#Resources & {
-//         kubeconfig: myKubeconfig
-//         manifest: nocalhostIngress.manifestStream
-//         namespace: installNamespace
-//     }
-
-//     createH8rIngress: {
-//         create: check.#CreateH8rIngress & {
-//             name: suffix.out + "-nocalhost"
-//             host: installIngress.targetIngressEndpoint.get
-//             domain: nocalhostDomain
-//             port: "80"
-//         }
-//     }
-// }
+    createH8rIngress: {
+        create: h8r.#CreateH8rIngress & {
+            name: suffix.out + "-nocalhost"
+            host: installIngress.targetIngressEndpoint.get
+            domain: nocalhostDomain
+            port: "80"
+        }
+    }
+}
 
 
 
@@ -95,12 +94,12 @@
 //         chart: "loki-stack"
 //         action: "installOrUpgrade"
 //         namespace: "loki"
-//         kubeconfig: myKubeconfig
+//         kubeconfig: helmDeploy.myKubeconfig
 //         wait: true
 //     }
 
 //     grafanaIngressToTargetCluster: {
-//         ingress: check.#Ingress & {
+//         ingress: ingressNginx.#Ingress & {
 //             name: suffix.out + "-grafana"
 //             className: "nginx"
 //             hostName: grafanaDomain
@@ -110,13 +109,13 @@
 //         }
 
 //         deploy: kubernetes.#Resources & {
-//             kubeconfig: myKubeconfig
+//             kubeconfig: helmDeploy.myKubeconfig
 //             manifest: ingress.manifestStream
 //             namespace: installNamespace
 //         }
 
 //         createH8rIngress: {
-//             create: check.#CreateH8rIngress & {
+//             create: h8r.#CreateH8rIngress & {
 //                 name: suffix.out + "-grafana"
 //                 host: installIngress.targetIngressEndpoint.get
 //                 domain: grafanaDomain
@@ -125,13 +124,13 @@
 //         }
 
 //         // Grafana secret, username admin
-//         grafanaSecret: check.#GetLokiSecret & {
-//             kubeconfig: myKubeconfig
+//         grafanaSecret: loki.#GetLokiSecret & {
+//             kubeconfig: helmDeploy.myKubeconfig
 //         }
 //     }
 
 //     prometheusIngressToTargetCluster: {
-//         ingress: check.#Ingress & {
+//         ingress: ingressNginx.#Ingress & {
 //             name: suffix.out + "-prometheus"
 //             className: "nginx"
 //             hostName: prometheusDomain
@@ -141,13 +140,13 @@
 //         }
 
 //         deploy: kubernetes.#Resources & {
-//             kubeconfig: myKubeconfig
+//             kubeconfig: helmDeploy.myKubeconfig
 //             manifest: ingress.manifestStream
 //             namespace: installNamespace
 //         }
 
 //         createH8rIngress: {
-//             create: check.#CreateH8rIngress & {
+//             create: h8r.#CreateH8rIngress & {
 //                 name: suffix.out + "-prometheus"
 //                 host: installIngress.targetIngressEndpoint.get
 //                 domain: prometheusDomain
@@ -157,7 +156,7 @@
 //     }
 
 //     alertmanagerIngressToTargetCluster: {
-//         ingress: check.#Ingress & {
+//         ingress: ingressNginx.#Ingress & {
 //             name: suffix.out + "-alertmanager"
 //             className: "nginx"
 //             hostName: alertmanagerDomain
@@ -167,13 +166,13 @@
 //         }
 
 //         deploy: kubernetes.#Resources & {
-//             kubeconfig: myKubeconfig
+//             kubeconfig: helmDeploy.myKubeconfig
 //             manifest: ingress.manifestStream
 //             namespace: installNamespace
 //         }
 
 //         createH8rIngress: {
-//             create: check.#CreateH8rIngress & {
+//             create: h8r.#CreateH8rIngress & {
 //                 name: suffix.out + "-alertmanager"
 //                 host: installIngress.targetIngressEndpoint.get
 //                 domain: alertmanagerDomain

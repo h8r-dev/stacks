@@ -1,44 +1,68 @@
-//package main
+package main
 
-//import(
-    //"alpha.dagger.io/kubernetes"
-    //"alpha.dagger.io/kubernetes/helm"
-    //"alpha.dagger.io/dagger"
-    //"github.com/h8r-dev/go-gin-stack/plans/check"
-//)
+import(
+    "github.com/h8r-dev/cuelib/git/github"
+    "github.com/h8r-dev/cuelib/infra/nocalhost"
+)
 
-//myKubeconfig: dagger.#Input & {dagger.#Secret}
+initRepo: github.#InitRepo & {
+    checkInfra: check_infra.check
+    sourceCodePath: "code/go-gin"
+}
 
-// installIngress: helm.#Chart & {
-//     name: "ingress-nginx"
-//     repository: "https://kubernetes.github.io/ingress-nginx"
-//     chart: "ingress-nginx"
-//     namespace: "ingress-nginx"
-//     action: "installOrUpgrade"
-//     kubeconfig: myKubeconfig
-// }
+initFrontendRepo: github.#InitRepo & {
+    applicationName: initRepo.applicationName + "-front"
+    accessToken: initRepo.accessToken
+    organization: initRepo.organization
+    checkInfra: check_infra.check
+    sourceCodePath: "code/vue-front"
+    sourceCodeDir: initRepo.sourceCodeDir
+}
 
-// installNocalhost: helm.#Chart & {
-//     name: "nocalhost"
-//     repository: "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
-//     chart: "nocalhost"
-//     namespace: "nocalhost"
-//     action: "installOrUpgrade"
-//     kubeconfig: myKubeconfig
-// }
+initHelmRepo: github.#InitRepo & {
+    applicationName: initRepo.applicationName
+    accessToken: initRepo.accessToken
+    organization: initRepo.organization
+    checkInfra: check_infra.check
+    sourceCodePath: "helm"
+    sourceCodeDir: initRepo.sourceCodeDir
+    isHelmChart: "true"
+}
 
-// nocalhostIngress: {
-//     ingress: check.#Ingress & {
-//         name: "nocalhost-ingress"
-//         className: "ingress-nginx"
-//         hostName: "coding.io"
-//         path: "/nocalhost"
-//         namespace: "nocalhost"
-//         backendServiceName: "nocalhost-web"
-//     }
+orgMember: github.#GetOrgMem & {
+    accessToken: initRepo.accessToken
+    organization: initRepo.organization
+}
 
-// 	deploy: kubernetes.#Resources & {
-// 		"kubeconfig": myKubeconfig
-// 		manifest: ingress.manifestStream
-// 	}
-// }
+initNocalhostData: {
+    login: nocalhost.#LoginNocalhost & {
+        waitNocalhost: installNocalhost.nocalhost
+        nocalhostURL: nocalhostDomain
+    }
+
+    createUser: nocalhost.#CreateNocalhostTeam & {
+        waitNocalhost: installNocalhost.nocalhost
+        githubMemberSource: orgMember
+        nocalhostTokenSource: login
+    }
+
+    createCluster: nocalhost.#CreateNocalhostCluster & {
+        waitNocalhost: installNocalhost.nocalhost
+        nocalhostTokenSource: login
+        myKubeconfig: helmDeploy.myKubeconfig
+    }
+
+    createApplication: nocalhost.#CreateNocalhostApplication & {
+        waitNocalhost: installNocalhost.nocalhost
+        nocalhostTokenSource: login
+        applicationName: initRepo.applicationName
+        gitUrl: initHelmRepo.gitUrl
+    }
+
+    createDevSpace: nocalhost.#CreateNocalhostDevSpace & {
+        waitNocalhost: installNocalhost.nocalhost
+        nocalhostTokenSource: login
+        waitUser: createUser
+        waitCluster: createCluster
+    }
+}
