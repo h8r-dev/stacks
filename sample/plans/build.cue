@@ -8,7 +8,7 @@ hello: {
 
 	message: dagger.#Input & {string}
 
-	container: os.#Container & {
+	createContainer: os.#Container & {
 		command: """
 			echo $MESSAGE > /tmp/out
 			"""
@@ -17,10 +17,10 @@ hello: {
 		}
 	}
 
-	file: os.#File & {
-		from: container
+	createFile: os.#File & {
+		from: createContainer
 		path: "/tmp/out"
 	}
 
-	output: file.contents & dagger.#Output
+	outputMessage: createFile.contents & dagger.#Output
 }
