@@ -6,7 +6,7 @@ import(
     "alpha.dagger.io/random"
     ingressNginx "github.com/h8r-dev/cuelib/infra/ingress"
     "github.com/h8r-dev/cuelib/infra/h8r"
-    //"github.com/h8r-dev/cuelib/infra/loki"
+    "github.com/h8r-dev/cuelib/infra/loki"
 )
 
 suffix: random.#String & {
@@ -85,99 +85,99 @@ installNocalhost: {
 
 
 
-// installLokiStack: {
-//     installNamespace: "loki"
+installLokiStack: {
+    installNamespace: "loki"
 
-//     lokiStack: helm.#Chart & {
-//         name: "loki"
-//         repository: "https://h8r-helm.pkg.coding.net/release/helm"
-//         chart: "loki-stack"
-//         action: "installOrUpgrade"
-//         namespace: "loki"
-//         kubeconfig: helmDeploy.myKubeconfig
-//         wait: true
-//     }
+    lokiStack: helm.#Chart & {
+        name: "loki"
+        repository: "https://h8r-helm.pkg.coding.net/release/helm"
+        chart: "loki-stack"
+        action: "installOrUpgrade"
+        namespace: "loki"
+        kubeconfig: helmDeploy.myKubeconfig
+        wait: true
+    }
 
-//     grafanaIngressToTargetCluster: {
-//         ingress: ingressNginx.#Ingress & {
-//             name: suffix.out + "-grafana"
-//             className: "nginx"
-//             hostName: grafanaDomain
-//             path: "/"
-//             namespace: installNamespace
-//             backendServiceName: "loki-grafana"
-//         }
+    grafanaIngressToTargetCluster: {
+        ingress: ingressNginx.#Ingress & {
+            name: suffix.out + "-grafana"
+            className: "nginx"
+            hostName: grafanaDomain
+            path: "/"
+            namespace: installNamespace
+            backendServiceName: "loki-grafana"
+        }
 
-//         deploy: kubernetes.#Resources & {
-//             kubeconfig: helmDeploy.myKubeconfig
-//             manifest: ingress.manifestStream
-//             namespace: installNamespace
-//         }
+        deploy: kubernetes.#Resources & {
+            kubeconfig: helmDeploy.myKubeconfig
+            manifest: ingress.manifestStream
+            namespace: installNamespace
+        }
 
-//         createH8rIngress: {
-//             create: h8r.#CreateH8rIngress & {
-//                 name: suffix.out + "-grafana"
-//                 host: installIngress.targetIngressEndpoint.get
-//                 domain: grafanaDomain
-//                 port: "80"
-//             }
-//         }
+        createH8rIngress: {
+            create: h8r.#CreateH8rIngress & {
+                name: suffix.out + "-grafana"
+                host: installIngress.targetIngressEndpoint.get
+                domain: grafanaDomain
+                port: "80"
+            }
+        }
 
-//         // Grafana secret, username admin
-//         grafanaSecret: loki.#GetLokiSecret & {
-//             kubeconfig: helmDeploy.myKubeconfig
-//         }
-//     }
+        // Grafana secret, username admin
+        grafanaSecret: loki.#GetLokiSecret & {
+            kubeconfig: helmDeploy.myKubeconfig
+        }
+    }
 
-//     prometheusIngressToTargetCluster: {
-//         ingress: ingressNginx.#Ingress & {
-//             name: suffix.out + "-prometheus"
-//             className: "nginx"
-//             hostName: prometheusDomain
-//             path: "/"
-//             namespace: installNamespace
-//             backendServiceName: "loki-prometheus-server"
-//         }
+    prometheusIngressToTargetCluster: {
+        ingress: ingressNginx.#Ingress & {
+            name: suffix.out + "-prometheus"
+            className: "nginx"
+            hostName: prometheusDomain
+            path: "/"
+            namespace: installNamespace
+            backendServiceName: "loki-prometheus-server"
+        }
 
-//         deploy: kubernetes.#Resources & {
-//             kubeconfig: helmDeploy.myKubeconfig
-//             manifest: ingress.manifestStream
-//             namespace: installNamespace
-//         }
+        deploy: kubernetes.#Resources & {
+            kubeconfig: helmDeploy.myKubeconfig
+            manifest: ingress.manifestStream
+            namespace: installNamespace
+        }
 
-//         createH8rIngress: {
-//             create: h8r.#CreateH8rIngress & {
-//                 name: suffix.out + "-prometheus"
-//                 host: installIngress.targetIngressEndpoint.get
-//                 domain: prometheusDomain
-//                 port: "80"
-//             }
-//         }
-//     }
+        createH8rIngress: {
+            create: h8r.#CreateH8rIngress & {
+                name: suffix.out + "-prometheus"
+                host: installIngress.targetIngressEndpoint.get
+                domain: prometheusDomain
+                port: "80"
+            }
+        }
+    }
 
-//     alertmanagerIngressToTargetCluster: {
-//         ingress: ingressNginx.#Ingress & {
-//             name: suffix.out + "-alertmanager"
-//             className: "nginx"
-//             hostName: alertmanagerDomain
-//             path: "/"
-//             namespace: installNamespace
-//             backendServiceName: "loki-prometheus-alertmanager"
-//         }
+    alertmanagerIngressToTargetCluster: {
+        ingress: ingressNginx.#Ingress & {
+            name: suffix.out + "-alertmanager"
+            className: "nginx"
+            hostName: alertmanagerDomain
+            path: "/"
+            namespace: installNamespace
+            backendServiceName: "loki-prometheus-alertmanager"
+        }
 
-//         deploy: kubernetes.#Resources & {
-//             kubeconfig: helmDeploy.myKubeconfig
-//             manifest: ingress.manifestStream
-//             namespace: installNamespace
-//         }
+        deploy: kubernetes.#Resources & {
+            kubeconfig: helmDeploy.myKubeconfig
+            manifest: ingress.manifestStream
+            namespace: installNamespace
+        }
 
-//         createH8rIngress: {
-//             create: h8r.#CreateH8rIngress & {
-//                 name: suffix.out + "-alertmanager"
-//                 host: installIngress.targetIngressEndpoint.get
-//                 domain: alertmanagerDomain
-//                 port: "80"
-//             }
-//         }
-//     }
-// }
+        createH8rIngress: {
+            create: h8r.#CreateH8rIngress & {
+                name: suffix.out + "-alertmanager"
+                host: installIngress.targetIngressEndpoint.get
+                domain: alertmanagerDomain
+                port: "80"
+            }
+        }
+    }
+}
