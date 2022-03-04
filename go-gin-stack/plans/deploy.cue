@@ -8,10 +8,10 @@ import(
 // Application install namespace
 appInstallNamespace: "production"
 
-// App domain
+// App domain prefix
 appDomain: suffix.out + ".go-gin.h8r.app"
 
-// Show App domain
+// App domain
 showAppDomain: appInstallNamespace + "." + appDomain @dagger(output)
 
 // Dev domain
