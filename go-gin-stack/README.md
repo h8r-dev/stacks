@@ -35,6 +35,7 @@ dagger input dir initRepo.sourceCodeDir .
 3. 创建并配置 Infra 层应用，包括 Nocalhost、Loki、Prometheus、Grafana、Alertmanager，并支持外网访问
 4. 使用 Github Organization 创建 Nocalhost 用户，初始化应用、集群、开发空间
 5. Nocalhost 一键开发和调试
+6. What's Next 指引
 
 ### Stack 参数
 ```
