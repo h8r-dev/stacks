@@ -9,6 +9,8 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	_ "h8r.io/docs"
 
+	"github.com/Depado/ginprom"
+
 	"h8r.io/middleware/jwt"
 	"h8r.io/pkg/export"
 	"h8r.io/pkg/qrcode"
@@ -20,6 +22,14 @@ import (
 // InitRouter initialize routing information
 func InitRouter() *gin.Engine {
 	r := gin.New()
+
+	p := ginprom.New(
+		ginprom.Engine(r),
+		ginprom.Subsystem("gin"),
+		ginprom.Path("/metrics"),
+	)
+	r.Use(p.Instrument())
+
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
