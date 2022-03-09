@@ -30,7 +30,7 @@ spec:
       volumes:
       - name: nginx-conf
         configMap:
-          name: nginx-conf
+          name: {{ include "go-gin-stack.fullname" . }}-nginx-conf
           items:
             - key: default.conf
               path: default.conf
