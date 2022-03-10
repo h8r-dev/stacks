@@ -17,6 +17,10 @@ spec:
       labels:
         app: {{ include "go-gin-stack.fullname" . }}-front
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-front
         image: "{{ .Values.frontImage.repository }}:{{ .Values.frontImage.tag | default .Chart.AppVersion }}"
