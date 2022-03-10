@@ -10,7 +10,7 @@ import (
 	_ "h8r.io/docs"
 
 	"github.com/Depado/ginprom"
-
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"h8r.io/middleware/jwt"
 	"h8r.io/pkg/export"
 	"h8r.io/pkg/qrcode"
@@ -22,6 +22,8 @@ import (
 // InitRouter initialize routing information
 func InitRouter() *gin.Engine {
 	r := gin.New()
+	// TODO: change service name to real name
+	r.Use(otelgin.Middleware("backend-api"))
 
 	p := ginprom.New(
 		ginprom.Engine(r),

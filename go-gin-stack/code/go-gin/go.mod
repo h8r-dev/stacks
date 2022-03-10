@@ -28,5 +28,6 @@ require (
 	github.com/swaggo/swag v1.5.1
 	github.com/tealeg/xlsx v1.0.4-0.20180419195153-f36fa3be8893
 	github.com/unknwon/com v1.0.1
+	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.29.0
 	gopkg.in/ini.v1 v1.47.0 // indirect
 )
