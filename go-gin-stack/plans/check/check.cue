@@ -6,6 +6,35 @@ import (
 	"alpha.dagger.io/kubernetes"
 )
 
+#TestOutput: {
+    // TODO default repoDir path, now you can set "." with dagger dir type
+    testString: string
+    
+	#up: [
+		op.#FetchContainer & {
+			ref: "ubuntu:latest"
+		},
+
+		op.#Exec & {
+			env: {
+				TEST:     testString
+			}
+			args: [
+				"/bin/bash",
+				"--noprofile",
+				"--norc",
+				"-eo",
+				"pipefail",
+				"-c",
+				#"""
+					echo "s"$TEST"sss"
+					"""#,
+			]
+			always: true
+		},
+	]
+}
+
 #CheckInfra: {
     // TODO default repoDir path, now you can set "." with dagger dir type
     sourceCodeDir: dagger.#Artifact @dagger(input)
@@ -55,6 +84,7 @@ import (
     // Get ingress version, such v1, v1beta1
     get: {
         string
+		
         #up: [
             op.#Load & {
 				from: kubernetes.#Kubectl & {
@@ -72,12 +102,11 @@ import (
 					"pipefail",
 					"-c",
 					#"""
-						kubectl api-resources --api-group=networking.k8s.io > /ingress_result
-						version=$(cat /ingress_result | grep v1)
-						if [ "$version" != "" ]; then
-							echo 'v1' > /result
-						else
+						ingress_result=$(kubectl api-resources --api-group=networking.k8s.io)
+						if [[ $ingress_result =~ "v1beta1" ]]; then
 							echo 'v1beta1' > /result
+						else
+							echo 'v1' > /result
 						fi
 					"""#,
 				]

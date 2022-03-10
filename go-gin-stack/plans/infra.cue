@@ -1,7 +1,7 @@
 package main
 
 import(
-    "alpha.dagger.io/kubernetes"
+    kubernetes "github.com/h8r-dev/cuelib/deploy/kubectl"
     "github.com/h8r-dev/cuelib/deploy/helm"
     "alpha.dagger.io/random"
     ingressNginx "github.com/h8r-dev/cuelib/infra/ingress"
@@ -63,6 +63,7 @@ installNocalhost: {
         action: "installOrUpgrade"
         kubeconfig: helmDeploy.myKubeconfig
         wait: true
+        waitFor: installIngress.install
     }
 
     nocalhostIngress: ingressNginx.#Ingress & {
@@ -79,6 +80,7 @@ installNocalhost: {
         kubeconfig: helmDeploy.myKubeconfig
         manifest: nocalhostIngress.manifestStream
         namespace: installNamespace
+        waitFor: installIngress.install
     }
 
     createH8rIngress: {
@@ -104,6 +106,7 @@ installLokiStack: {
         namespace: "loki"
         kubeconfig: helmDeploy.myKubeconfig
         wait: true
+        waitFor: installIngress.install
     }
 
     initIngressNginxDashboard: grafana.#CreateIngressDashboard & {
@@ -135,6 +138,7 @@ installLokiStack: {
             kubeconfig: helmDeploy.myKubeconfig
             manifest: ingress.manifestStream
             namespace: installNamespace
+            waitFor: installIngress.install
         }
 
         createH8rIngress: {
@@ -167,6 +171,7 @@ installLokiStack: {
             kubeconfig: helmDeploy.myKubeconfig
             manifest: ingress.manifestStream
             namespace: installNamespace
+            waitFor: installIngress.install
         }
 
         createH8rIngress: {
@@ -194,6 +199,7 @@ installLokiStack: {
             kubeconfig: helmDeploy.myKubeconfig
             manifest: ingress.manifestStream
             namespace: installNamespace
+            waitFor: installIngress.install
         }
 
         createH8rIngress: {

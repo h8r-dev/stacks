@@ -28,6 +28,7 @@ helmDeploy: helm.#Deploy & {
   namespace: appInstallNamespace
   // helm chart has namespace host prefix
   ingressHostName: appDomain
+  waitFor: installIngress.install
 }
 
 createH8rIngress: {
