@@ -6,10 +6,10 @@ import(
 )
 
 // Application install namespace
-appInstallNamespace: "production"
+appInstallNamespace: initRepo.applicationName + "-production"
 
 // App domain prefix
-appDomain: suffix.out + ".go-gin.h8r.app"
+appDomain: uri.out + ".go-gin.h8r.app"
 
 // App domain
 showAppDomain: appInstallNamespace + "." + appDomain @dagger(output)
@@ -28,11 +28,12 @@ helmDeploy: helm.#Deploy & {
   namespace: appInstallNamespace
   // helm chart has namespace host prefix
   ingressHostName: appDomain
+  waitFor: installIngress.install
 }
 
 createH8rIngress: {
   app: h8r.#CreateH8rIngress & {
-    name: suffix.out + "-go-gin"
+    name: uri.out + "-go-gin"
     host: installIngress.targetIngressEndpoint.get
     domain: appInstallNamespace + "." + appDomain
     port: "80"
