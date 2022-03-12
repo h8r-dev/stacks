@@ -6,9 +6,8 @@
 
 ## 已知问题
 1. 每次运行将产生新的访问 URL
-2. Infra 应用在初始化安装时，如时间超过 5 分钟（例如镜像拉取）则会导致失败
-3. `initRepo.organization` 不再支持用户名，现只支持组织名
-4. 只支持创建公开权限的仓库
+2. Infra 应用在初始化安装时，如时间超过 10 分钟（例如镜像拉取）则会导致失败
+3. 只支持创建公开权限的仓库
 
 ## Quick Start
 
@@ -24,7 +23,7 @@
 dagger input secret helmDeploy.myKubeconfig -f /Users/wangwei/Downloads/test/test2
 dagger input text initRepo.applicationName orders
 dagger input secret initRepo.accessToken [Github personal access token]
-dagger input text initRepo.organization [organization name]
+dagger input text initRepo.organization [organization name or github id]
 dagger input dir initRepo.sourceCodeDir .
 ```
 
