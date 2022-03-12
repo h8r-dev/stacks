@@ -50,6 +50,25 @@ installIngress: {
     targetIngressEndpoint: ingressNginx.#GetIngressEndpoint & {
         kubeconfig: helmDeploy.myKubeconfig
     }
+
+    // wait for prometheus operator ready then upgrade ingress nginx metric
+    forWait: kubernetes.#WaitFor & {
+        kubeconfig: helmDeploy.myKubeconfig
+        worklaod: "ServiceMonitor"
+    }
+
+    // upgrade ingress nginx for serviceMonitor
+    upgrade: helm.#Chart & {
+        name: "ingress-nginx"
+        repository: "https://h8r-helm.pkg.coding.net/release/helm"
+        chart: "ingress-nginx"
+        namespace: "ingress-nginx"
+        action: "installOrUpgrade"
+        kubeconfig: helmDeploy.myKubeconfig
+        values: #ingressNginxUpgradeSetting
+        wait: true
+        waitFor: installIngress.forWait
+    }
 }
 
 installNocalhost: {
@@ -93,34 +112,41 @@ installNocalhost: {
     }
 }
 
+installPrometheusStack: {
+    releaseName: "prometheus"
+    installNamespace: "monitoring"
 
-
-installLokiStack: {
-    installNamespace: "loki"
-
-    lokiStack: helm.#Chart & {
-        name: "loki"
-        repository: "https://h8r-helm.pkg.coding.net/release/helm"
-        chart: "loki-stack"
+    kubePrometheus: helm.#Chart & {
+        name: installPrometheusStack.releaseName
+        repository: "https://prometheus-community.github.io/helm-charts"
+        chart: "kube-prometheus-stack"
         action: "installOrUpgrade"
-        namespace: "loki"
+        namespace: installPrometheusStack.installNamespace
         kubeconfig: helmDeploy.myKubeconfig
         wait: true
         waitFor: installIngress.install
     }
 
+    // Grafana secret, username admin
+    grafanaSecret: loki.#GetLokiSecret & {
+        secretName: installPrometheusStack.releaseName + "-grafana"
+        kubeconfig: helmDeploy.myKubeconfig
+        namespace: installPrometheusStack.installNamespace
+    }
+
     initIngressNginxDashboard: grafana.#CreateIngressDashboard & {
         url: grafanaDomain
         username: "admin"
-        password: installLokiStack.grafanaIngressToTargetCluster.grafanaSecret.get
-        waitGrafana: lokiStack
+        password: installPrometheusStack.grafanaSecret.get
+        waitGrafana: installPrometheusStack.kubePrometheus
     }
 
-    initNodeExporterDashboard: grafana.#CreateNodeExporterDashboard & {
+    initLokiDataSource: grafana.#CreateLokiDataSource & {
         url: grafanaDomain
         username: "admin"
-        password: installLokiStack.grafanaIngressToTargetCluster.grafanaSecret.get
-        waitGrafana: lokiStack
+        password: installPrometheusStack.grafanaSecret.get
+        waitGrafana: installPrometheusStack.kubePrometheus
+        waitLoki: installLokiStack.lokiStack
     }
 
     grafanaIngressToTargetCluster: {
@@ -129,15 +155,15 @@ installLokiStack: {
             className: "nginx"
             hostName: grafanaDomain
             path: "/"
-            namespace: installNamespace
-            backendServiceName: "loki-grafana"
+            namespace: installPrometheusStack.installNamespace
+            backendServiceName: installPrometheusStack.releaseName + "-grafana"
             ingressVersion: getIngressVersion.get
         }
 
         deploy: kubernetes.#Resources & {
             kubeconfig: helmDeploy.myKubeconfig
             manifest: ingress.manifestStream
-            namespace: installNamespace
+            namespace: installPrometheusStack.installNamespace
             waitFor: installIngress.install
         }
 
@@ -149,11 +175,6 @@ installLokiStack: {
                 port: "80"
             }
         }
-
-        // Grafana secret, username admin
-        grafanaSecret: loki.#GetLokiSecret & {
-            kubeconfig: helmDeploy.myKubeconfig
-        }
     }
 
     prometheusIngressToTargetCluster: {
@@ -162,15 +183,16 @@ installLokiStack: {
             className: "nginx"
             hostName: prometheusDomain
             path: "/"
-            namespace: installNamespace
-            backendServiceName: "loki-prometheus-server"
+            namespace: installPrometheusStack.installNamespace
+            backendServiceName: "prometheus-operated"
+            backendServicePort: 9090
             ingressVersion: getIngressVersion.get
         }
 
         deploy: kubernetes.#Resources & {
             kubeconfig: helmDeploy.myKubeconfig
             manifest: ingress.manifestStream
-            namespace: installNamespace
+            namespace: installPrometheusStack.installNamespace
             waitFor: installIngress.install
         }
 
@@ -190,15 +212,16 @@ installLokiStack: {
             className: "nginx"
             hostName: alertmanagerDomain
             path: "/"
-            namespace: installNamespace
-            backendServiceName: "loki-prometheus-alertmanager"
+            namespace: installPrometheusStack.installNamespace
+            backendServiceName: "alertmanager-operated"
+            backendServicePort: 9093
             ingressVersion: getIngressVersion.get
         }
 
         deploy: kubernetes.#Resources & {
             kubeconfig: helmDeploy.myKubeconfig
             manifest: ingress.manifestStream
-            namespace: installNamespace
+            namespace: installPrometheusStack.installNamespace
             waitFor: installIngress.install
         }
 
@@ -211,4 +234,27 @@ installLokiStack: {
             }
         }
     }
+
+}
+
+installLokiStack: {
+    installNamespace: "logging"
+
+    lokiStack: helm.#Chart & {
+        name: "loki"
+        repository: "https://grafana.github.io/helm-charts"
+        chart: "loki-stack"
+        action: "installOrUpgrade"
+        namespace: installLokiStack.installNamespace
+        kubeconfig: helmDeploy.myKubeconfig
+        wait: true
+        waitFor: installIngress.install
+    }
+
+    // initNodeExporterDashboard: grafana.#CreateNodeExporterDashboard & {
+    //     url: grafanaDomain
+    //     username: "admin"
+    //     password: installLokiStack.grafanaIngressToTargetCluster.grafanaSecret.get
+    //     waitGrafana: lokiStack
+    // }
 }
