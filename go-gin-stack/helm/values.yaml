@@ -102,7 +102,7 @@ tolerations: []
 affinity: {}
 
 mariadb:
-  commonAnnotations: {"helm.sh/hook": "pre-install", "helm.sh/hook-weight": "-2"}
+  #commonAnnotations: {"helm.sh/hook": "pre-install", "helm.sh/hook-weight": "-2"}
   auth:
     rootPassword: root
   primary:
