@@ -1,0 +1,3 @@
+package gin-vue
+
+status: {}

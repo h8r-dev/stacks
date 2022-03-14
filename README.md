@@ -1,2 +1,3 @@
 # stacks
-Cloud native stacks to develop and deploy applications
+
+Cloud native stacks for application development.

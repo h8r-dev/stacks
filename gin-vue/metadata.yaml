@@ -1,0 +1,9 @@
+name: go-gin-stack
+version: 1.0.0
+owner:
+  name: Wei Wang
+  contact: wei.wang@h8r.io
+description: This is go-gin stack
+icon: https://raw.githubusercontent.com/gin-gonic/logo/master/color.png
+url: https://gin-gonic.com/
+tags: ["go", "gin", "microservice", "redis", "mysql"]

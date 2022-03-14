@@ -1,0 +1,28 @@
+containers:
+  - name: {{ .Chart.Name }}
+    dev:
+      gitUrl: {{ .Values.nocalhost.backend.dev.gitUrl }}
+      image: nocalhost-docker.pkg.coding.net/nocalhost/dev-images/golang:latest
+      shell: bash
+      workDir: /home/nocalhost-dev
+      command:
+        run: [ "go", "run", "main.go" ]
+        debug: [ "dlv", "--headless", "--log", "--listen", ":9009", "--api-version", "2", "--accept-multiclient", "debug", "main.go" ]
+      debug:
+        remoteDebugPort: 9009
+      hotReload: true
+      sync:
+        type: send
+        filePattern:
+          - ./
+        ignoreFilePattern:
+          - ".git"
+          - ".idea"
+          - ".github"
+      resources:
+        limits:
+          cpu: "2"
+          memory: 2Gi
+        requests:
+          cpu: "0.2"
+          memory: 256Mi
