@@ -25,7 +25,7 @@
     ```
 
 1. 运行：`dagger do create`
-1. 删除: `dagger do destroy`
+1. 删除: `dagger do delete`
 
 ## 功能预览
 

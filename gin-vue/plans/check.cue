@@ -1,3 +1,3 @@
-package gin-vue
+package main
 
 check_infra: {}
