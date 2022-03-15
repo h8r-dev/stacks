@@ -50,7 +50,7 @@ initNocalhostData: {
     createCluster: nocalhost.#CreateNocalhostCluster & {
         waitNocalhost: installNocalhost.nocalhost
         nocalhostTokenSource: login
-        myKubeconfig: helmDeploy.myKubeconfig
+        "myKubeconfig": myKubeconfig
     }
 
     createApplication: nocalhost.#CreateNocalhostApplication & {
