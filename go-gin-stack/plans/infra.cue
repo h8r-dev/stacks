@@ -50,7 +50,9 @@ installArgoCD: {
         kubeconfig: myKubeconfig
         namespace: argoCDNamespace
         url: "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
-        waitFor: installIngress.install
+        waitFor: {
+            "/waitforingress": from: installIngress.install
+        }
     }
 
     argoCDIngress: ingressNginx.#Ingress & {

@@ -8,10 +8,12 @@ import(
 initRepo: github.#InitRepo & {
     checkInfra: check_infra.check
     sourceCodePath: "code/go-gin"
+    suffix: ""
 }
 
 initFrontendRepo: github.#InitRepo & {
-    applicationName: initRepo.applicationName + "-front"
+    applicationName: initRepo.applicationName
+    suffix: "-front"
     accessToken: initRepo.accessToken
     organization: initRepo.organization
     checkInfra: check_infra.check
@@ -22,6 +24,7 @@ initFrontendRepo: github.#InitRepo & {
 // What's Next
 initHelmRepo: github.#InitRepo & {
     applicationName: initRepo.applicationName
+    suffix: "-helm"
     accessToken: initRepo.accessToken
     organization: initRepo.organization
     checkInfra: check_infra.check
