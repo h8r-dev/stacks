@@ -19,13 +19,13 @@
 
     ```shell
     export KUBECONFIG=$HOME/.kube/config
-    export APPLICATION_NAME="orders"
+    export HLN_APP_NAME="orders"
     export GITHUB_TOKEN=[Github personal access token]
     export GITHUB_ORG=[organization name or github id]
     ```
 
-1. 运行：`dagger do create`
-1. 删除: `dagger do delete`
+1. 运行：`dagger do up -p ./plans/up.cue`
+1. 删除: `dagger do down -p ./plans/down.cue`
 
 ## 功能预览
 
