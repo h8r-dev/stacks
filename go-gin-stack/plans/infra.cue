@@ -9,6 +9,7 @@ import(
     "github.com/h8r-dev/cuelib/infra/loki"
     "github.com/h8r-dev/cuelib/monitoring/grafana"
     "github.com/h8r-dev/go-gin-stack/plans/check"
+    "github.com/h8r-dev/cuelib/deploy/argocd"
 )
 
 uri: random.#String & {
@@ -22,6 +23,9 @@ infraDomain: ".stack.h8r.io"
 // Nocalhost URL
 nocalhostDomain: uri.out + ".nocalhost" + infraDomain @dagger(output)
 
+// ArgoCD URL
+argocdDomain: uri.out + ".argocd" + infraDomain @dagger(output)
+
 // Grafana URL
 grafanaDomain: uri.out + ".grafana" + infraDomain @dagger(output)
 
@@ -31,8 +35,78 @@ prometheusDomain: uri.out + ".prom" + infraDomain @dagger(output)
 // Alertmanager URL
 alertmanagerDomain: uri.out + ".alert" + infraDomain @dagger(output)
 
+// ArgoCD namespace
+argoCDNamespace: "argocd"
+
+// ArgoCD application deploy namespace
+argoApplicationNamespace: appInstallNamespace
+
 getIngressVersion: check.#GetIngressVersion & {
-    kubeconfig: helmDeploy.myKubeconfig
+    kubeconfig: myKubeconfig
+}
+
+installArgoCD: {
+    install: argocd.#InstallArgoCD & {
+        kubeconfig: myKubeconfig
+        namespace: argoCDNamespace
+        url: "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+        waitFor: {
+            "/waitforingress": from: installIngress.install
+        }
+    }
+
+    argoCDIngress: ingressNginx.#Ingress & {
+        name: uri.out + "-argocd"
+        className: "nginx"
+        hostName: argocdDomain
+        path: "/"
+        namespace: argoCDNamespace
+        backendServiceName: "argocd-server"
+        backendServicePort: 80
+        ingressVersion: getIngressVersion.get
+    }
+
+    deploy: kubernetes.#Resources & {
+        kubeconfig: myKubeconfig
+        manifest: argoCDIngress.manifestStream
+        namespace: argoCDNamespace
+        waitFor: install.install
+    }
+
+    createH8rIngress: {
+        create: h8r.#CreateH8rIngress & {
+            name: uri.out + "-argocd"
+            host: installIngress.targetIngressEndpoint.get
+            domain: argocdDomain
+            port: "80"
+        }
+    }
+    
+    argocdConfig: argocd.#Config & {
+        version: "v2.3.1"
+        server:  argocdDomain
+        basicAuth: {
+            username: "admin"
+            password: install.install
+        }
+    }
+
+    createApp: argocd.#App & {
+        config: argocdConfig
+        name:   initRepo.applicationName
+        repo:   initHelmRepo.gitUrl
+        namespace: argoApplicationNamespace
+        path: "."
+        helmSet: "ingress.hosts[0].host=" + appDomain + ",ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
+    }
+
+    // create image pull secret for argocd
+    createImagePullSecret: kubernetes.#CreateImagePullSecret & {
+        kubeconfig: myKubeconfig
+        username: initRepo.organization
+        password: initRepo.accessToken
+        namespace: argoApplicationNamespace
+    }
 }
 
 installIngress: {
@@ -42,18 +116,18 @@ installIngress: {
         chart: "ingress-nginx"
         namespace: "ingress-nginx"
         action: "installOrUpgrade"
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         values: #ingressNginxSetting
         wait: true
     }
 
     targetIngressEndpoint: ingressNginx.#GetIngressEndpoint & {
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
     }
 
     // wait for prometheus operator ready then upgrade ingress nginx metric
     forWait: kubernetes.#WaitFor & {
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         worklaod: "ServiceMonitor"
     }
 
@@ -64,10 +138,13 @@ installIngress: {
         chart: "ingress-nginx"
         namespace: "ingress-nginx"
         action: "installOrUpgrade"
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         values: #ingressNginxUpgradeSetting
         wait: true
-        waitFor: installIngress.forWait
+        waitFor: {
+            "/waitinstall": from: installIngress.install
+            "/waitprometheus": from: forWait
+        }
     }
 }
 
@@ -80,9 +157,11 @@ installNocalhost: {
         chart: "nocalhost"
         namespace: installNamespace
         action: "installOrUpgrade"
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         wait: true
-        waitFor: installIngress.install
+        waitFor: {
+            "/wait": from: installIngress.install
+        }
     }
 
     nocalhostIngress: ingressNginx.#Ingress & {
@@ -96,7 +175,7 @@ installNocalhost: {
     }
 
     deploy: kubernetes.#Resources & {
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         manifest: nocalhostIngress.manifestStream
         namespace: installNamespace
         waitFor: installIngress.install
@@ -122,15 +201,17 @@ installPrometheusStack: {
         chart: "kube-prometheus-stack"
         action: "installOrUpgrade"
         namespace: installPrometheusStack.installNamespace
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         wait: true
-        waitFor: installIngress.install
+        waitFor: {
+            "/wait": from: installIngress.install
+        }
     }
 
     // Grafana secret, username admin
     grafanaSecret: loki.#GetLokiSecret & {
         secretName: installPrometheusStack.releaseName + "-grafana"
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         namespace: installPrometheusStack.installNamespace
     }
 
@@ -161,7 +242,7 @@ installPrometheusStack: {
         }
 
         deploy: kubernetes.#Resources & {
-            kubeconfig: helmDeploy.myKubeconfig
+            kubeconfig: myKubeconfig
             manifest: ingress.manifestStream
             namespace: installPrometheusStack.installNamespace
             waitFor: installIngress.install
@@ -190,7 +271,7 @@ installPrometheusStack: {
         }
 
         deploy: kubernetes.#Resources & {
-            kubeconfig: helmDeploy.myKubeconfig
+            kubeconfig: myKubeconfig
             manifest: ingress.manifestStream
             namespace: installPrometheusStack.installNamespace
             waitFor: installIngress.install
@@ -219,7 +300,7 @@ installPrometheusStack: {
         }
 
         deploy: kubernetes.#Resources & {
-            kubeconfig: helmDeploy.myKubeconfig
+            kubeconfig: myKubeconfig
             manifest: ingress.manifestStream
             namespace: installPrometheusStack.installNamespace
             waitFor: installIngress.install
@@ -246,9 +327,11 @@ installLokiStack: {
         chart: "loki-stack"
         action: "installOrUpgrade"
         namespace: installLokiStack.installNamespace
-        kubeconfig: helmDeploy.myKubeconfig
+        kubeconfig: myKubeconfig
         wait: true
-        waitFor: installIngress.install
+        waitFor: {
+            "/wait": from: installIngress.install
+        }
     }
 
     // initNodeExporterDashboard: grafana.#CreateNodeExporterDashboard & {

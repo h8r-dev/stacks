@@ -1,8 +1,9 @@
 package main
 
 import(
-  "github.com/h8r-dev/cuelib/deploy/helm"
+  //"github.com/h8r-dev/cuelib/deploy/helm"
   "github.com/h8r-dev/cuelib/infra/h8r"
+  "alpha.dagger.io/dagger"
 )
 
 // Application install namespace
@@ -17,19 +18,23 @@ showAppDomain: appInstallNamespace + "." + appDomain @dagger(output)
 // Dev domain
 devDomain: ".dev.go-gin.h8r.app"
 
-helmDeploy: helm.#Deploy & {
-  helmPath: "helm"
-  releaseName: initRepo.applicationName
-  repoUrl: initHelmRepo.gitUrl
-  ghcrName: initRepo.organization
-  ghcrPassword: initRepo.accessToken
-  // TODO set as default dir
-  sourceCodeDir: initRepo.sourceCodeDir
-  namespace: appInstallNamespace
-  // helm chart has namespace host prefix
-  ingressHostName: appDomain
-  waitFor: installIngress.install
-}
+// orders52-pro.dev.go-gin.h8r.app
+
+// helmDeploy: helm.#Deploy & {
+//   helmPath: "helm"
+//   releaseName: initRepo.applicationName
+//   repoUrl: initHelmRepo.gitUrl
+//   ghcrName: initRepo.organization
+//   ghcrPassword: initRepo.accessToken
+//   // TODO set as default dir
+//   sourceCodeDir: initRepo.sourceCodeDir
+//   namespace: appInstallNamespace
+//   // helm chart has namespace host prefix
+//   ingressHostName: appDomain
+//   waitFor: installIngress.install
+// }
+
+myKubeconfig: dagger.#Input & {dagger.#Secret}
 
 createH8rIngress: {
   app: h8r.#CreateH8rIngress & {
