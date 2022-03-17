@@ -1,5 +1,7 @@
 FROM golang:alpine as builder
 
+RUN apk add git
+
 ENV GOPROXY https://goproxy.cn,direct
 WORKDIR /root
 COPY . /root
