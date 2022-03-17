@@ -28,7 +28,7 @@ func InitRouter() *gin.Engine {
 	p := ginprom.New(
 		ginprom.Engine(r),
 		ginprom.Subsystem("gin"),
-		ginprom.Path("/metrics"),
+		ginprom.Path("/api/metrics"),
 	)
 	r.Use(p.Instrument())
 
