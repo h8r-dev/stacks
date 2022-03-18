@@ -9,9 +9,7 @@ import (
 
 dagger.#Plan & {
 	client: {
-		filesystem: "code/": read: {
-			contents: dagger.#FS
-		}
+		filesystem: "code/": read: contents: dagger.#FS
 		env: {
 			GITHUB_TOKEN: dagger.#Secret
 			APP_NAME:     string
