@@ -9,19 +9,12 @@ import (
 
 dagger.#Plan & {
 	client: {
-		filesystem: {
-			"code/": read: {
-				contents: dagger.#FS
-				exclude: [
-					"go-gin/README.md",
-					"vue-front/README.md",
-				]
-			}
-			"output/": write: contents: actions.up.createGithubRepos.result.output
+		filesystem: "code/": read: {
+			contents: dagger.#FS
 		}
 		env: {
 			GITHUB_TOKEN: dagger.#Secret
-			HLN_APP_NAME: string
+			APP_NAME:     string
 		}
 	}
 
@@ -33,6 +26,7 @@ dagger.#Plan & {
 						bash: {}
 						curl: {}
 						jq: {}
+						git: {}
 					}
 				},
 				docker.#Copy & {
@@ -40,49 +34,55 @@ dagger.#Plan & {
 					dest:     "/src"
 				},
 				bash.#Run & {
-					workdir: "/src"
-					env: HLN_APP_NAME: client.env.HLN_APP_NAME
 					env: GITHUB_TOKEN: client.env.GITHUB_TOKEN
 					script: contents: #"""
 						mkdir /output /github
+						curl -sH "Authorization: token $GITHUB_TOKEN" https://api.github.com/user > /github/user.json
+						curl -sH "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/emails > /github/email.json
 						"""#
 				},
 			]
 		}
-		up: {
-			createGithubRepos: {
-				backend: bash.#Run & {
-					input:   deps.output
-					workdir: "/src"
-					env: HLN_APP_NAME: client.env.HLN_APP_NAME
-					env: GITHUB_TOKEN: client.env.GITHUB_TOKEN
-					script: contents: #"""
-						curl -XPOST -d '{"name":"'$HLN_APP_NAME-backend'"}' -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos >> /output/createback
-						"""#
-				}
-				frontend: bash.#Run & {
-					input:   backend.output
-					workdir: "/src"
-					env: HLN_APP_NAME: client.env.HLN_APP_NAME
-					env: GITHUB_TOKEN: client.env.GITHUB_TOKEN
-					script: contents: #"""
-						curl -XPOST -d '{"name":"'$HLN_APP_NAME-frontend'"}' -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos >> /output/createfront
-						"""#
-				}
-				helm: bash.#Run & {
-					input:   frontend.output
-					workdir: "/src"
-					env: HLN_APP_NAME: client.env.HLN_APP_NAME
-					env: GITHUB_TOKEN: client.env.GITHUB_TOKEN
-					script: contents: #"""
-						curl -XPOST -d '{"name":"'$HLN_APP_NAME-helm'"}' -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos >> /output/createhelm
-						"""#
-				}
-				result: dagger.#Subdir & {
-					input: helm.output.rootfs
-					path:  "/output"
-				}
+		up: initRepos: {
+			backend: #GithubCreate & {
+				input:   deps.output
+				workdir: "/src/go-gin"
+				#suffix: "-backend"
+			}
+			frontend: #GithubCreate & {
+				input:   deps.output
+				workdir: "/src/vue-front"
+				#suffix: "-frontend"
+			}
+			helm: #GithubCreate & {
+				input:   deps.output
+				workdir: "/src/helm"
+				#suffix: "-helm"
 			}
 		}
+	}
+
+	#GithubCreate: bash.#Run & {
+		#appname: client.env.APP_NAME
+		#suffix:  string
+		#token:   client.env.GITHUB_TOKEN
+
+		env: REPO_NAME:    "\(#appname)\(#suffix)"
+		env: GITHUB_TOKEN: #token
+		script: contents: #"""
+			curl -XPOST -d '{"name":"'$REPO_NAME'"}' -sH "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos > /github/repo.json
+			export GITHUB_USER=$(cat /github/user.json | jq -r '.login')
+			export GITHUB_EMAIL=$(cat /github/email.json | jq -r '[.[] | .email] | .[0]')
+			export HTTPS_URL=https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$REPO_NAME.git
+			git config --global user.name $GITHUB_USER
+			git config --global user.email $GITHUB_EMAIL
+
+			git init
+			git add .
+			git commit -m "first commit"
+			git branch -M main
+			git remote add origin $HTTPS_URL
+			git push -u origin main
+			"""#
 	}
 }

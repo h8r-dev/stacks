@@ -19,7 +19,7 @@
 
     ```shell
     export KUBECONFIG=$HOME/.kube/config
-    export HLN_APP_NAME="orders"
+    export APP_NAME="orders"
     export GITHUB_TOKEN=[Github personal access token]
     export GITHUB_ORG=[organization name or github id]
     ```
