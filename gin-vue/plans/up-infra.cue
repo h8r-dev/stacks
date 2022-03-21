@@ -10,47 +10,48 @@ import (
 // Automatically setup infra resources:
 //   Nocalhost, Loki, Granfana, Prometheus, ArgoCD
 
-dagger.#Plan & {
-	client: {
-		filesystem: {
-			"client.env.KUBECONFIG": read: contents: dagger.#FS
-		}
-
-		env: KUBECONFIG: string
-	}
-
-	actions: up: getIngressVersion: #GetIngressVersion & {
-		kubeconfig: client.filesystem."client.env.KUBECONFIG".read.contents
-	}
-}
-
-#GetIngressVersion: {
-	kubeconfig: string
-
-	// Get ingress version, such v1, v1beta1
-	get: docker.#Build & {
+#Kubectl: {
+	version: string | *"v1.23.5"
+	image:   docker.#Build & {
 		steps: [
 			alpine.#Build & {
 				packages: {
 					bash: {}
-					yarn: {}
-					git: {}
+					curl: {}
 				}
 			},
-			docker.#Copy & {
-				contents: kubeconfig
-				dest:     "/kubeconfig"
-			},
 			bash.#Run & {
+				workdir: "/src"
 				script: contents: #"""
-					 ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
-					 if [[ $ingress_result =~ "v1beta1" ]]; then
-					  echo 'v1beta1' > /result
-					 else
-					  echo 'v1' > /result
-					 fi
+					curl -LO https://dl.k8s.io/release/\#(version)/bin/linux/amd64/kubectl
+					chmod +x kubectl
+					mv kubectl /usr/local/bin/
 					"""#
 			},
 		]
+	}
+}
+
+kubectl: #Kubectl & {version: "v1.23.5"}
+
+dagger.#Plan & {
+	client: env: KUBECONFIG_DATA: dagger.#Secret
+
+	// Get ingress version, such v1, v1beta1
+	actions: getIngressVersion: bash.#Run & {
+		input:   kubectl.image
+		workdir: "/src"
+		mounts: "KubeConfig Data": {
+			dest:     "/kubeconfig"
+			contents: client.env.KUBECONFIG_DATA
+		}
+		script: contents: #"""
+			ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
+			if [[ $ingress_result =~ "v1beta1" ]]; then
+			 echo 'v1beta1' > /result
+			else
+			 echo 'v1' > /result
+			fi
+			"""#
 	}
 }
