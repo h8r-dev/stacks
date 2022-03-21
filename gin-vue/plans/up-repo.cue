@@ -23,8 +23,9 @@ dagger.#Plan & {
 					packages: {
 						bash: {}
 						curl: {}
-						jq: {}
 						git: {}
+						jq: {}
+						yq: {}
 					}
 				},
 				docker.#Copy & {
@@ -52,10 +53,27 @@ dagger.#Plan & {
 				workdir: "/src/vue-front"
 				#suffix: "-frontend"
 			}
-			helm: #GithubCreate & {
-				input:   deps.output
-				workdir: "/src/helm"
-				#suffix: "-helm"
+			deploy: {
+				prepare: bash.#Run & {
+					input:   deps.output
+					workdir: "/src/helm"
+					env: APP_NAME:      client.env.APP_NAME
+					env: BACKEND_NAME:  "\(env.APP_NAME)\(backend.#suffix)"
+					env: FRONTEND_NAME: "\(env.APP_NAME)\(frontend.#suffix)"
+					script: contents: #"""
+						export GITHUB_USER=$(cat /github/user.json | jq -r '.login')
+						yq eval -i '.image.repository="ghcr.io/'$GITHUB_USER'/'$BACKEND_NAME'"' values.yaml
+						yq eval -i '.frontImage.repository="ghcr.io/'$GITHUB_USER'/'$FRONTEND_NAME'"' values.yaml
+						yq eval -i '.nocalhost.backend.dev.gitUrl="git@github.com:'$GITHUB_USER'/'$BACKEND_NAME.git'"' values.yaml
+						yq eval -i '.nocalhost.frontend.dev.gitUrl="git@github.com:'$GITHUB_USER'/'$FRONTEND_NAME.git'"' values.yaml
+						yq eval -i '.name="$APP_NAME"' Chart.yaml
+						"""#
+				}
+				run: #GithubCreate & {
+					input:   prepare.output
+					workdir: "/src/helm"
+					#suffix: "-deploy"
+				}
 			}
 		}
 	}
