@@ -18,7 +18,7 @@
 1. 初始化参数：
 
     ```shell
-    export KUBECONFIG=[your kubeconfig path]
+    export KUBECONFIG_DATA=$(cat $KUBECONFIG)
     export APP_NAME="orders"
     export GITHUB_TOKEN=[Github personal access token]
     export GITHUB_ORG=[organization name or github id]
