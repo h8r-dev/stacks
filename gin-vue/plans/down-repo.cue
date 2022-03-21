@@ -36,15 +36,15 @@ dagger.#Plan & {
 		down: deleteGithubRepos: {
 			backend: #GithubDelete & {
 				input:   deps.output
-				#suffix: "backend"
+				#suffix: "-backend"
 			}
 			frontend: #GithubDelete & {
 				input:   deps.output
-				#suffix: "frontend"
+				#suffix: "-frontend"
 			}
-			helm: #GithubDelete & {
+			deploy: #GithubDelete & {
 				input:   deps.output
-				#suffix: "helm"
+				#suffix: "-deploy"
 			}
 		}
 	}
@@ -55,7 +55,7 @@ dagger.#Plan & {
 		#token:   client.env.GITHUB_TOKEN
 
 		always: true
-		env: REPO_NAME:    "\(#appname)-\(#suffix)"
+		env: REPO_NAME:    "\(#appname)\(#suffix)"
 		env: GITHUB_TOKEN: #token
 		script: contents: #"""
 			export USER_NAME=$(cat /github/username)
