@@ -32,14 +32,15 @@ import (
 	}
 }
 
-kubectl: #Kubectl & {version: "v1.23.5"}
+_kubectl: #Kubectl & {version: "v1.23.5"}
+kubectl: _kubectl.image.output
 
 dagger.#Plan & {
 	client: env: KUBECONFIG_DATA: dagger.#Secret
 
 	// Get ingress version, such v1, v1beta1
 	actions: getIngressVersion: bash.#Run & {
-		input:   kubectl.image
+		input:   kubectl
 		workdir: "/src"
 		mounts: "KubeConfig Data": {
 			dest:     "/kubeconfig"
