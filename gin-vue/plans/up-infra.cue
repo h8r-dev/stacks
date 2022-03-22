@@ -102,11 +102,18 @@ import (
 }
 
 dagger.#Plan & {
-	client: env: KUBECONFIG_DATA: dagger.#Secret
-	client: filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
+	client: {
+		commands: kubeconfig: {
+			name: "cat"
+			args: ["\(env.KUBECONFIG)"]
+			stdout: dagger.#Secret
+		}
+		env: KUBECONFIG: string
+		filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
+	}
 
 	actions: {
-		kubectl: #Kubectl & {version: "v1.23.5"}
+		kubectl: #Kubectl
 
 		// Get ingress version, i.e. v1 or v1beta1
 		getIngressVersion: bash.#Run & {
@@ -114,7 +121,7 @@ dagger.#Plan & {
 			workdir: "/src"
 			mounts: "KubeConfig Data": {
 				dest:     "/kubeconfig"
-				contents: client.env.KUBECONFIG_DATA
+				contents: client.commands.kubeconfig.stdout
 			}
 			script: contents: #"""
 				ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
