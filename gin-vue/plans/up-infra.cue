@@ -69,15 +69,19 @@ import (
 	output: image.output
 }
 
-#Chart: {
+#InstallChart: {
+	// input values
 	releasename: string
 	repository:  string
 	chartname:   string
 	namespace:   string | *""
 	kubeconfig:  dagger.#Secret
 
-	deps:    #Helm
-	install: bash.#Run & {
+	// dependencies
+	deps: #Helm
+
+	run: bash.#Run & {
+		input: deps.output
 		mounts: "/etc/kubernetes/config": dagger.#Mount & {
 			dest:     "/etc/kubernetes/config"
 			type:     "secret"
@@ -90,7 +94,6 @@ import (
 			RELEASE_NAME:   releasename
 			CHART_NAME:     chartname
 		}
-		input: deps.output
 		script: contents: #"""
 			helm repo add tmp-repo $TMP_REPO
 			helm install $RELEASE_NAME tmp-repo/$CHART_NAME
@@ -125,7 +128,7 @@ dagger.#Plan & {
 		}
 
 		// Should be the chat you want to install
-		installNocalhost: #Chart & {
+		installNocalhost: #InstallChart & {
 			releasename: "nocalhost"
 			repository:  "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
 			chartname:   "nocalhost"
