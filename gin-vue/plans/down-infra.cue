@@ -57,6 +57,7 @@ dagger.#Plan & {
 #DeleteChart: {
 	// input values
 	releasename: string
+	namespace:   string | *""
 	kubeconfig:  dagger.#Secret
 
 	// dependencies
@@ -72,8 +73,9 @@ dagger.#Plan & {
 			}
 		}
 		env: {
-			KUBECONFIG:   "/etc/kubernetes/config"
-			RELEASE_NAME: releasename
+			KUBECONFIG:     "/etc/kubernetes/config"
+			RELEASE_NAME:   releasename
+			HELM_NAMESPACE: namespace
 		}
 		script: contents: #"""
 			helm delete $RELEASE_NAME
