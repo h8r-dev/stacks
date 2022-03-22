@@ -1,9 +1,9 @@
 package main
 
-import(
-  //"github.com/h8r-dev/cuelib/deploy/helm"
-  "github.com/h8r-dev/cuelib/infra/h8r"
-  "alpha.dagger.io/dagger"
+import (
+	//"github.com/h8r-dev/cuelib/deploy/helm"
+	"github.com/h8r-dev/cuelib/infra/h8r"
+	"alpha.dagger.io/dagger"
 )
 
 // Application install namespace
@@ -37,18 +37,18 @@ devDomain: ".dev.go-gin.h8r.app"
 myKubeconfig: dagger.#Input & {dagger.#Secret}
 
 createH8rIngress: {
-  app: h8r.#CreateH8rIngress & {
-    name: uri.out + "-go-gin"
-    host: installIngress.targetIngressEndpoint.get
-    domain: appInstallNamespace + "." + appDomain
-    port: "80"
-  }
+	app: h8r.#CreateH8rIngress & {
+		name:   uri.out + "-go-gin"
+		host:   installIngress.targetIngressEndpoint.get
+		domain: appInstallNamespace + "." + appDomain
+		port:   "80"
+	}
 
-  dev: h8r.#CreateH8rIngressBatch & {
-    name: "dev"
-    host: installIngress.targetIngressEndpoint.get
-    domain: devDomain
-    port: "80"
-    batchJson: initNocalhostData.createDevSpace
-  }
+	dev: h8r.#CreateH8rIngressBatch & {
+		name:      "dev"
+		host:      installIngress.targetIngressEndpoint.get
+		domain:    devDomain
+		port:      "80"
+		batchJson: initNocalhostData.createDevSpace
+	}
 }

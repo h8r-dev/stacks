@@ -1,4 +1,5 @@
 package main
+
 import (
 	"alpha.dagger.io/dagger"
 	"alpha.dagger.io/os"
@@ -12,9 +13,7 @@ hello: {
 		command: """
 			echo $MESSAGE > /tmp/out
 			"""
-		env: {
-			MESSAGE: message
-		}
+		env: MESSAGE: message
 	}
 
 	createFile: os.#File & {

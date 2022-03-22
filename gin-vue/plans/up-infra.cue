@@ -78,12 +78,10 @@ import (
 
 	deps:    #Helm
 	install: bash.#Run & {
-		mounts: {
-			"/etc/kubernetes/config": dagger.#Mount & {
-				dest:     "/etc/kubernetes/config"
-				type:     "secret"
-				contents: kubeconfig
-			}
+		mounts: "/etc/kubernetes/config": dagger.#Mount & {
+			dest:     "/etc/kubernetes/config"
+			type:     "secret"
+			contents: kubeconfig
 		}
 		env: {
 			KUBECONFIG:     "/etc/kubernetes/config"
