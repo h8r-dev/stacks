@@ -9,11 +9,9 @@ import (
 dagger.#Plan & {
 	client: env: KUBECONFIG_DATA: dagger.#Secret
 
-	actions: {
-		deleteNocalhost: #DeleteChart & {
-			releasename: "nocalhost"
-			kubeconfig:  client.env.KUBECONFIG_DATA
-		}
+	actions: deleteNocalhost: #DeleteChart & {
+		releasename: "nocalhost"
+		kubeconfig:  client.env.KUBECONFIG_DATA
 	}
 }
 
@@ -65,12 +63,10 @@ dagger.#Plan & {
 
 	run: bash.#Run & {
 		input: deps.output
-		mounts: {
-			"/etc/kubernetes/config": dagger.#Mount & {
-				dest:     "/etc/kubernetes/config"
-				type:     "secret"
-				contents: kubeconfig
-			}
+		mounts: "/etc/kubernetes/config": dagger.#Mount & {
+			dest:     "/etc/kubernetes/config"
+			type:     "secret"
+			contents: kubeconfig
 		}
 		env: {
 			KUBECONFIG:     "/etc/kubernetes/config"

@@ -77,26 +77,15 @@ import (
 	namespace:   string | *""
 	kubeconfig:  dagger.#Secret
 
-<<<<<<< HEAD
-	deps:    #Helm
-	install: bash.#Run & {
-		mounts: "/etc/kubernetes/config": dagger.#Mount & {
-			dest:     "/etc/kubernetes/config"
-			type:     "secret"
-			contents: kubeconfig
-=======
 	// dependencies
 	deps: #Helm
 
 	run: bash.#Run & {
 		input: deps.output
-		mounts: {
-			"/etc/kubernetes/config": dagger.#Mount & {
-				dest:     "/etc/kubernetes/config"
-				type:     "secret"
-				contents: kubeconfig
-			}
->>>>>>> c666a51 (Fix: add delete chart action)
+		mounts: "/etc/kubernetes/config": dagger.#Mount & {
+			dest:     "/etc/kubernetes/config"
+			type:     "secret"
+			contents: kubeconfig
 		}
 		env: {
 			KUBECONFIG:     "/etc/kubernetes/config"
