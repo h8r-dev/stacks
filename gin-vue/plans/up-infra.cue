@@ -101,6 +101,46 @@ import (
 	}
 }
 
+// craete ingress by h8s server
+#CreateH8rIngress: {
+	// Ingress name
+	name:             string
+	host:             string
+	domain:           string
+	port:             string | *"80"
+	h8rServerAddress: string | *"api.stack.h8r.io/api/v1/cluster/ingress"
+
+	baseImage: alpine.#Build & {
+		packages: {
+			bash: {}
+			curl: {}
+		}
+	}
+
+	create: bash.#Run & {
+		input: baseImage.output
+		env: {
+			NAME:               name
+			HOST:               host
+			DOMAIN:             domain
+			PORT:               port
+			H8R_SERVER_ADDRESS: h8rServerAddress
+		}
+		script: contents: #"""
+			sh_c='sh -c'
+			data_raw="{\"name\":\"$NAME\",\"host\":\"$HOST\",\"domain\":\"$DOMAIN\",\"port\":\"$PORT\"}"
+			do_create="curl -sw '\n%{http_code}' --retry 3 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '$data_raw' $H8R_SERVER_ADDRESS"
+			messages="$($sh_c "$do_create")"
+			http_code=$(echo "$messages" |  tail -1)
+			if [ "$http_code" -ne "200" ]; then
+				#// echo error messages
+				echo "$messages"
+				exit 1
+			fi
+			"""#
+	}
+}
+
 dagger.#Plan & {
 	client: {
 		commands: kubeconfig: {
@@ -140,6 +180,13 @@ dagger.#Plan & {
 			repository:  "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
 			chartname:   "nocalhost"
 			kubeconfig:  client.env.KUBECONFIG_DATA
+		}
+
+		testCreateH8rIngress: #CreateH8rIngress & {
+			name:   "just-a-test"
+			host:   "1.1.1.1"
+			domain: "foo.bar"
+			port:   "80"
 		}
 	}
 }
