@@ -101,6 +101,50 @@ import (
 	}
 }
 
+// craete ingress by h8s server
+#CreateH8rIngress: {
+	// Ingress name
+	name: string
+	// Host IP
+	host: string
+	// Domain
+	domain: string
+	// Port
+	port: string | *"80"
+
+	image: alpine.#Build & {
+		packages: {
+			bash: {}
+			jq: {}
+			curl: {}
+			sed: {}
+		}
+	}
+
+	create: bash.#Run & {
+		input: image.output
+		env: {
+			NAME:   name
+			HOST:   host
+            DOMAIN: domain
+            PORT:   port
+		}
+		script: contents: #"""
+			export HOST=$(echo $HOST | awk '$1=$1')
+			echo '{"name":"'$NAME'","host":"'$HOST'","domain":"'$DOMAIN'","port":"'$PORT'"}'
+			check=$(curl --retry 50 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '{"name":"'$NAME'","host":"'$HOST'","domain":"'$DOMAIN'","port":"'$PORT'"}' api.stack.h8r.io/api/v1/cluster/ingress | jq .message | sed 's/\"//g')
+			echo $check
+			if [ "$check" == "ok" ]; then
+				echo "Create h8r ingress success"
+			else
+				echo "Create h8r ingress fail"
+				exit 1
+			fi
+			"""#
+	}
+}
+
+
 dagger.#Plan & {
 	client: env: KUBECONFIG_DATA: dagger.#Secret
 	client: filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
@@ -133,6 +177,13 @@ dagger.#Plan & {
 			repository:  "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
 			chartname:   "nocalhost"
 			kubeconfig:  client.env.KUBECONFIG_DATA
+		}
+
+		testCreateH8rIngress: #CreateH8rIngress & {
+			name: "just-a-test"
+			host: "1.1.1.1"
+			domain: "foo.bar"
+			port: "80"
 		}
 	}
 }
