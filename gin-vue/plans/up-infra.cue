@@ -32,27 +32,30 @@ import (
 	}
 }
 
-_kubectl: #Kubectl & {version: "v1.23.5"}
-kubectl: _kubectl.image.output
-
 dagger.#Plan & {
 	client: env: KUBECONFIG_DATA: dagger.#Secret
+	client: filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
 
-	// Get ingress version, such v1, v1beta1
-	actions: getIngressVersion: bash.#Run & {
-		input:   kubectl
-		workdir: "/src"
-		mounts: "KubeConfig Data": {
-			dest:     "/kubeconfig"
-			contents: client.env.KUBECONFIG_DATA
+	actions: {
+		kubectl: #Kubectl & {version: "v1.23.5"}
+
+		// Get ingress version, i.e. v1 or v1beta1
+		getIngressVersion: bash.#Run & {
+			input:   kubectl.image.output
+			workdir: "/src"
+			mounts: "KubeConfig Data": {
+				dest:     "/kubeconfig"
+				contents: client.env.KUBECONFIG_DATA
+			}
+			script: contents: #"""
+				ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
+				if [[ $ingress_result =~ "v1beta1" ]]; then
+				 echo 'v1beta1' > /result
+				else
+				 echo 'v1' > /result
+				fi
+				"""#
+			export: files: "/result": _
 		}
-		script: contents: #"""
-			ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
-			if [[ $ingress_result =~ "v1beta1" ]]; then
-			 echo 'v1beta1' > /result
-			else
-			 echo 'v1' > /result
-			fi
-			"""#
 	}
 }
