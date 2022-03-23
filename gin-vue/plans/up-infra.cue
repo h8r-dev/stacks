@@ -129,7 +129,7 @@ import (
 		}
 		script: contents: #"""
 			sh_c='sh -c'
-			data_raw="{\"name\":\"$NAME\",\"host\":\"$HOST\",\"domain\":\"$DOMAIN\",\"port\":\"$PORT\"}"
+			data_raw="{\"name\":\"$NAME\",\"host\":\"$HOST\",\"domain\":\"$DOMAIN\",\"port\":\"$PORT\"}
 			do_create="curl -sw '\n%{http_code}' --retry 3 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '$data_raw' $H8R_SERVER_ADDRESS"
 			messages="$($sh_c "$do_create")"
 			http_code=$(echo "$messages" |  tail -1)
