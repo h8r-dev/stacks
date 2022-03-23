@@ -24,8 +24,8 @@
     export GITHUB_ORG=[organization name or github id]
     ```
 
-1. 运行：`dagger do up -p ./plans/up.cue`
-1. 删除: `dagger do down -p ./plans/down.cue`
+1. 运行：`dagger do up -p ./plans`
+1. 删除: `dagger do down -p ./plans`
 
 ## 功能预览
 
