@@ -5,6 +5,7 @@ import (
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
 )
 
 // Automatically setup infra resources:
@@ -187,6 +188,17 @@ dagger.#Plan & {
 			host:   "1.1.1.1"
 			domain: "foo.bar"
 			port:   "80"
+		}
+
+		installIngress: helm.#Chart & {
+			name:       "ingress-nginx"
+			repository: "https://h8r-helm.pkg.coding.net/release/helm"
+			chart:      "ingress-nginx"
+			namespace:  "ingress-nginx"
+			action:     "installOrUpgrade"
+			kubeconfig: client.commands.kubeconfig.stdout
+			values:     #ingressNginxSetting
+			wait:       true
 		}
 	}
 }
