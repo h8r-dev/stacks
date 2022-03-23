@@ -119,17 +119,10 @@ import (
 
 	create: bash.#Run & {
 		input: baseImage.output
-		env: {
-			NAME:               name
-			HOST:               host
-			DOMAIN:             domain
-			PORT:               port
-			H8R_SERVER_ADDRESS: h8rServerAddress
-		}
 		script: contents: #"""
 			sh_c='sh -c'
-			data_raw="{\"name\":\"$NAME\",\"host\":\"$HOST\",\"domain\":\"$DOMAIN\",\"port\":\"$PORT\"}"
-			do_create="curl -sw '\n%{http_code}' --retry 3 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '$data_raw' $H8R_SERVER_ADDRESS"
+			data_raw='{"name":"\#(name)","host":"\#(host)","domain":"\#(domain)","port":"\#(port)"}'
+			do_create="curl -sw '\n%{http_code}' --retry 3 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '$data_raw' \#(h8rServerAddress)"
 			messages="$($sh_c "$do_create")"
 			http_code=$(echo "$messages" |  tail -1)
 			if [ "$http_code" -ne "200" ]; then
@@ -167,4 +160,3 @@ import (
 			"""#
 	}
 }
-

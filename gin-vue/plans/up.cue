@@ -4,6 +4,7 @@ import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/random"
 )
 
 dagger.#Plan & {
@@ -19,6 +20,7 @@ dagger.#Plan & {
 
 	actions: {
 		kubectl: #Kubectl
+		uri:     random.#String
 
 		// Get ingress version, i.e. v1 or v1beta1
 		getIngressVersion: bash.#Run & {
@@ -48,9 +50,9 @@ dagger.#Plan & {
 		}
 
 		testCreateH8rIngress: #CreateH8rIngress & {
-			name:   "just-a-test"
+			name:   "just-a-test-" + uri.output
 			host:   "1.1.1.1"
-			domain: "foo.bar"
+			domain: uri.output + ".foo.bar"
 			port:   "80"
 		}
 
