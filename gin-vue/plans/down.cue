@@ -6,9 +6,9 @@ import (
 
 dagger.#Plan & {
 	client: env: {
-		KUBECONFIG_DATA: dagger.#Secret
-		APP_NAME:        string
-		GITHUB_TOKEN:    dagger.#Secret
+		APP_NAME:     string
+		ORGANIZATION: string
+		GITHUB_TOKEN: dagger.#Secret
 	}
 
 	actions: {
@@ -16,9 +16,26 @@ dagger.#Plan & {
 			releasename: "nocalhost"
 			kubeconfig:  client.env.KUBECONFIG_DATA
 		}
-		deleteRepos: #DeleteRepos & {
-			appname:     client.env.APP_NAME
-			githubtoken: client.env.GITHUB_TOKEN
+		deleteRepos: {
+			applicationName: client.env.APP_NAME
+			accessToken:     client.env.GITHUB_TOKEN
+			organization:    client.env.ORGANIZATION
+
+			DeleteRepo: #DeleteRepo & {
+				reponame:       "\(applicationName)"
+				githubtoken:    accessToken
+				"organization": organization
+			}
+			DeleteFrontendRepo: #DeleteRepo & {
+				reponame:       "\(applicationName)-front"
+				githubtoken:    accessToken
+				"organization": organization
+			}
+			DeleteHelmRepo: #DeleteRepo & {
+				reponame:       "\(applicationName)-deploy"
+				githubtoken:    accessToken
+				"organization": organization
+			}
 		}
 	}
 }

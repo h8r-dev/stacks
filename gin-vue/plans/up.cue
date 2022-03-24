@@ -9,6 +9,7 @@ import (
 
 dagger.#Plan & {
 	client: {
+		filesystem: code: read: contents: dagger.#FS
 		commands: kubeconfig: {
 			name: "cat"
 			args: ["\(env.KUBECONFIG)"]
@@ -17,12 +18,10 @@ dagger.#Plan & {
 		env: {
 			KUBECONFIG:   string
 			APP_NAME:     string
+			ORGANIZATION: string
 			GITHUB_TOKEN: dagger.#Secret
 		}
-		filesystem: {
-			"code/": read: contents:          dagger.#FS
-			ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
-		}
+		filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
 	}
 
 	actions: {
@@ -74,14 +73,39 @@ dagger.#Plan & {
 			wait:       true
 		}
 
-		createRepos: #CreateRepos & {
-			appname:     client.env.APP_NAME
-			sourcecode:  client.filesystem."code".read.contents
-			githubtoken: client.env.GITHUB_TOKEN
-		}
-		deleteRepos: #DeleteRepos & {
-			appname:     client.env.APP_NAME
-			githubtoken: client.env.GITHUB_TOKEN
+		initRepos: {
+			applicationName: client.env.APP_NAME
+			accessToken:     client.env.GITHUB_TOKEN
+			organization:    client.env.ORGANIZATION
+			sourceCodeDir:   client.filesystem.code.read.contents
+
+			initRepo: #InitRepo & {
+				sourceCodePath:    "go-gin"
+				suffix:            ""
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
+			}
+
+			initFrontendRepo: #InitRepo & {
+				suffix:            "-front"
+				sourceCodePath:    "vue-front"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
+			}
+
+			initHelmRepo: #InitRepo & {
+				suffix:            "-deploy"
+				sourceCodePath:    "helm"
+				isHelmChart:       "true"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
+			}
 		}
 	}
 }
