@@ -7,7 +7,7 @@ import (
 	"universe.dagger.io/docker"
 )
 
-#Createrepos: {
+#CreateRepos: {
 	appname:        string
 	sourcecode:     dagger.#FS
 	githubtoken:    dagger.#Secret
@@ -15,15 +15,15 @@ import (
 	frontendsuffix: string | *"-frontend"
 	deploysuffix:   string | *"-deploy"
 
-	fetchinfo: #GithubFetchInfo & {
+	fetchinfo: #FetchGithubInfo & {
 		"githubtoken": githubtoken
 	}
 	backendcode: dagger.#Subdir & {
 		input: sourcecode
 		path:  "/go-gin"
 	}
-	backend: #GithubCreateRepo & {
-		"sourcecode":  backendcode.output
+	backend: #CreateGithubRepo & {
+		sourcecode:    backendcode.output
 		reponame:      "\(appname)\(backendsuffix)"
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
@@ -32,8 +32,8 @@ import (
 		input: sourcecode
 		path:  "/vue-front"
 	}
-	frontend: #GithubCreateRepo & {
-		"sourcecode":  frontendcode.output
+	frontend: #CreateGithubRepo & {
+		sourcecode:    frontendcode.output
 		reponame:      "\(appname)\(frontendsuffix)"
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
@@ -42,8 +42,8 @@ import (
 		input: sourcecode
 		path:  "/helm"
 	}
-	deploy: #GithubCreateRepo & {
-		"sourcecode":  deploycode.output
+	deploy: #CreateGithubRepo & {
+		sourcecode:    deploycode.output
 		reponame:      "\(appname)\(deploysuffix)"
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
@@ -57,27 +57,27 @@ import (
 	frontendsuffix: string | *"-frontend"
 	deploysuffix:   string | *"-deploy"
 
-	fetchinfo: #GithubFetchInfo & {
+	fetchinfo: #FetchGithubInfo & {
 		"githubtoken": githubtoken
 	}
-	backend: #GithubDeleteRepo & {
+	backend: #DeleteGithubRepo & {
 		reponame:      "\(appname)\(backendsuffix)"
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
 	}
-	frontend: #GithubDeleteRepo & {
+	frontend: #DeleteGithubRepo & {
 		reponame:      "\(appname)\(frontendsuffix)"
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
 	}
-	deploy: #GithubDeleteRepo & {
+	deploy: #DeleteGithubRepo & {
 		reponame:      "\(appname)\(deploysuffix)"
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
 	}
 }
 
-#GithubFetchInfo: {
+#FetchGithubInfo: {
 	githubtoken: dagger.#Secret
 
 	output: dagger.#FS
@@ -91,9 +91,7 @@ import (
 				}
 			},
 			bash.#Run & {
-				env: {
-					GITHUB_TOKEN: githubtoken
-				}
+				env: GITHUB_TOKEN: githubtoken
 				script: contents: #"""
 					mkdir /github
 					curl -sH "Authorization: token $GITHUB_TOKEN" https://api.github.com/user > /github/user.json
@@ -109,7 +107,7 @@ import (
 	output: export.output
 }
 
-#GithubCreateRepo: {
+#CreateGithubRepo: {
 	sourcecode:  dagger.#FS
 	reponame:    string
 	githubinfo:  dagger.#FS
@@ -159,7 +157,7 @@ import (
 	}
 }
 
-#GithubDeleteRepo: {
+#DeleteGithubRepo: {
 	reponame:    string
 	githubinfo:  dagger.#FS
 	githubtoken: dagger.#Secret

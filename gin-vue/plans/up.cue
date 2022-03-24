@@ -13,8 +13,15 @@ dagger.#Plan & {
 			args: ["\(env.KUBECONFIG)"]
 			stdout: dagger.#Secret
 		}
-		env: KUBECONFIG: string
-		filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
+		env: {
+			KUBECONFIG:   string
+			APP_NAME:     string
+			GITHUB_TOKEN: dagger.#Secret
+		}
+		filesystem: {
+			"code/": read: contents:          dagger.#FS
+			ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
+		}
 	}
 
 	actions: {
@@ -63,6 +70,16 @@ dagger.#Plan & {
 			kubeconfig: client.commands.kubeconfig.stdout
 			values:     #ingressNginxSetting
 			wait:       true
+		}
+
+		createRepos: #CreateRepos & {
+			appname:     client.env.APP_NAME
+			sourcecode:  client.filesystem."code".read.contents
+			githubtoken: client.env.GITHUB_TOKEN
+		}
+		deleteRepos: #DeleteRepos & {
+			appname:     client.env.APP_NAME
+			githubtoken: client.env.GITHUB_TOKEN
 		}
 	}
 }
