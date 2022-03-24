@@ -107,5 +107,32 @@ dagger.#Plan & {
 				"sourceCodeDir":   sourceCodeDir
 			}
 		}
+
+		deleteNocalhost: #DeleteChart & {
+			releasename: "nocalhost"
+			kubeconfig:  client.env.KUBECONFIG_DATA
+		}
+
+		deleteRepos: {
+			applicationName: client.env.APP_NAME
+			accessToken:     client.env.GITHUB_TOKEN
+			organization:    client.env.ORGANIZATION
+
+			DeleteRepo: #DeleteRepo & {
+				reponame:       "\(applicationName)"
+				githubtoken:    accessToken
+				"organization": organization
+			}
+			DeleteFrontendRepo: #DeleteRepo & {
+				reponame:       "\(applicationName)-front"
+				githubtoken:    accessToken
+				"organization": organization
+			}
+			DeleteHelmRepo: #DeleteRepo & {
+				reponame:       "\(applicationName)-deploy"
+				githubtoken:    accessToken
+				"organization": organization
+			}
+		}
 	}
 }
