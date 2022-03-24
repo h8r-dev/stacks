@@ -73,6 +73,42 @@ dagger.#Plan & {
 			wait:       true
 		}
 
+		// upgrade ingress nginx for serviceMonitor
+		// should wait for installIngress and installPrometheusStack
+		upgradeIngress: helm.#Chart & {
+			name:       "ingress-nginx"
+			repository: "https://h8r-helm.pkg.coding.net/release/helm"
+			chart:      "ingress-nginx"
+			namespace:  "ingress-nginx"
+			action:     "installOrUpgrade"
+			kubeconfig: client.commands.kubeconfig.stdout
+			values:     #ingressNginxUpgradeSetting
+			wait:       true
+		}
+
+		installLokiStack: helm.#Chart & {
+			name:       "loki"
+			repository: "https://grafana.github.io/helm-charts"
+			chart:      "loki-stack"
+			action:     "installOrUpgrade"
+			namespace:  lokiNamespace
+			kubeconfig: client.commands.kubeconfig.stdout
+			wait:       true
+		}
+
+		installPrometheusStack: {
+			releaseName:    "prometheus"
+			kubePrometheus: helm.#Chart & {
+				name:       installPrometheusStack.releaseName
+				repository: "https://prometheus-community.github.io/helm-charts"
+				chart:      "kube-prometheus-stack"
+				action:     "installOrUpgrade"
+				namespace:  prometheusNamespace
+				kubeconfig: client.commands.kubeconfig.stdout
+				wait:       true
+			}
+		}
+
 		initRepos: {
 			applicationName: client.env.APP_NAME
 			accessToken:     client.env.GITHUB_TOKEN
