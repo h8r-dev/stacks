@@ -1,12 +1,14 @@
 package main
 
 import (
+	"strings"
 	"dagger.io/dagger"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/k8s/ingress"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
 )
 
 // Automatically setup infra resources:
@@ -110,45 +112,38 @@ import (
 	domain:         string
 	// ingress ip
 	host:      string
-	name:      string | *"nocalhost"
-	namespace: string | *"nocalhost"
-	//         repository: string | *"https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
-	//         chart:      string | *"nocalhost"
-	action: string | *"installOrUpgrade"
-	wait:   bool | *true
+	name:      string
+	namespace: string
 
 	install: helm.#Chart & {
 		"name":       name
-		"repository": "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
-		"chart":      "nocalhost"
-		"action":     action
+		repository:   "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
+		chart:        "nocalhost"
 		"namespace":  namespace
 		"kubeconfig": kubeconfig
-		"wait":       wait
 	}
 
 	getIngressYaml: ingress.#Ingress & {
-		"name":               uri + "-nocalhost"
-		"className":          "nginx"
-		"hostName":           domain
-		"path":               "/"
-		"namespace":          namespace
-		"backendServiceName": "nocalhost-web"
-		"ingressVersion":     ingressVersion
+		name:               uri + "-nocalhost"
+		className:          "nginx"
+		hostName:           domain
+		path:               "/"
+		"namespace":        namespace
+		backendServiceName: "nocalhost-web"
+		"ingressVersion":   ingressVersion
 	}
 
-	// TODO apply yaml
-	applyIngressYaml: {
+	applyIngressYaml: kubectl.#Apply & {
 		"kubeconfig": kubeconfig
-		"manifest":   getIngressYaml.manifestStream
+		manifest:     getIngressYaml.manifestStream
 		"namespace":  namespace
 	}
 
 	createH8rIngress: #CreateH8rIngress & {
-		"name":   uri + "-nocalhost"
-		"host":   host
-		"domain": domain
-		"port":   "80"
+		name:     uri + "-nocalhost"
+		"host":   strings.Replace(host, "\n", "", -1)
+		"domain": strings.Replace(domain, "\n", "", -1)
+		port:     "80"
 	}
 }
 

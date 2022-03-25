@@ -6,6 +6,7 @@ import (
 	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/random"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
 )
 
 dagger.#Plan & {
@@ -26,7 +27,7 @@ dagger.#Plan & {
 	}
 
 	actions: {
-		//kubectl: #Kubectl
+		_kubectl:    kubectl.#Kubectl
 		uri:         random.#String
 		infraDomain: ".stack.h8r.io"
 
@@ -37,7 +38,7 @@ dagger.#Plan & {
 
 		// Get ingress version, i.e. v1 or v1beta1
 		getIngressVersion: bash.#Run & {
-			input:   kubectl.image.output
+			input:   _kubectl.output
 			workdir: "/src"
 			mounts: "KubeConfig Data": {
 				dest:     "/kubeconfig"
@@ -51,7 +52,7 @@ dagger.#Plan & {
 				 echo 'v1' > /result
 				fi
 				"""#
-			export: files: "/result": _
+			export: files: "/result": string
 		}
 
 		installNocalhost: #InstallNocalhost & {
@@ -59,8 +60,9 @@ dagger.#Plan & {
 			kubeconfig:     client.commands.kubeconfig.stdout
 			ingressVersion: getIngressVersion.export.files."/result"
 			domain:         uri.output + ".nocalhost" + infraDomain
-			// TODO get ip from ingress
-			host: "1.1.1.1"
+			host:           getIngressEndPoint.endPoint
+			namespace:      "nocalhost"
+			name:           "nocalhost"
 		}
 
 		testCreateH8rIngress: #CreateH8rIngress & {
