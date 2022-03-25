@@ -6,6 +6,7 @@ import (
 	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/random"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
 )
 
 dagger.#Plan & {
@@ -26,8 +27,9 @@ dagger.#Plan & {
 	}
 
 	actions: {
-		//kubectl: #Kubectl
-		uri:     random.#String
+		_kubectl:    kubectl.#Kubectl
+		uri:         random.#String
+		infraDomain: ".stack.h8r.io"
 
 		// get ingress endpoint
 		getIngressEndPoint: ingress.#GetIngressEndpoint & {
@@ -36,7 +38,7 @@ dagger.#Plan & {
 
 		// Get ingress version, i.e. v1 or v1beta1
 		getIngressVersion: bash.#Run & {
-			input:   kubectl.image.output
+			input:   _kubectl.output
 			workdir: "/src"
 			mounts: "KubeConfig Data": {
 				dest:     "/kubeconfig"
@@ -50,15 +52,17 @@ dagger.#Plan & {
 				 echo 'v1' > /result
 				fi
 				"""#
-			export: files: "/result": _
+			export: files: "/result": string
 		}
 
-		// Should be the chat you want to install
-		installNocalhost: #InstallChart & {
-			releasename: "nocalhost"
-			repository:  "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
-			chartname:   "nocalhost"
-			kubeconfig:  client.env.KUBECONFIG_DATA
+		installNocalhost: #InstallNocalhost & {
+			"uri":          "just-test" + uri.output
+			kubeconfig:     client.commands.kubeconfig.stdout
+			ingressVersion: getIngressVersion.export.files."/result"
+			domain:         uri.output + ".nocalhost" + infraDomain
+			host:           getIngressEndPoint.endPoint
+			namespace:      "nocalhost"
+			name:           "nocalhost"
 		}
 
 		testCreateH8rIngress: #CreateH8rIngress & {

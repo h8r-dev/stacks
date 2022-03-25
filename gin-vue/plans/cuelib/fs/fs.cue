@@ -1,8 +1,8 @@
 package fs
 
-import(
-    "universe.dagger.io/docker"
-    "dagger.io/dagger"
+import (
+	"universe.dagger.io/docker"
+	"dagger.io/dagger"
 )
 
 // Build step that copies files into the container image

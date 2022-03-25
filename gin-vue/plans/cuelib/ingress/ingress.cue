@@ -3,11 +3,11 @@ package ingress
 import (
 	"encoding/yaml"
 	"strings"
-    "dagger.io/dagger"
-    "universe.dagger.io/bash"
-    //"universe.dagger.io/docker"
-    //"universe.dagger.io/alpine"
-    "github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
+	"dagger.io/dagger"
+	"universe.dagger.io/bash"
+	//"universe.dagger.io/docker"
+	//"universe.dagger.io/alpine"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
 )
 
 #Ingress: {
@@ -37,33 +37,29 @@ import (
 
 	// Ingress manifest
 	// generate the resource manifest.
-	
+
 	manifest: {
 		if strings.TrimSpace(ingressVersion) == "v1" {
 			apiVersion: "networking.k8s.io/v1"
 			kind:       "Ingress"
 			metadata: {
-				"name": name
+				"name":      name
 				"namespace": namespace
 				annotations: {
-					"h8r": "true"
-					"host": hostName
+					h8r:  "true"
+					host: hostName
 				}
 			}
 			spec: {
-				"ingressClassName": "nginx"
+				ingressClassName: "nginx"
 				rules: [{
-					host:  hostName
+					host: hostName
 					http: paths: [{
-						"path": path
+						"path":   path
 						pathType: "Prefix"
-						backend: {
-							service: {
-								"name": backendServiceName
-								port: {
-									"number": backendServicePort
-								}
-							}
+						backend: service: {
+							name: backendServiceName
+							port: number: backendServicePort
 						}
 					}]
 				}]
@@ -73,30 +69,28 @@ import (
 			apiVersion: "networking.k8s.io/v1beta1"
 			kind:       "Ingress"
 			metadata: {
-				"name": name
+				"name":      name
 				"namespace": namespace
 				annotations: {
-					"h8r": "true"
-					"host": hostName
+					h8r:                           "true"
+					host:                          hostName
 					"kubernetes.io/ingress.class": "nginx"
 				}
 			}
-			spec: {
-				rules: [{
-					host:  hostName
-					http: paths: [{
-						"path": path
-						pathType: "Prefix"
-						backend: {
-							serviceName: backendServiceName
-							servicePort: backendServicePort
-						}
-					}]
+			spec: rules: [{
+				host: hostName
+				http: paths: [{
+					"path":   path
+					pathType: "Prefix"
+					backend: {
+						serviceName: backendServiceName
+						servicePort: backendServicePort
+					}
 				}]
-			}
+			}]
 		}
 	}
-	
+
 	// MarshalStream
 	manifestStream: yaml.MarshalStream([manifest])
 }
@@ -116,26 +110,22 @@ import (
 		echo $endpoint | awk '$1=$1' > /endpoint
 		"""#
 
-    _kubectl: kubectl.#Kubectl
+	_kubectl: kubectl.#Kubectl
 
-    get: bash.#Run & {
-        input: _kubectl.output
-        always: true
-        env: {
-            KUBECONFIG:     "/kubeconfig"
-            KUBE_NAMESPACE: namespace
-        }
-        script: contents: #code
-        mounts: {
-            "kubeconfig": {
-                dest:     "/kubeconfig"
-                contents: kubeconfig
-            }
-        }
-        export: files: {
-            "/endpoint": _
-        }
-    }
+	get: bash.#Run & {
+		input:  _kubectl.output
+		always: true
+		env: {
+			KUBECONFIG:     "/kubeconfig"
+			KUBE_NAMESPACE: namespace
+		}
+		script: contents: #code
+		mounts: "kubeconfig": {
+			dest:     "/kubeconfig"
+			contents: kubeconfig
+		}
+		export: files: "/endpoint": _
+	}
 
-    endPoint: get.export.files."/endpoint"
+	endPoint: get.export.files."/endpoint"
 }

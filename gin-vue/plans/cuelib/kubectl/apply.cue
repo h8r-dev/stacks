@@ -44,7 +44,7 @@ import (
 			}
 		}
 		env: {
-			KUBECONFIG:  "/etc/kubernetes/config"
+			KUBECONFIG:     "/etc/kubernetes/config"
 			KUBE_NAMESPACE: namespace
 		}
 		script: contents: #"""

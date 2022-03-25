@@ -1,7 +1,7 @@
 package kubectl
 
-import(
-    "universe.dagger.io/alpine"
+import (
+	"universe.dagger.io/alpine"
 	"universe.dagger.io/docker"
 )
 
