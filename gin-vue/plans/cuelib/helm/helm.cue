@@ -5,28 +5,8 @@ import (
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/fs"
 )
-
-// Build step that copies files into the container image
-#WriteFile: {
-	input:       docker.#Image
-	contents:    string
-	path:        string | *"/"
-	permissions: *0o600 | int
-
-	// Execute write operation
-	_copy: dagger.#WriteFile & {
-		"input":       input.rootfs
-		"contents":    contents
-		"path":        path
-		"permissions": permissions
-	}
-
-	output: docker.#Image & {
-		config: input.config
-		rootfs: _copy.output
-	}
-}
 
 // Install a Helm chart
 #Chart: {
@@ -116,13 +96,13 @@ import (
 			//  }
 			// },
 			if chart != null {
-				#WriteFile & {
+				fs.#WriteFile & {
 					contents: chart
 					path:     "/helm/chart"
 				}
 			},
 			if values != null {
-				#WriteFile & {
+				fs.#WriteFile & {
 					contents: values
 					path:     "/helm/values.yaml"
 				}

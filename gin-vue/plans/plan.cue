@@ -5,6 +5,7 @@ import (
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/random"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
 )
 
 dagger.#Plan & {
@@ -25,8 +26,13 @@ dagger.#Plan & {
 	}
 
 	actions: {
-		kubectl: #Kubectl
+		//kubectl: #Kubectl
 		uri:     random.#String
+
+		// get ingress endpoint
+		getIngressEndPoint: ingress.#GetIngressEndpoint & {
+			kubeconfig: client.commands.kubeconfig.stdout
+		}
 
 		// Get ingress version, i.e. v1 or v1beta1
 		getIngressVersion: bash.#Run & {
