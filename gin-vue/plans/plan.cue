@@ -27,7 +27,8 @@ dagger.#Plan & {
 
 	actions: {
 		//kubectl: #Kubectl
-		uri:     random.#String
+		uri:         random.#String
+		infraDomain: ".stack.h8r.io"
 
 		// get ingress endpoint
 		getIngressEndPoint: ingress.#GetIngressEndpoint & {
@@ -53,12 +54,13 @@ dagger.#Plan & {
 			export: files: "/result": _
 		}
 
-		// Should be the chat you want to install
-		installNocalhost: #InstallChart & {
-			releasename: "nocalhost"
-			repository:  "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
-			chartname:   "nocalhost"
-			kubeconfig:  client.env.KUBECONFIG_DATA
+		installNocalhost: #InstallNocalhost & {
+			"uri":          "just-test" + uri.output
+			kubeconfig:     client.commands.kubeconfig.stdout
+			ingressVersion: getIngressVersion.export.files."/result"
+			domain:         uri.output + ".nocalhost" + infraDomain
+			// TODO get ip from ingress
+			host: "1.1.1.1"
 		}
 
 		testCreateH8rIngress: #CreateH8rIngress & {

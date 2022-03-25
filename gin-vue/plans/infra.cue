@@ -5,6 +5,8 @@ import (
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/k8s/ingress"
 )
 
 // Automatically setup infra resources:
@@ -98,6 +100,55 @@ import (
 			helm repo add tmp-repo $TMP_REPO
 			helm install $RELEASE_NAME tmp-repo/$CHART_NAME
 			"""#
+	}
+}
+
+#InstallNocalhost: {
+	uri:            string
+	kubeconfig:     string | dagger.#Secret
+	ingressVersion: string
+	domain:         string
+	// ingress ip
+	host:      string
+	name:      string | *"nocalhost"
+	namespace: string | *"nocalhost"
+	//         repository: string | *"https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
+	//         chart:      string | *"nocalhost"
+	action: string | *"installOrUpgrade"
+	wait:   bool | *true
+
+	install: helm.#Chart & {
+		"name":       name
+		"repository": "https://nocalhost-helm.pkg.coding.net/nocalhost/nocalhost"
+		"chart":      "nocalhost"
+		"action":     action
+		"namespace":  namespace
+		"kubeconfig": kubeconfig
+		"wait":       wait
+	}
+
+	getIngressYaml: ingress.#Ingress & {
+		"name":               uri + "-nocalhost"
+		"className":          "nginx"
+		"hostName":           domain
+		"path":               "/"
+		"namespace":          namespace
+		"backendServiceName": "nocalhost-web"
+		"ingressVersion":     ingressVersion
+	}
+
+	// TODO apply yaml
+	applyIngressYaml: {
+		"kubeconfig": kubeconfig
+		"manifest":   getIngressYaml.manifestStream
+		"namespace":  namespace
+	}
+
+	createH8rIngress: #CreateH8rIngress & {
+		"name":   uri + "-nocalhost"
+		"host":   host
+		"domain": domain
+		"port":   "80"
 	}
 }
 
