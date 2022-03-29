@@ -1,0 +1,7 @@
+module github.com/h8r-dev/go-gin-stack
+
+cue 0.4.0
+
+require (
+  github.com/h8r-dev/cuelib v0.1.35
+)
