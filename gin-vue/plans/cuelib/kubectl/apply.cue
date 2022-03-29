@@ -32,7 +32,8 @@ import (
 	}
 
 	run: bash.#Run & {
-		input: _kubectlImage.output
+		input:  _kubectlImage.output
+		always: true
 		mounts: {
 			"kubeconfig": {
 				dest:     "/etc/kubernetes/config"

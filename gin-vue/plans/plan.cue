@@ -65,7 +65,16 @@ dagger.#Plan & {
 			name:           "nocalhost"
 		}
 
-		testCreateH8rIngress: #CreateH8rIngress & {
+		initNocalhost: #InitNocalhostData & {
+			nocalhostURL:       "http://hcozny.nocalhost.stack.h8r.io"
+			githubAccessToken:  client.env.GITHUB_TOKEN
+			githubOrganization: client.env.ORGANIZATION
+			kubeconfig:         client.commands.kubeconfig.stdout
+			applicationName:    client.env.APP_NAME
+			gitURL:             "https://github.com/just-a-test/test"
+		}
+
+		createH8rIngress: #CreateH8rIngress & {
 			name:   "just-a-test-" + uri.output
 			host:   "1.1.1.1"
 			domain: uri.output + ".foo.bar"
