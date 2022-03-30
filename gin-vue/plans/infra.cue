@@ -3,38 +3,17 @@ package main
 import (
 	"strings"
 	"dagger.io/dagger"
-	"universe.dagger.io/alpine"
+	//"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/h8r"
 )
 
 // Automatically setup infra resources:
 //   Nocalhost, Loki, Granfana, Prometheus, ArgoCD
-
-#Kubectl: {
-	version: string | *"v1.23.5"
-	image:   docker.#Build & {
-		steps: [
-			alpine.#Build & {
-				packages: {
-					bash: {}
-					curl: {}
-				}
-			},
-			bash.#Run & {
-				workdir: "/src"
-				script: contents: #"""
-					curl -LO https://dl.k8s.io/release/\#(version)/bin/linux/amd64/kubectl
-					chmod +x kubectl
-					mv kubectl /usr/local/bin/
-					"""#
-			},
-		]
-	}
-}
 
 #Helm: {
 	helmversion:    string | *"3.8.1"
@@ -105,6 +84,7 @@ import (
 	}
 }
 
+// need to wait for ingress nginx installed
 #InstallNocalhost: {
 	uri:            string
 	kubeconfig:     string | dagger.#Secret
@@ -133,13 +113,13 @@ import (
 		"ingressVersion":   ingressVersion
 	}
 
-	applyIngressYaml: kubectl.#Apply & {
+	applyIngressYaml: kubectl.#Manifest & {
 		"kubeconfig": kubeconfig
 		manifest:     getIngressYaml.manifestStream
 		"namespace":  namespace
 	}
 
-	createH8rIngress: #CreateH8rIngress & {
+	createH8rIngress: h8r.#CreateH8rIngress & {
 		name:     uri + "-nocalhost"
 		"host":   strings.Replace(host, "\n", "", -1)
 		"domain": strings.Replace(domain, "\n", "", -1)
@@ -148,37 +128,37 @@ import (
 }
 
 // craete ingress by h8s server
-#CreateH8rIngress: {
-	// Ingress name
-	name:             string
-	host:             string
-	domain:           string
-	port:             string | *"80"
-	h8rServerAddress: string | *"api.stack.h8r.io/api/v1/cluster/ingress"
+// #CreateH8rIngress: {
+//  // Ingress name
+//  name:             string
+//  host:             string
+//  domain:           string
+//  port:             string | *"80"
+//  h8rServerAddress: string | *"api.stack.h8r.io/api/v1/cluster/ingress"
 
-	baseImage: alpine.#Build & {
-		packages: {
-			bash: {}
-			curl: {}
-		}
-	}
+//  baseImage: alpine.#Build & {
+//   packages: {
+//    bash: {}
+//    curl: {}
+//   }
+//  }
 
-	create: bash.#Run & {
-		input: baseImage.output
-		script: contents: #"""
-			sh_c='sh -c'
-			data_raw='{"name":"\#(name)","host":"\#(host)","domain":"\#(domain)","port":"\#(port)"}'
-			do_create="curl -sw '\n%{http_code}' --retry 3 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '$data_raw' \#(h8rServerAddress)"
-			messages="$($sh_c "$do_create")"
-			http_code=$(echo "$messages" |  tail -1)
-			if [ "$http_code" -ne "200" ]; then
-				#// echo error messages
-				echo "$messages"
-				exit 1
-			fi
-			"""#
-	}
-}
+//  create: bash.#Run & {
+//   input: baseImage.output
+//   script: contents: #"""
+//    sh_c='sh -c'
+//    data_raw='{"name":"\#(name)","host":"\#(host)","domain":"\#(domain)","port":"\#(port)"}'
+//    do_create="curl -sw '\n%{http_code}' --retry 3 --retry-delay 2 --insecure -X POST --header 'Content-Type: application/json' --data-raw '$data_raw' \#(h8rServerAddress)"
+//    messages="$($sh_c "$do_create")"
+//    http_code=$(echo "$messages" |  tail -1)
+//    if [ "$http_code" -ne "200" ]; then
+//     #// echo error messages
+//     echo "$messages"
+//     exit 1
+//    fi
+//    """#
+//  }
+// }
 
 #DeleteChart: {
 	// input values

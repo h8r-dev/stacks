@@ -2,6 +2,7 @@ package helm
 
 #code: #"""
 	# Add the repository
+	# cat /helm/values.yaml
 	if [ -n "$HELM_REPO" ]; then
 		helm repo add repository "${HELM_REPO}"
 		helm repo update
@@ -9,11 +10,13 @@ package helm
 
 	# If the chart is a file, then it's the chart name
 	# If it's a directly, then it's the contents of the cart
-	if [ -f "/helm/chart" ]; then
-		HELM_CHART="repository/$(cat /helm/chart)"
-	else
-		HELM_CHART="/helm/chart"
-	fi
+	# if [ -f "/helm/chart" ]; then
+	#	HELM_CHART="repository/$(cat /helm/chart)"
+	# else
+	#	HELM_CHART="/helm/chart"
+	# fi
+	HELM_CHART="repository/$CHART_NAME"
+
 
 	OPTS=""
 	OPTS="$OPTS --timeout "$HELM_TIMEOUT""

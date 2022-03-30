@@ -2,16 +2,24 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/bash"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/random"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/grafana"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/argocd"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/prometheus"
 )
 
 dagger.#Plan & {
 	client: {
-		filesystem: code: read: contents: dagger.#FS
+		filesystem: {
+			code: read: contents: dagger.#FS
+			"./output.yaml": write: {
+				// Convert a CUE value into a YAML formatted string
+				contents: actions.up.outputYaml.output
+			}
+		}
+		//filesystem: code: read: contents: dagger.#FS
 		commands: kubeconfig: {
 			name: "cat"
 			args: ["\(env.KUBECONFIG)"]
@@ -23,134 +31,213 @@ dagger.#Plan & {
 			ORGANIZATION: string
 			GITHUB_TOKEN: dagger.#Secret
 		}
-		filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
+		// filesystem: "config.yaml": write: {
+		//  // Convert a CUE value into a YAML formatted string
+		//  contents: yaml.Marshal(actions.outputStruct)
+		// }
+		//filesystem: ingress_version: write: contents: actions.getIngressVersion.export.files["/result"]
 	}
 
 	actions: {
-		_kubectl:    kubectl.#Kubectl
-		uri:         random.#String
-		infraDomain: ".stack.h8r.io"
-
 		// get ingress endpoint
-		getIngressEndPoint: ingress.#GetIngressEndpoint & {
-			kubeconfig: client.commands.kubeconfig.stdout
-		}
-
-		// Get ingress version, i.e. v1 or v1beta1
-		getIngressVersion: bash.#Run & {
-			input:   _kubectl.output
-			workdir: "/src"
-			mounts: "KubeConfig Data": {
-				dest:     "/kubeconfig"
-				contents: client.commands.kubeconfig.stdout
-			}
-			script: contents: #"""
-				ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
-				if [[ $ingress_result =~ "v1beta1" ]]; then
-				 echo 'v1beta1' > /result
-				else
-				 echo 'v1' > /result
-				fi
-				"""#
-			export: files: "/result": string
-		}
-
-		installNocalhost: #InstallNocalhost & {
-			"uri":          "just-test" + uri.output
-			kubeconfig:     client.commands.kubeconfig.stdout
-			ingressVersion: getIngressVersion.export.files."/result"
-			domain:         uri.output + ".nocalhost" + infraDomain
-			host:           getIngressEndPoint.endPoint
-			namespace:      "nocalhost"
-			name:           "nocalhost"
-		}
-
-		testCreateH8rIngress: #CreateH8rIngress & {
-			name:   "just-a-test-" + uri.output
-			host:   "1.1.1.1"
-			domain: uri.output + ".foo.bar"
-			port:   "80"
-		}
-
-		installIngress: helm.#Chart & {
-			name:       "ingress-nginx"
-			repository: "https://h8r-helm.pkg.coding.net/release/helm"
-			chart:      "ingress-nginx"
-			namespace:  "ingress-nginx"
-			action:     "installOrUpgrade"
-			kubeconfig: client.commands.kubeconfig.stdout
-			values:     #ingressNginxSetting
-			wait:       true
-		}
-
-		// upgrade ingress nginx for serviceMonitor
-		// should wait for installIngress and installPrometheusStack
-		upgradeIngress: helm.#Chart & {
-			name:       "ingress-nginx"
-			repository: "https://h8r-helm.pkg.coding.net/release/helm"
-			chart:      "ingress-nginx"
-			namespace:  "ingress-nginx"
-			action:     "installOrUpgrade"
-			kubeconfig: client.commands.kubeconfig.stdout
-			values:     #ingressNginxUpgradeSetting
-			wait:       true
-		}
-
-		installLokiStack: helm.#Chart & {
-			name:       "loki"
-			repository: "https://grafana.github.io/helm-charts"
-			chart:      "loki-stack"
-			action:     "installOrUpgrade"
-			namespace:  lokiNamespace
-			kubeconfig: client.commands.kubeconfig.stdout
-			wait:       true
-		}
-
-		installPrometheusStack: {
-			releaseName:    "prometheus"
-			kubePrometheus: helm.#Chart & {
-				name:       installPrometheusStack.releaseName
-				repository: "https://prometheus-community.github.io/helm-charts"
-				chart:      "kube-prometheus-stack"
-				action:     "installOrUpgrade"
-				namespace:  prometheusNamespace
+		up: {
+			getIngressEndPoint: ingress.#GetIngressEndpoint & {
 				kubeconfig: client.commands.kubeconfig.stdout
+			}
+
+			// get ingress version
+			getIngressVersion: ingress.#GetIngressVersion & {
+				kubeconfig: client.commands.kubeconfig.stdout
+			}
+
+			// installNocalhost: #InstallNocalhost & {
+			//  "uri":          "just-test" + uri.output
+			//  kubeconfig:     client.commands.kubeconfig.stdout
+			//  ingressVersion: getIngressVersion.content
+			//  domain:         uri.output + ".nocalhost" + infraDomain
+			//  host:           getIngressEndPoint.endPoint
+			//  namespace:      "nocalhost"
+			//  name:           "nocalhost"
+			// }
+
+			// testCreateH8rIngress: #CreateH8rIngress & {
+			//  name:   "just-a-test-" + uri.output
+			//  host:   "1.1.1.1"
+			//  domain: uri.output + ".foo.bar"
+			//  port:   "80"
+			// }
+
+			installIngress: helm.#Chart & {
+				name:       "ingress-nginx"
+				repository: "https://h8r-helm.pkg.coding.net/release/helm"
+				chart:      "ingress-nginx"
+				namespace:  "ingress-nginx"
+				action:     "installOrUpgrade"
+				kubeconfig: client.commands.kubeconfig.stdout
+				"values":   ingressNginxSetting
 				wait:       true
 			}
-		}
 
-		initRepos: {
-			applicationName: client.env.APP_NAME
-			accessToken:     client.env.GITHUB_TOKEN
-			organization:    client.env.ORGANIZATION
-			sourceCodeDir:   client.filesystem.code.read.contents
-
-			initRepo: #InitRepo & {
-				sourceCodePath:    "go-gin"
-				suffix:            ""
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-				"sourceCodeDir":   sourceCodeDir
+			// // upgrade ingress nginx for serviceMonitor
+			// // should wait for installIngress and installPrometheusStack
+			upgradeIngress: helm.#Chart & {
+				name:       "ingress-nginx"
+				repository: "https://h8r-helm.pkg.coding.net/release/helm"
+				chart:      "ingress-nginx"
+				namespace:  "ingress-nginx"
+				action:     "installOrUpgrade"
+				kubeconfig: client.commands.kubeconfig.stdout
+				"values":   ingressNginxUpgradeSetting
+				wait:       true
+				"waitFor":  installIngress.success & installPrometheusLokiStack.success
 			}
 
-			initFrontendRepo: #InitRepo & {
-				suffix:            "-front"
-				sourceCodePath:    "vue-front"
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-				"sourceCodeDir":   sourceCodeDir
+			// install argocd
+			installArgoCD: argocd.#Install & {
+				kubeconfig:       client.commands.kubeconfig.stdout
+				namespace:        argoCDNamespace
+				url:              "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+				"uri":            uri.output
+				"ingressVersion": getIngressVersion.content
+				domain:           argocdDomain
+				host:             getIngressEndPoint.content
 			}
 
-			initHelmRepo: #InitRepo & {
-				suffix:            "-deploy"
-				sourceCodePath:    "helm"
-				isHelmChart:       "true"
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-				"sourceCodeDir":   sourceCodeDir
+			createApp: argocd.#App & {
+				"waitFor": installArgoCD.success
+				config:    argocd.#Config & {
+					version: "v2.3.1"
+					server:  argocdDomain
+					basicAuth: {
+						username: argoCDDefaultUsername
+						password: installArgoCD.content
+					}
+				}
+				name:      client.env.APP_NAME
+				repo:      initRepos.initHelmRepo.url
+				namespace: client.env.APP_NAME + appInstallNamespace
+				path:      "."
+				helmSet:   "ingress.hosts[0].host=" + appDomain + ",ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
+			}
+
+			// create image pull secret for argocd
+			createImagePullSecret: kubectl.#CreateImagePullSecret & {
+				kubeconfig: client.commands.kubeconfig.stdout
+				username:   client.env.ORGANIZATION
+				password:   client.env.GITHUB_TOKEN
+				namespace:  client.env.APP_NAME + appInstallNamespace
+			}
+
+			// install prometheus and loki stack
+			installPrometheusLokiStack: {
+				installPrometheus: prometheus.#installPrometheusStack & {
+					"uri":                uri.output
+					"kubeconfig":         client.commands.kubeconfig.stdout
+					"ingressVersion":     getIngressVersion.content
+					"prometheusDomain":   prometheusDomain
+					"grafanaDomain":      grafanaDomain
+					"alertmanagerDomain": alertmanagerDomain
+					host:                 getIngressEndPoint.content
+					name:                 prometheusReleaseName
+					namespace:            prometheusNamespace
+					"waitFor":            installIngress.success
+				}
+
+				installLoki: prometheus.#installLokiStack & {
+					namespace:    lokiNamespace
+					"kubeconfig": client.commands.kubeconfig.stdout
+				}
+
+				getGrafanaSecret: grafana.#GetGrafanaSecret & {
+					"kubeconfig": client.commands.kubeconfig.stdout
+					"secretName": prometheusReleaseName + "-grafana"
+					"namespace":  prometheusNamespace
+				}
+
+				initIngressNginxDashboard: grafana.#CreateIngressDashboard & {
+					url:       grafanaDomain
+					username:  grafanaDefaultUsername
+					password:  getGrafanaSecret.secret
+					"waitFor": installPrometheus.success
+				}
+
+				initLokiDataSource: grafana.#CreateLokiDataSource & {
+					url:       grafanaDomain
+					username:  "admin"
+					password:  getGrafanaSecret.secret
+					"waitFor": installPrometheus.success & installLoki.success
+				}
+
+				success: installPrometheus.success & installLoki.success
+			}
+
+			initRepos: {
+				applicationName: client.env.APP_NAME
+				accessToken:     client.env.GITHUB_TOKEN
+				organization:    client.env.ORGANIZATION
+				sourceCodeDir:   client.filesystem.code.read.contents
+
+				initRepo: #InitRepo & {
+					sourceCodePath:    "go-gin"
+					suffix:            ""
+					"applicationName": applicationName
+					"accessToken":     accessToken
+					"organization":    organization
+					"sourceCodeDir":   sourceCodeDir
+				}
+
+				initFrontendRepo: #InitRepo & {
+					suffix:            "-front"
+					sourceCodePath:    "vue-front"
+					"applicationName": applicationName
+					"accessToken":     accessToken
+					"organization":    organization
+					"sourceCodeDir":   sourceCodeDir
+				}
+
+				initHelmRepo: #InitRepo & {
+					suffix:            "-deploy"
+					sourceCodePath:    "helm"
+					isHelmChart:       "true"
+					"applicationName": applicationName
+					"accessToken":     accessToken
+					"organization":    organization
+					"sourceCodeDir":   sourceCodeDir
+				}
+			}
+
+			// output cue struct
+			outputYaml: #OutputStruct & {
+				application: {
+					domain:  showAppDomain
+					ingress: getIngressEndPoint.content
+				}
+				repository: {
+					frontend: initRepos.initFrontendRepo.url
+					backend:  initRepos.initRepo.url
+					deploy:   initRepos.initRepo.url
+				}
+				prometheus: {
+					domain: prometheusDomain
+				}
+				grafana: {
+					domain:   grafanaDomain
+					username: grafanaDefaultUsername
+					password: installPrometheusLokiStack.getGrafanaSecret.secret
+				}
+				alertManager: {
+					domain: alertmanagerDomain
+				}
+				argocd: {
+					domain:   argocdDomain
+					username: argoCDDefaultUsername
+					password: installArgoCD.content
+				}
+				nocalhost: {
+					domain:   nocalhostDomain
+					username: nocalhostDefaultUsername
+					password: nocalhostDefaultPassword
+				}
 			}
 		}
 

@@ -169,6 +169,13 @@ import (
 			done
 			"""#
 	}
+
+	readFile: dagger.#ReadFile & {
+		input: run.output.rootfs
+		path:  "/create.json"
+	}
+
+	url: readFile.contents
 }
 
 #DeleteRepo: {

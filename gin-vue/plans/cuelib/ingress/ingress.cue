@@ -3,11 +3,10 @@ package ingress
 import (
 	"encoding/yaml"
 	"strings"
+	//"strconv"
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
-	//"universe.dagger.io/docker"
-	//"universe.dagger.io/alpine"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
 )
 
 #Ingress: {
@@ -91,8 +90,24 @@ import (
 		}
 	}
 
-	// MarshalStream
-	manifestStream: yaml.MarshalStream([manifest])
+	manifestStream: yaml.Marshal(manifest)
+
+	// _kubectl: base.#Kubectl
+
+	// run: bash.#Run & {
+	//  input: _kubectl.output
+	//  script: contents: #"""
+	//    printf '\#(manifestY)' > /k8s.yaml
+	//   """#
+	//  always: true
+	// }
+
+	// contentFile: dagger.#ReadFile & {
+	//  input: run.output.rootfs
+	//  path:  "/k8s.yaml"
+	// }
+
+	// manifestStream: contentFile.contents
 }
 
 #GetIngressEndpoint: {
@@ -110,7 +125,7 @@ import (
 		echo $endpoint | awk '$1=$1' > /endpoint
 		"""#
 
-	_kubectl: kubectl.#Kubectl
+	_kubectl: base.#Kubectl
 
 	get: bash.#Run & {
 		input:  _kubectl.output
@@ -124,8 +139,49 @@ import (
 			dest:     "/kubeconfig"
 			contents: kubeconfig
 		}
-		export: files: "/endpoint": _
+		//export: files: "/endpoint": string
 	}
 
-	endPoint: get.export.files."/endpoint"
+	contentFile: dagger.#ReadFile & {
+		input: get.output.rootfs
+		path:  "/endpoint"
+	}
+
+	content: strings.Replace(contentFile.contents, "\n", "", -1)
+
+	//content: get.export.files."/endpoint".content
+}
+
+// Get ingress version, i.e. v1 or v1beta1
+#GetIngressVersion: {
+	kubeconfig: string | dagger.#Secret
+
+	_kubectl: base.#Kubectl
+
+	get: bash.#Run & {
+		input:   _kubectl.output
+		workdir: "/src"
+		mounts: "KubeConfig Data": {
+			dest:     "/kubeconfig"
+			contents: kubeconfig
+		}
+		script: contents: #"""
+			ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
+			if [[ $ingress_result =~ "v1beta1" ]]; then
+				echo 'v1beta1' > /result
+			else
+				echo 'v1' > /result
+			fi
+			"""#
+		//export: files: "/result": string
+		always: true
+	}
+
+	contentFile: dagger.#ReadFile & {
+		input: get.output.rootfs
+		path:  "/result"
+	}
+
+	content: strings.TrimSpace(contentFile.contents)
+	//content: strings.TrimSpace(get.export.files."/result".content)
 }
