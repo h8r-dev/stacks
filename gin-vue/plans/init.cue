@@ -121,6 +121,7 @@ import (
 	token:   string
 	members: string
 	url:     string
+	password: string | *"123456"
 
 	baseImage: alpine.#Build & {
 		packages: {
