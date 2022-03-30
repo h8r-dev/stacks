@@ -143,7 +143,7 @@ import (
 			URL="\#(url)/v1/users"
 			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
 			for user in ${MEMBERS[@]}; do
-				DATA_RAW='{"confirm_password":"123456","email":"'"$user"'@h8r.io","is_admin":0,"name":"'"$user"'","password":"123456","status":1}'
+				DATA_RAW='{"confirm_password":"\#(password)","email":"'"$user"'@h8r.io","is_admin":0,"name":"'"$user"'","password":"\#(password)","status":1}'
 			  do_create="curl $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 				$sh_c "$do_create"
 			done
