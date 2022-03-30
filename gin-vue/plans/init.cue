@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 	"dagger.io/dagger"
 	"universe.dagger.io/alpine"
@@ -44,10 +45,9 @@ import (
 	}
 
 	createNocalhostDevSpace: #CreateNocalhostDevSpace & {
-		token:                         nocalhostToken.output
-		url:                           nocalhostURL
-		waitForCreateNocalhostTeam:    createNocalhostTeam.success
-		waitForCreateNocalhostCluster: createNocalhostCluster.success
+		token:   nocalhostToken.output
+		url:     nocalhostURL
+		waitFor: createNocalhostTeam.success & createNocalhostCluster.success
 	}
 }
 
@@ -118,9 +118,9 @@ import (
 }
 
 #CreateNocalhostTeam: {
-	token:   string
-	members: string
-	url:     string
+	token:    string
+	members:  string
+	url:      string
 	password: string | *"123456"
 
 	baseImage: alpine.#Build & {
@@ -139,6 +139,7 @@ import (
 				echo 'nocalhost ready'
 				sleep 2
 			done
+
 			MEMBERS="\#(members)"
 			URL="\#(url)/v1/users"
 			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
@@ -224,10 +225,9 @@ import (
 }
 
 #CreateNocalhostDevSpace: {
-	token:                         string
-	url:                           string
-	waitForCreateNocalhostTeam:    bool
-	waitForCreateNocalhostCluster: bool
+	token:   string
+	url:     string
+	waitFor: bool
 
 	baseImage: alpine.#Build & {
 		packages: {
@@ -241,9 +241,8 @@ import (
 	run: bash.#Run & {
 		always: true
 		input:  baseImage.output
+		env: WAIT_FOR:    strconv.FormatBool(waitFor)
 		script: contents: #"""
-			echo "waitForCreateNocalhostTeam \#(waitForCreateNocalhostTeam)"
-			echo "waitForCreateNocalhostCluster \#(waitForCreateNocalhostCluster)"
 			sh_c='sh -c'
 			until $(curl --output /dev/null --silent --head --fail \#(url)/health); do
 				echo 'nocalhost ready'
