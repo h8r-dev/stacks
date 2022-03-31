@@ -26,7 +26,8 @@ import (
 	}
 
 	run: bash.#Run & {
-		input: base.output
+		input:  base.output
+		always: true
 		env: GITHUB_TOKEN: accessToken
 		script: contents:  #"""
 		curl -H "Authorization: token $GITHUB_TOKEN" -XDELETE  https://api.github.com/repos/\#(organization)/\#(applicationName)\#(suffix)
