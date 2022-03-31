@@ -1,11 +1,10 @@
 package github
 
 import (
-	"strconv"
-	"universe.dagger.io/alpine"
-	"universe.dagger.io/docker"
 	"dagger.io/dagger"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/fs"
+	"universe.dagger.io/alpine"
+	"universe.dagger.io/bash"
+	"universe.dagger.io/docker"
 )
 
 #DeleteRepo: {

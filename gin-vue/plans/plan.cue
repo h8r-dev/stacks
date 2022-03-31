@@ -55,25 +55,6 @@ dagger.#Plan & {
 			export: files: "/result": string
 		}
 
-		installNocalhost: #InstallNocalhost & {
-			"uri":          "just-test" + uri.output
-			kubeconfig:     client.commands.kubeconfig.stdout
-			ingressVersion: getIngressVersion.export.files."/result"
-			domain:         uri.output + ".nocalhost" + infraDomain
-			host:           getIngressEndPoint.endPoint
-			namespace:      "nocalhost"
-			name:           "nocalhost"
-		}
-
-		initNocalhost: #InitNocalhostData & {
-			nocalhostURL:       "http://hcozny.nocalhost.stack.h8r.io"
-			githubAccessToken:  client.env.GITHUB_TOKEN
-			githubOrganization: client.env.ORGANIZATION
-			kubeconfig:         client.commands.kubeconfig.stdout
-			applicationName:    client.env.APP_NAME
-			gitURL:             "https://github.com/just-a-test/test"
-		}
-
 		createH8rIngress: #CreateH8rIngress & {
 			name:   "just-a-test-" + uri.output
 			host:   "1.1.1.1"

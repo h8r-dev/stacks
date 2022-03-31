@@ -1,4 +1,4 @@
-package main
+package nocalhost
 
 import (
 	"strconv"
@@ -8,53 +8,11 @@ import (
 	"universe.dagger.io/bash"
 )
 
-#InitNocalhostData: {
-	nocalhostURL:       string
-	githubAccessToken:  dagger.#Secret
-	githubOrganization: string
-	kubeconfig:         string | dagger.#Secret
-	applicationName:    string
-	gitURL:             string
-
-	nocalhostToken: #GetNocalhostToken & {
-		url: nocalhostURL
-	}
-
-	githubOrganizationMembers: #GetGithubOrganizationMembers & {
-		accessToken:  githubAccessToken
-		organization: githubOrganization
-	}
-
-	createNocalhostTeam: #CreateNocalhostTeam & {
-		token:   nocalhostToken.output
-		members: githubOrganizationMembers.output
-		url:     nocalhostURL
-	}
-
-	createNocalhostCluster: #CreateNocalhostCluster & {
-		token:        nocalhostToken.output
-		url:          nocalhostURL
-		"kubeconfig": kubeconfig
-	}
-
-	createNocalhostApplication: #CreateNocalhostApplication & {
-		token:             nocalhostToken.output
-		url:               nocalhostURL
-		"applicationName": applicationName
-		"gitURL":          gitURL
-	}
-
-	createNocalhostDevSpace: #CreateNocalhostDevSpace & {
-		token:   nocalhostToken.output
-		url:     nocalhostURL
-		waitFor: createNocalhostTeam.success & createNocalhostCluster.success
-	}
-}
-
-#GetNocalhostToken: {
+#GetToken: {
 	url:      string
 	user:     string | *"admin@admin.com"
 	password: string | *"123456"
+	waitFor:  bool
 
 	baseImage: alpine.#Build & {
 		packages: {
@@ -65,6 +23,7 @@ import (
 	}
 
 	run: bash.#Run & {
+		env: WAIT_FOR: strconv.FormatBool(waitFor)
 		always: true
 		input:  baseImage.output
 		script: contents: #"""
@@ -84,40 +43,7 @@ import (
 	output: strings.Replace(run.export.files."/result", "\n", "", -1)
 }
 
-#GetGithubOrganizationMembers: {
-	accessToken:  dagger.#Secret
-	organization: string
-
-	baseImage: alpine.#Build & {
-		packages: {
-			bash: {}
-			curl: {}
-			jq: {}
-		}
-	}
-
-	run: bash.#Run & {
-		always: true
-		input:  baseImage.output
-		env: TOKEN:       accessToken
-		script: contents: #"""
-		username=$(curl -sH "Authorization: token ${TOKEN}" https://api.github.com/user | jq -r '.login') > /result
-		if [ "$username" == \#(organization) ]; then
-			# personal github name
-			exit 0
-		else
-			# github organization name
-			curl -sH "Authorization: token ${TOKEN}" https://api.github.com/orgs/\#(organization)/members | jq -r '.[].login' > /result
-		fi
-		"""#
-
-		export: files: "/result": string
-	}
-
-	output: run.export.files."/result"
-}
-
-#CreateNocalhostTeam: {
+#CreateTeam: {
 	token:    string
 	members:  string
 	url:      string
@@ -153,7 +79,7 @@ import (
 	success: run.success
 }
 
-#CreateNocalhostCluster: {
+#CreateCluster: {
 	token:      string
 	url:        string
 	kubeconfig: string | dagger.#Secret
@@ -190,13 +116,13 @@ import (
 	success: run.success
 }
 
-#CreateNocalhostApplication: {
-	token:           string
-	url:             string
-	applicationName: string
-	gitURL:          string
-	source:          string | *"git"
-	installType:     string | *"helm_chart"
+#CreateApplication: {
+	token:       string
+	url:         string
+	appName:     string
+	appGitURL:   string
+	source:      string | *"git"
+	installType: string | *"helm_chart"
 
 	baseImage: alpine.#Build & {
 		packages: {
@@ -216,7 +142,7 @@ import (
 			done
 
 			URL="\#(url)/v1/application"
-			DATA_RAW='{"context":"{\"application_url\":\"\#(gitURL)\",\"application_name\":\"\#(applicationName)\",\"source\":\"\#(source)\",\"install_type\":\"\#(installType)\",\"resource_dir\":[]}","status":1}'
+			DATA_RAW='{"context":"{\"application_url\":\"\#(appGitURL)\",\"application_name\":\"\#(appName)\",\"source\":\"\#(source)\",\"install_type\":\"\#(installType)\",\"resource_dir\":[]}","status":1}'
 			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
 			do_create="curl $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 			$sh_c "$do_create"
@@ -224,7 +150,7 @@ import (
 	}
 }
 
-#CreateNocalhostDevSpace: {
+#CreateDevSpace: {
 	token:   string
 	url:     string
 	waitFor: bool
@@ -248,7 +174,7 @@ import (
 				echo 'nocalhost ready'
 				sleep 2
 			done
-			
+
 			URL="\#(url)/v2/dev_space/cluster"
 			HEADER="--header 'Authorization: Bearer \#(token)'"
 			do_create="curl $HEADER -s --location --request GET $URL"

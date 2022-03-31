@@ -2,7 +2,6 @@ package helm
 
 import (
 	"strconv"
-	"universe.dagger.io/alpine"
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/fs"
@@ -57,14 +56,36 @@ import (
 	// Wait for
 	// waitFor: [string]: from: dagger.#FS
 
+	_imageVersion: string | *"3.15.0@sha256:21a3deaa0d32a8057914f36584b5288d2e5ecc984380bc0118285c70fa8c9300"
+	_packages: [pkgName=string]: version: string | *""
+	_packages: {
+		jq: {}
+		curl: {}
+	}
+
 	build: docker.#Build & {
 		steps: [
-			alpine.#Build & {
-				packages: {
-					jq: {}
-					curl: {}
+			docker.#Pull & {
+				source: "index.docker.io/alpine:\(_imageVersion)"
+			},
+			for pkgName, pkg in _packages {
+				docker.#Run & {
+					command: {
+						name: "apk"
+						args: ["add", "\(pkgName)\(pkg.version)"]
+						flags: {
+							"-U":         true
+							"--no-cache": true
+						}
+					}
 				}
 			},
+			//   alpine.#Build & {
+			//    packages: {
+			//     jq: {}
+			//     curl: {}
+			//    }
+			//   },
 			docker.#Run & {
 				workdir: "/src"
 				command: {
@@ -148,4 +169,15 @@ import (
 			},
 		]
 	}
+
+	done: docker.#Run & {
+		always: true
+		input:  build.output
+		command: {
+			name: "sh"
+			flags: "-c": "echo helm-install-done"
+		}
+	}
+
+	success: done.success
 }
