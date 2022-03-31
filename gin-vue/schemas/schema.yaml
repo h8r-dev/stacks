@@ -1,18 +1,19 @@
 parameters:
   - title: applicationName
-    description: Name of your application.
+    description: Name of your application
     key: APP_NAME
-    default: gin-vue-app
+    default: sample
     required: true
   - title: kubeConfig
-    description: Path to your kubeconfig file.
+    description: Path to your kubeconfig file
     key: KUBECONFIG
     default: ~/.kube/config
     required: true
   - title: githubToken
-    description: Access token of your github account.
+    description: Your github access token
     key: GITHUB_TOKEN
     required: true
   - title: organization
-    description: Github organization of your developing team.
+    description: Which github organization do you want to use?
     key: ORGANIZATION
+    required: true

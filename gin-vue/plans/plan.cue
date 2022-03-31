@@ -163,6 +163,33 @@ dagger.#Plan & {
 			}
 		}
 
+		deleteRepos: {
+			applicationName: client.env.APP_NAME
+			accessToken:     client.env.GITHUB_TOKEN
+			organization:    client.env.ORGANIZATION
+
+			deleteRepo: #DeleteRepo & {
+				suffix:            ""
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+			}
+
+			deleteFrontendRepo: #DeleteRepo & {
+				suffix:            "-front"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+			}
+
+			deleteHelmRepo: #DeleteRepo & {
+				suffix:            "-deploy"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+			}
+		}
+
 		deleteNocalhost: #DeleteChart & {
 			releasename: "nocalhost"
 			kubeconfig:  client.env.KUBECONFIG_DATA

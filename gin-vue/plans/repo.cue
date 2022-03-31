@@ -7,6 +7,33 @@ import (
 	"universe.dagger.io/docker"
 )
 
+#DeleteRepo: {
+	// Application name, will be set as repo name
+	applicationName: string
+
+	// Suffix
+	suffix: *"" | string
+
+	accessToken: dagger.#Secret
+
+	organization: string
+
+	base: alpine.#Build & {
+		packages: {
+			bash: {}
+			curl: {}
+		}
+	}
+
+	run: bash.#Run & {
+		input: base.output
+		env: GITHUB_TOKEN: accessToken
+		script: contents:  #"""
+		curl -H "Authorization: token $GITHUB_TOKEN" -XDELETE  https://api.github.com/repos/\#(organization)/\#(applicationName)\#(suffix)
+		"""#
+	}
+}
+
 #InitRepo: {
 
 	// Application name, will be set as repo name
