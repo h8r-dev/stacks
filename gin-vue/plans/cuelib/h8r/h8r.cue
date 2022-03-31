@@ -23,9 +23,7 @@ import (
 
 	create: bash.#Run & {
 		input: baseImage.output
-		env: {
-			HOST: host
-		}
+		env: HOST:        host
 		script: contents: #"""
 			sh_c='sh -c'
 			echo $HOST'-'\#(name)'-'\#(domain)'-'\#(port)

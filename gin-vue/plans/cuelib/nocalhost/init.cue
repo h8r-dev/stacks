@@ -25,27 +25,27 @@ import (
 	}
 
 	createTeam: #CreateTeam & {
-		"token": getToken.output
+		token:   getToken.output
 		members: githubOrganizationMembers.output
 		"url":   url
 	}
 
 	createCluster: #CreateCluster & {
-		"token":      getToken.output
+		token:        getToken.output
 		"url":        url
 		"kubeconfig": kubeconfig
 	}
 
 	createApplication: #CreateApplication & {
-		"token":     getToken.output
+		token:       getToken.output
 		"url":       url
 		"appName":   appName
 		"appGitURL": appGitURL
 	}
 
 	createDevSpace: #CreateDevSpace & {
-		"token":   getToken.output
-		"url":     url
-		"waitFor": createTeam.success & createCluster.success
+		token:   getToken.output
+		"url":   url
+		waitFor: createTeam.success & createCluster.success
 	}
 }

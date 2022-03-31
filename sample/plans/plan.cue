@@ -25,68 +25,64 @@ dagger.#Plan & {
 	}
 
 	actions: {
-		up: {
-			initRepos: {
-				applicationName: client.env.APP_NAME
-				accessToken:     client.env.GITHUB_TOKEN
-				organization:    client.env.ORGANIZATION
-				sourceCodeDir:   client.filesystem.code.read.contents
+		up: initRepos: {
+			applicationName: client.env.APP_NAME
+			accessToken:     client.env.GITHUB_TOKEN
+			organization:    client.env.ORGANIZATION
+			sourceCodeDir:   client.filesystem.code.read.contents
 
-				initRepo: #InitRepo & {
-					sourceCodePath:    "go-gin"
-					suffix:            ""
-					"applicationName": applicationName
-					"accessToken":     accessToken
-					"organization":    organization
-					"sourceCodeDir":   sourceCodeDir
-				}
+			initRepo: #InitRepo & {
+				sourceCodePath:    "go-gin"
+				suffix:            ""
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
+			}
 
-				initFrontendRepo: #InitRepo & {
-					suffix:            "-front"
-					sourceCodePath:    "vue-front"
-					"applicationName": applicationName
-					"accessToken":     accessToken
-					"organization":    organization
-					"sourceCodeDir":   sourceCodeDir
-				}
+			initFrontendRepo: #InitRepo & {
+				suffix:            "-front"
+				sourceCodePath:    "vue-front"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
+			}
 
-				initHelmRepo: #InitRepo & {
-					suffix:            "-deploy"
-					sourceCodePath:    "helm"
-					isHelmChart:       "true"
-					"applicationName": applicationName
-					"accessToken":     accessToken
-					"organization":    organization
-					"sourceCodeDir":   sourceCodeDir
-				}
+			initHelmRepo: #InitRepo & {
+				suffix:            "-deploy"
+				sourceCodePath:    "helm"
+				isHelmChart:       "true"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
 			}
 		}
-		down: {
-			deleteRepos: {
-				applicationName: client.env.APP_NAME
-				accessToken:     client.env.GITHUB_TOKEN
-				organization:    client.env.ORGANIZATION
+		down: deleteRepos: {
+			applicationName: client.env.APP_NAME
+			accessToken:     client.env.GITHUB_TOKEN
+			organization:    client.env.ORGANIZATION
 
-				deleteRepo: #DeleteRepo & {
-					suffix:            ""
-					"applicationName": applicationName
-					"accessToken":     accessToken
-					"organization":    organization
-				}
+			deleteRepo: #DeleteRepo & {
+				suffix:            ""
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+			}
 
-				deleteFrontendRepo: #DeleteRepo & {
-					suffix:            "-front"
-					"applicationName": applicationName
-					"accessToken":     accessToken
-					"organization":    organization
-				}
+			deleteFrontendRepo: #DeleteRepo & {
+				suffix:            "-front"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+			}
 
-				deleteHelmRepo: #DeleteRepo & {
-					suffix:            "-deploy"
-					"applicationName": applicationName
-					"accessToken":     accessToken
-					"organization":    organization
-				}
+			deleteHelmRepo: #DeleteRepo & {
+				suffix:            "-deploy"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
 			}
 		}
 	}

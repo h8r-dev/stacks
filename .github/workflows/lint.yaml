@@ -8,8 +8,6 @@ on:
     branches:
     - main
 
-name: Lint
-
 jobs:
   lint:
     name: Lint
@@ -28,7 +26,7 @@ jobs:
       - name: "Install deps"
         run: |
           # Cue
-          export CUE_VERSION="$(grep cue ./go.mod | cut -d' ' -f2 | head -1 | sed -E 's/\.[[:digit:]]\.[[:alnum:]]+-[[:alnum:]]+$//')"
+          export CUE_VERSION="v0.4.2"
           export CUE_TARBALL="cue_${CUE_VERSION}_linux_amd64.tar.gz"
           echo "Installing cue version $CUE_VERSION"
           curl -L https://github.com/cue-lang/cue/releases/download/${CUE_VERSION}/${CUE_TARBALL} | sudo tar zxf - -C /usr/local/bin
