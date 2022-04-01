@@ -23,13 +23,14 @@ import (
 		input:  baseImage.output
 		env: TOKEN:       accessToken
 		script: contents: #"""
-		username=$(curl -sH "Authorization: token ${TOKEN}" https://api.github.com/user | jq -r '.login') > /result
+		username=$(curl --retry 5 --retry-delay 2 -sH  "Authorization: token ${TOKEN}" https://api.github.com/user | jq -r '.login') > /result
 		if [ "$username" == \#(organization) ]; then
 			# personal github name
+			printf "$username" > /result
 			exit 0
 		else
 			# github organization name
-			curl -sH "Authorization: token ${TOKEN}" https://api.github.com/orgs/\#(organization)/members | jq -r '.[].login' > /result
+			curl --retry 5 --retry-delay 2 -sH "Authorization: token ${TOKEN}" https://api.github.com/orgs/\#(organization)/members | jq -r '.[].login' > /result
 		fi
 		"""#
 

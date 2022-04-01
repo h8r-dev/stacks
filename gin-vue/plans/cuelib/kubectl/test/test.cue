@@ -34,7 +34,6 @@ testyaml: #"""
 
 dagger.#Plan & {
 	client: {
-		filesystem: code: read: contents: dagger.#FS
 		commands: kubeconfig: {
 			name: "cat"
 			args: ["\(env.KUBECONFIG)"]
