@@ -110,9 +110,9 @@ import (
 			    echo "repo not exist"
 			else
 			    echo "repo already created"
-			    echo https://github.com/$username/$REPO_NAME.git > /create.json
+			    printf https://github.com/$username/$REPO_NAME.git > /create.json
 			    if [ "$username" != "$ORGANIZATION" ]; then
-			        echo https://github.com/$ORGANIZATION/$REPO_NAME.git > /create.json
+			        printf https://github.com/$ORGANIZATION/$REPO_NAME.git > /create.json
 			    fi
 			    exit 0
 			fi
@@ -130,7 +130,7 @@ import (
 			echo $GIT_URL
 			cd $SOURCECODEPATH && git init && git remote add origin $GIT_URL
 
-			echo $SSH_URL > /create.json
+			printf $SSH_URL > /create.json
 
 			export GITHUB_TOKEN="$(cat /run/secrets/github)"
 
@@ -182,7 +182,7 @@ import (
 
 			if [ "$ISHELMCHART" == "true" ]; then
 			    sleep 10
-			    echo $HELM_GIT_URL > /create.json
+			    printf $HELM_GIT_URL > /create.json
 			    echo "ISHELMCHART:" $ISHELMCHART
 			    exit 0
 			fi
