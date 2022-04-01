@@ -1,0 +1,20 @@
+parameters:
+  - title: applicationName
+    description: Name of your application
+    key: APP_NAME
+    default: sample
+    required: true
+  - title: kubeConfig
+    description: Path to your kubeconfig file
+    key: KUBECONFIG
+    default: ~/.kube/config
+    required: true
+  - title: githubToken
+    description: Your github access token
+    key: GITHUB_TOKEN
+    required: true
+  - title: organization
+    description: Which github organization do you want to use?
+    key: ORGANIZATION
+    required: true
+    
