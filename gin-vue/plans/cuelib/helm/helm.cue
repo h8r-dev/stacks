@@ -100,15 +100,15 @@ import (
 
 	//  ]
 	// }
-	_writeYaml: output: dagger.#FS
+	//_writeYaml: output: dagger.#FS
 
-	if values != null {
-		_writeYaml: dagger.#WriteFile & {
-			input:    dagger.#Scratch
-			path:     "/values.yaml"
-			contents: values
-		}
+	//if values != null {
+	_writeYaml: dagger.#WriteFile & {
+		input:    dagger.#Scratch
+		path:     "/values.yaml"
+		contents: values
 	}
+	//}
 
 	_writeYamlOutput: _writeYaml.output
 
