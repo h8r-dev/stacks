@@ -26,6 +26,7 @@ import (
 		username=$(curl -sH "Authorization: token ${TOKEN}" https://api.github.com/user | jq -r '.login') > /result
 		if [ "$username" == \#(organization) ]; then
 			# personal github name
+			printf "$username" > /result
 			exit 0
 		else
 			# github organization name
