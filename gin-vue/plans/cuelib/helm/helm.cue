@@ -168,12 +168,12 @@ import (
 				contents: kubeconfig
 			}
 
-			if values != null {
-				helm: {
-					contents: _writeYamlOutput
-					dest:     "/helm"
-				}
+			//if values != null {
+			helm: {
+				contents: _writeYamlOutput
+				dest:     "/helm"
 			}
+			//}
 		}
 		// export: directories: "/output": _
 	}
