@@ -23,34 +23,30 @@ dagger.#Plan & {
 		}
 	}
 
-	actions: {
-		up: {
-			base: alpine.#Build & {
-				packages: {
-					bash: {}
-				}
-			}
-			run: bash.#Run & {
-				input:  base.output
-				always: true
-				env: {
-					KC: client.env.KUBECONFIG
-					AN: client.env.APP_NAME
-					OG: client.env.ORGANIZATION
-					GT: client.env.GITHUB_TOKEN
-				}
-				script: contents: #"""
-					echo kubeconfig: $KC >> /result.yaml
-					echo applicationname: $AN >> /result.yaml
-					echo organization: $OG >> /result.yaml
-					echo githubtoken: $GT >> /result.yaml
-					"""#
-			}
-			readFile: dagger.#ReadFile & {
-				input: run.output.rootfs
-				path:  "/result.yaml"
-			}
-			output: readFile.contents
+	actions: up: {
+		base: alpine.#Build & {
+			packages: bash: {}
 		}
+		run: bash.#Run & {
+			input:  base.output
+			always: true
+			env: {
+				KC: client.env.KUBECONFIG
+				AN: client.env.APP_NAME
+				OG: client.env.ORGANIZATION
+				GT: client.env.GITHUB_TOKEN
+			}
+			script: contents: #"""
+				echo kubeconfig: $KC >> /result.yaml
+				echo applicationname: $AN >> /result.yaml
+				echo organization: $OG >> /result.yaml
+				echo githubtoken: $GT >> /result.yaml
+				"""#
+		}
+		readFile: dagger.#ReadFile & {
+			input: run.output.rootfs
+			path:  "/result.yaml"
+		}
+		output: readFile.contents
 	}
 }
