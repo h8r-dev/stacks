@@ -32,10 +32,11 @@ import (
 				sleep 2
 			done
 			mkdir /output
-			curl --retry 10 --retry-delay 2 --location --request POST \#(url)/v1/login \
+			curl --retry 20 --retry-delay 2 --location --request POST \#(url)/v1/login \
 				--header "Content-Type: application/json" \
 				--data-raw '{"email":"\#(user)","password":"\#(password)"}' > /result
 			printf "$(jq '.data.token' /result)" > /result
+			cat /result
 			"""#
 		export: files: "/result": string
 	}
@@ -71,7 +72,7 @@ import (
 			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
 			for user in ${MEMBERS[@]}; do
 				DATA_RAW='{"confirm_password":"\#(password)","email":"'"$user"'@h8r.io","is_admin":0,"name":"'"$user"'","password":"\#(password)","status":1}'
-			  do_create="curl $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
+			  do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 				$sh_c "$do_create"
 			done
 			"""#
@@ -105,7 +106,8 @@ import (
 			URL="\#(url)/v1/cluster"
 			DATA_RAW='{"name":"initCluster","kubeconfig":"'$kubeconfig'"}'
 			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
-			do_create="curl $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
+			do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
+			echo $do_create
 			$sh_c "$do_create"
 			"""#
 		mounts: "kubeconfig": {
@@ -144,7 +146,7 @@ import (
 			URL="\#(url)/v1/application"
 			DATA_RAW='{"context":"{\"application_url\":\"\#(appGitURL)\",\"application_name\":\"\#(appName)\",\"source\":\"\#(source)\",\"install_type\":\"\#(installType)\",\"resource_dir\":[]}","status":1}'
 			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
-			do_create="curl $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
+			do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 			$sh_c "$do_create"
 			"""#
 	}
@@ -177,7 +179,7 @@ import (
 
 			URL="\#(url)/v2/dev_space/cluster"
 			HEADER="--header 'Authorization: Bearer \#(token)'"
-			do_create="curl $HEADER -s --location --request GET $URL"
+			do_create="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
 			messages="$($sh_c "$do_create")"
 			cluster_id=$(echo "$messages" | jq '.data | .[0] | .id')
 			if [[ "$cluster_id" == "null" ]]; then
@@ -186,12 +188,12 @@ import (
 			fi
 
 			URL="\#(url)/v1/users"
-			do_create="curl $HEADER -s --location --request GET $URL"
+			do_create="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
 			messages="$($sh_c "$do_create")"
 			user_ids=$(echo "$messages" | jq -r '.data | .[] | .id')
 
 			URL="\#(url)/v2/dev_space"
-			do_create="curl $HEADER -s --location --request GET $URL"
+			do_create="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
 			messages="$($sh_c "$do_create")"
 			had_space_ids=$(echo "$messages" | jq -r '.data | .[] | .user_id')
 
@@ -201,7 +203,7 @@ import (
 				[[ "${had_space_ids[@]}" =~ "$id" ]] && continue
 				DATA_RAW='{"cluster_id":'"$cluster_id"',"cluster_admin":0,"user_id":'"$id"',"space_name":"","space_resource_limit":null}'
 				echo $DATA_RAW
-				do_create="curl $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
+				do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 				$sh_c "$do_create"
 			done
 			"""#
