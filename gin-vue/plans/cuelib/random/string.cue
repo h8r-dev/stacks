@@ -1,7 +1,6 @@
 package random
 
 import (
-	"dagger.io/dagger"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 )
@@ -19,28 +18,19 @@ import (
 		}
 	}
 
-	write: dagger.#WriteFile & {
-		input:    dagger.#Scratch
-		path:     "/entrypoint.py"
-		contents: #"""
+	run: bash.#Run & {
+		input:  baseImage.output
+		always: true
+		env: SEED:        seed
+		script: contents: #"""
+			cat > /random-string.py <<"EOF"
 			import random
 			import string
 			import os
 			letters = string.ascii_lowercase
 			print ( ''.join(random.choice(letters) for i in range(\#(length))) )
-			"""#
-	}
-
-	run: bash.#Run & {
-		input:  baseImage.output
-		always: true
-		mounts: "Python scripts": {
-			contents: write.output
-			dest:     "/py/scripts"
-		}
-		env: SEED: seed
-		script: contents: #"""
-			printf "$(python3 /py/scripts/entrypoint.py)" > /rand
+			EOF
+			printf "$(python3 /random-string.py)" > /rand
 			"""#
 		export: files: "/rand": string
 	}
