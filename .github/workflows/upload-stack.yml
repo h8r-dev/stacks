@@ -1,13 +1,11 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Upload to S3
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -26,11 +24,11 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Install coscmd
         run: pip install coscmd
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Upload stacks to S3
         run: |
           rm -rf .git
           rm -rf .github
@@ -40,4 +38,3 @@ jobs:
           cd ~/tars
           ls
           coscmd upload -r --delete -y . .
-          
