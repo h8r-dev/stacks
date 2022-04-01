@@ -9,6 +9,7 @@ XDG_CONFIG_HOME ?= $(CURDIR)/.config
 export XDG_CONFIG_HOME
 .DEFAULT_GOAL := help
 HELP_TARGET_DEPTH ?= \#
+
 .PHONY: help
 help: # Show how to get started & what targets are available
 	@printf "This is a list of all the make targets that you can run, e.g. $(BOLD)make dagger$(NORMAL) - or $(BOLD)m dagger$(NORMAL)\n\n"
@@ -21,4 +22,4 @@ cuefmt: # Format all cue files
 
 .PHONY: cuelint
 cuelint: cuefmt # Lint and format all cue files
-	@test -z "$$(git status -s . | grep -e "^ M"  | grep .cue | cut -d ' ' -f3 | tee /dev/stderr)"
+	@test -z "$$(git status -s . | grep -e "^ M"  | grep "\.cue" | cut -d ' ' -f3 | tee /dev/stderr)"

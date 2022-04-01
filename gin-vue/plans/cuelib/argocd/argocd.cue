@@ -48,8 +48,9 @@ import (
 
 	deployArgoCDIngress: kubectl.#Manifest & {
 		"kubeconfig": kubeconfig
-		"manifest":   argoIngress.manifestStream
+		manifest:     argoIngress.manifestStream
 		"namespace":  namespace
+		waitFor:      install.success
 	}
 
 	createH8rIngress: h8r.#CreateH8rIngress & {
@@ -90,7 +91,7 @@ import (
 
 	content: secretFile.contents
 
-	success: patch.success & deployArgoCDIngress.success
+	success: patch.success & deployArgoCDIngress.success & createH8rIngress.success
 }
 
 // ArgoCD configuration

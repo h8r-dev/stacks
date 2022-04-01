@@ -1,6 +1,6 @@
 // package kubectl
 
 // import (
-// 	"dagger.io/dagger"
-// 	"universe.dagger.io/docker"
+//  "dagger.io/dagger"
+//  "universe.dagger.io/docker"
 // )

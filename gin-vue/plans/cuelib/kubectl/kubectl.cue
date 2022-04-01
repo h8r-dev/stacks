@@ -47,7 +47,7 @@ import (
 			type:     "secret"
 			contents: kubeconfig
 		}
-		mounts: "github": dagger.#Mount & {
+		mounts: github: dagger.#Mount & {
 			dest:     "/run/secrets/github"
 			type:     "secret"
 			contents: password
@@ -110,11 +110,9 @@ import (
 			#fi
 			"""#
 		}
-		mounts: {
-			"kubeconfig": {
-				dest:     "/etc/kubernetes/config"
-				contents: kubeconfig
-			}
+		mounts: "kubeconfig": {
+			dest:     "/etc/kubernetes/config"
+			contents: kubeconfig
 		}
 		env: {
 			WAIT_FOR:       strconv.FormatBool(waitFor)
@@ -200,7 +198,7 @@ import (
 				dest:     "/etc/kubernetes/config"
 				contents: kubeconfig
 			}
-			"shell": {
+			shell: {
 				dest:     "/shell"
 				contents: writeSH.output
 			}

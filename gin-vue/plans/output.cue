@@ -22,9 +22,7 @@ import (
 		deploy:   string
 	}
 
-	prometheus: {
-		domain: string
-	}
+	prometheus: domain: string
 
 	grafana: {
 		domain:   string
@@ -32,9 +30,7 @@ import (
 		password: string
 	}
 
-	alertManager: {
-		domain: string
-	}
+	alertManager: domain: string
 
 	argocd: {
 		domain:   string

@@ -8,13 +8,13 @@ import (
 uri: random.#String
 
 // Application install namespace
-appInstallNamespace: "-production"
+appInstallNamespace: "production"
 
 // App domain prefix
 appDomain: uri.output + ".go-gin.h8r.app"
 
 // App domain
-showAppDomain: appInstallNamespace + "." + appDomain
+//showAppDomain: appInstallNamespace + "." + appDomain
 
 // Dev domain
 devDomain: ".dev.go-gin.h8r.app"

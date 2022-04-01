@@ -8,6 +8,7 @@ import (
 	"github.com/h8r-dev/gin-vue/plans/cuelib/argocd"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/prometheus"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/h8r"
 )
 
 dagger.#Plan & {
@@ -41,6 +42,8 @@ dagger.#Plan & {
 	actions: {
 		// get ingress endpoint
 		up: {
+			applicationInstallNamespace: client.env.APP_NAME + "-" + appInstallNamespace
+
 			getIngressEndPoint: ingress.#GetIngressEndpoint & {
 				kubeconfig: client.commands.kubeconfig.stdout
 			}
@@ -74,7 +77,7 @@ dagger.#Plan & {
 				namespace:  "ingress-nginx"
 				action:     "installOrUpgrade"
 				kubeconfig: client.commands.kubeconfig.stdout
-				"values":   ingressNginxSetting
+				values:     ingressNginxSetting
 				wait:       true
 			}
 
@@ -87,25 +90,25 @@ dagger.#Plan & {
 				namespace:  "ingress-nginx"
 				action:     "installOrUpgrade"
 				kubeconfig: client.commands.kubeconfig.stdout
-				"values":   ingressNginxUpgradeSetting
+				values:     ingressNginxUpgradeSetting
 				wait:       true
-				"waitFor":  installIngress.success & installPrometheusLokiStack.success
+				waitFor:    installIngress.success & installPrometheusLokiStack.success
 			}
 
 			// install argocd
 			installArgoCD: argocd.#Install & {
-				kubeconfig:       client.commands.kubeconfig.stdout
-				namespace:        argoCDNamespace
-				url:              "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
-				"uri":            uri.output
-				"ingressVersion": getIngressVersion.content
-				domain:           argocdDomain
-				host:             getIngressEndPoint.content
+				kubeconfig:     client.commands.kubeconfig.stdout
+				namespace:      argoCDNamespace
+				url:            "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+				"uri":          uri.output
+				ingressVersion: getIngressVersion.content
+				domain:         argocdDomain
+				host:           getIngressEndPoint.content
 			}
 
 			createApp: argocd.#App & {
-				"waitFor": installArgoCD.success
-				config:    argocd.#Config & {
+				waitFor: installArgoCD.success
+				config:  argocd.#Config & {
 					version: "v2.3.1"
 					server:  argocdDomain
 					basicAuth: {
@@ -115,7 +118,7 @@ dagger.#Plan & {
 				}
 				name:      client.env.APP_NAME
 				repo:      initRepos.initHelmRepo.url
-				namespace: client.env.APP_NAME + appInstallNamespace
+				namespace: applicationInstallNamespace
 				path:      "."
 				helmSet:   "ingress.hosts[0].host=" + appDomain + ",ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[0].pathType=ImplementationSpecific"
 			}
@@ -125,50 +128,57 @@ dagger.#Plan & {
 				kubeconfig: client.commands.kubeconfig.stdout
 				username:   client.env.ORGANIZATION
 				password:   client.env.GITHUB_TOKEN
-				namespace:  client.env.APP_NAME + appInstallNamespace
+				namespace:  applicationInstallNamespace
 			}
 
 			// install prometheus and loki stack
 			installPrometheusLokiStack: {
 				installPrometheus: prometheus.#installPrometheusStack & {
 					"uri":                uri.output
-					"kubeconfig":         client.commands.kubeconfig.stdout
-					"ingressVersion":     getIngressVersion.content
+					kubeconfig:           client.commands.kubeconfig.stdout
+					ingressVersion:       getIngressVersion.content
 					"prometheusDomain":   prometheusDomain
 					"grafanaDomain":      grafanaDomain
 					"alertmanagerDomain": alertmanagerDomain
 					host:                 getIngressEndPoint.content
 					name:                 prometheusReleaseName
 					namespace:            prometheusNamespace
-					"waitFor":            installIngress.success
+					waitFor:              installIngress.success
 				}
 
 				installLoki: prometheus.#installLokiStack & {
-					namespace:    lokiNamespace
-					"kubeconfig": client.commands.kubeconfig.stdout
+					namespace:  lokiNamespace
+					kubeconfig: client.commands.kubeconfig.stdout
 				}
 
 				getGrafanaSecret: grafana.#GetGrafanaSecret & {
-					"kubeconfig": client.commands.kubeconfig.stdout
-					"secretName": prometheusReleaseName + "-grafana"
-					"namespace":  prometheusNamespace
+					kubeconfig: client.commands.kubeconfig.stdout
+					secretName: prometheusReleaseName + "-grafana"
+					namespace:  prometheusNamespace
 				}
 
 				initIngressNginxDashboard: grafana.#CreateIngressDashboard & {
-					url:       grafanaDomain
-					username:  grafanaDefaultUsername
-					password:  getGrafanaSecret.secret
-					"waitFor": installPrometheus.success
+					url:      grafanaDomain
+					username: grafanaDefaultUsername
+					password: getGrafanaSecret.secret
+					waitFor:  installPrometheus.success
 				}
 
 				initLokiDataSource: grafana.#CreateLokiDataSource & {
-					url:       grafanaDomain
-					username:  "admin"
-					password:  getGrafanaSecret.secret
-					"waitFor": installPrometheus.success & installLoki.success
+					url:      grafanaDomain
+					username: "admin"
+					password: getGrafanaSecret.secret
+					waitFor:  installPrometheus.success & installLoki.success
 				}
 
 				success: installPrometheus.success & installLoki.success
+			}
+
+			initApplication: app: h8r.#CreateH8rIngress & {
+				name:   uri.output + "-gin-vue"
+				host:   getIngressEndPoint.content
+				domain: applicationInstallNamespace + "." + appDomain
+				port:   "80"
 			}
 
 			initRepos: {
@@ -209,25 +219,21 @@ dagger.#Plan & {
 			// output cue struct
 			outputYaml: #OutputStruct & {
 				application: {
-					domain:  showAppDomain
+					domain:  applicationInstallNamespace + "." + appDomain
 					ingress: getIngressEndPoint.content
 				}
 				repository: {
 					frontend: initRepos.initFrontendRepo.url
 					backend:  initRepos.initRepo.url
-					deploy:   initRepos.initRepo.url
+					deploy:   initRepos.initHelmRepo.url
 				}
-				prometheus: {
-					domain: prometheusDomain
-				}
+				prometheus: domain: prometheusDomain
 				grafana: {
 					domain:   grafanaDomain
 					username: grafanaDefaultUsername
 					password: installPrometheusLokiStack.getGrafanaSecret.secret
 				}
-				alertManager: {
-					domain: alertmanagerDomain
-				}
+				alertManager: domain: alertmanagerDomain
 				argocd: {
 					domain:   argocdDomain
 					username: argoCDDefaultUsername

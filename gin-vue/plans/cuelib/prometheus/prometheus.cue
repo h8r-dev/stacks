@@ -47,7 +47,7 @@ import (
 
 		deploy: kubectl.#Manifest & {
 			"kubeconfig": kubeconfig
-			"manifest":   alertIngress.manifestStream
+			manifest:     alertIngress.manifestStream
 			"namespace":  namespace
 			"waitFor":    waitFor
 		}
@@ -64,7 +64,7 @@ import (
 
 	prometheusIngress: {
 		promIngress: ingress.#Ingress & {
-			"name":             uri + "-prometheus"
+			name:               uri + "-prometheus"
 			className:          "nginx"
 			hostName:           prometheusDomain
 			path:               "/"
@@ -76,7 +76,7 @@ import (
 
 		deploy: kubectl.#Manifest & {
 			"kubeconfig": kubeconfig
-			"manifest":   promIngress.manifestStream
+			manifest:     promIngress.manifestStream
 			"namespace":  namespace
 			"waitFor":    waitFor
 		}
@@ -104,16 +104,16 @@ import (
 
 		deploy: kubectl.#Manifest & {
 			"kubeconfig": kubeconfig
-			"manifest":   grafanaIngress.manifestStream
+			manifest:     grafanaIngress.manifestStream
 			"namespace":  namespace
 			"waitFor":    waitFor
 		}
 
 		createH8rIngress: h8r.#CreateH8rIngress & {
-			name:     uri + "-grafana"
-			"host":   host
-			"domain": grafanaDomain
-			port:     "80"
+			name:   uri + "-grafana"
+			"host": host
+			domain: grafanaDomain
+			port:   "80"
 		}
 
 		success: deploy.success

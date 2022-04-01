@@ -167,7 +167,7 @@ import (
 			}
 
 			if values != null {
-				"helm": {
+				helm: {
 					contents: writeYaml.output
 					dest:     "/helm"
 				}
