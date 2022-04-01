@@ -9,6 +9,7 @@ import (
 	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/prometheus"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/h8r"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/nocalhost"
 )
 
 dagger.#Plan & {
@@ -53,23 +54,6 @@ dagger.#Plan & {
 				kubeconfig: client.commands.kubeconfig.stdout
 			}
 
-			// installNocalhost: #InstallNocalhost & {
-			//  "uri":          "just-test" + uri.output
-			//  kubeconfig:     client.commands.kubeconfig.stdout
-			//  ingressVersion: getIngressVersion.content
-			//  domain:         uri.output + ".nocalhost" + infraDomain
-			//  host:           getIngressEndPoint.endPoint
-			//  namespace:      "nocalhost"
-			//  name:           "nocalhost"
-			// }
-
-			// testCreateH8rIngress: #CreateH8rIngress & {
-			//  name:   "just-a-test-" + uri.output
-			//  host:   "1.1.1.1"
-			//  domain: uri.output + ".foo.bar"
-			//  port:   "80"
-			// }
-
 			installIngress: helm.#Chart & {
 				name:       "ingress-nginx"
 				repository: "https://h8r-helm.pkg.coding.net/release/helm"
@@ -81,8 +65,31 @@ dagger.#Plan & {
 				wait:       true
 			}
 
-			// // upgrade ingress nginx for serviceMonitor
-			// // should wait for installIngress and installPrometheusStack
+			installNocalhost: {
+				install: nocalhost.#Install & {
+					"uri":          uri.output
+					kubeconfig:     client.commands.kubeconfig.stdout
+					ingressVersion: getIngressVersion.content
+					domain:         nocalhostDomain
+					host:           getIngressEndPoint.content
+					namespace:      "nocalhost"
+					name:           "nocalhost"
+					waitFor:        installIngress.success
+				}
+
+				init: nocalhost.#InitData & {
+					url:                nocalhostDomain
+					githubAccessToken:  client.env.GITHUB_TOKEN
+					githubOrganization: client.env.ORGANIZATION
+					kubeconfig:         client.commands.kubeconfig.stdout
+					appName:            client.env.APP_NAME
+					appGitURL:          initRepos.initHelmRepo.url
+					waitFor:            install.success
+				}
+			}
+
+			// upgrade ingress nginx for serviceMonitor
+			// should wait for installIngress and installPrometheusStack
 			upgradeIngress: helm.#Chart & {
 				name:       "ingress-nginx"
 				repository: "https://h8r-helm.pkg.coding.net/release/helm"
