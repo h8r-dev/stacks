@@ -2,6 +2,7 @@ package argocd
 
 import (
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	"strconv"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
@@ -21,7 +22,6 @@ import (
 	url: string
 
 	// Wait for
-	// waitFor: [string]: from: dagger.#Artifact
 
 	uri:            string
 	ingressVersion: string
@@ -84,7 +84,7 @@ import (
 			"""#
 	}
 
-	secretFile: dagger.#ReadFile & {
+	secretFile: core.#ReadFile & {
 		input: patch.output.rootfs
 		path:  "/secret"
 	}

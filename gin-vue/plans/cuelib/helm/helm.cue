@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
 )
 
@@ -100,41 +101,17 @@ import (
 
 	//  ]
 	// }
-	//_writeYaml: output: dagger.#FS
+	_writeYaml: output: core.#FS
 
-	//if values != null {
-	_writeYaml: dagger.#WriteFile & {
-		input:    dagger.#Scratch
-		path:     "/values.yaml"
-		contents: values
+	if values != null {
+		_writeYaml: core.#WriteFile & {
+			input:    dagger.#Scratch
+			path:     "/values.yaml"
+			contents: values
+		}
 	}
-	//}
 
 	_writeYamlOutput: _writeYaml.output
-
-	// if values != null {
-	//  writeYaml: dagger.#WriteFile & {
-	//   input:    dagger.#Scratch
-	//   path:     "/values.yaml"
-	//   contents: values
-	//  }
-	// }
-
-	// writeChart: dagger.#WriteFile & {
-	//  input:    dagger.#Scratch
-	//  path:     "/chart.yaml"
-	//  contents: chart
-	// }
-
-	// build: docker.#Run & {
-	//  input: _kubectl.output
-	//  mounts: {
-	//   "helm": {
-	//    contents: writeYaml.output
-	//    dest:     "/helm"
-	//   }
-	//  }
-	// }
 
 	run: docker.#Run & {
 		input:  _kubectl.output
@@ -168,12 +145,12 @@ import (
 				contents: kubeconfig
 			}
 
-			//if values != null {
-			helm: {
-				contents: _writeYamlOutput
-				dest:     "/helm"
+			if values != null {
+				helm: {
+					contents: _writeYamlOutput
+					dest:     "/helm"
+				}
 			}
-			//}
 		}
 		// export: directories: "/output": _
 	}

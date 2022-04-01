@@ -16,11 +16,6 @@ import (
 	// Grafana password
 	password: string
 
-	// Wait Grafana installed
-	// waitGrafana: dagger.#Artifact
-
-	// Wait Loki installed
-	// waitLoki: dagger.#Artifact
 	waitFor: bool | *true
 
 	code: #"""

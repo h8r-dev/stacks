@@ -5,6 +5,7 @@ import (
 	"strings"
 	//"strconv"
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
 )
@@ -102,7 +103,7 @@ import (
 	//  always: true
 	// }
 
-	// contentFile: dagger.#ReadFile & {
+	// contentFile: core.#ReadFile & {
 	//  input: run.output.rootfs
 	//  path:  "/k8s.yaml"
 	// }
@@ -142,7 +143,7 @@ import (
 		//export: files: "/endpoint": string
 	}
 
-	contentFile: dagger.#ReadFile & {
+	contentFile: core.#ReadFile & {
 		input: get.output.rootfs
 		path:  "/endpoint"
 	}
@@ -177,7 +178,7 @@ import (
 		always: true
 	}
 
-	contentFile: dagger.#ReadFile & {
+	contentFile: core.#ReadFile & {
 		input: get.output.rootfs
 		path:  "/result"
 	}
