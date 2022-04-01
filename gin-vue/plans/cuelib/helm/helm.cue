@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/fs"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
 )
 
 // Install a Helm chart
@@ -55,129 +55,128 @@ import (
 
 	// Wait for
 	// waitFor: [string]: from: dagger.#FS
+	waitFor: bool | *true
 
-	_imageVersion: string | *"3.15.0@sha256:21a3deaa0d32a8057914f36584b5288d2e5ecc984380bc0118285c70fa8c9300"
-	_packages: [pkgName=string]: version: string | *""
-	_packages: {
-		jq: {}
-		curl: {}
-	}
+	_kubectl: base.#Kubectl
 
-	build: docker.#Build & {
-		steps: [
-			docker.#Pull & {
-				source: "index.docker.io/alpine:\(_imageVersion)"
-			},
-			for pkgName, pkg in _packages {
-				docker.#Run & {
-					command: {
-						name: "apk"
-						args: ["add", "\(pkgName)\(pkg.version)"]
-						flags: {
-							"-U":         true
-							"--no-cache": true
-						}
-					}
-				}
-			},
-			//   alpine.#Build & {
-			//    packages: {
-			//     jq: {}
-			//     curl: {}
-			//    }
-			//   },
-			docker.#Run & {
-				workdir: "/src"
-				command: {
-					name: "sh"
-					flags: "-c": #"""
-						curl -LO https://dl.k8s.io/release/\#(kubectlVersion)/bin/linux/amd64/kubectl
-						chmod +x kubectl
-						mv kubectl /usr/local/bin/
-						mkdir /helm
-						"""#
-				}
-			},
-			docker.#Run & {
-				env: HELM_VERSION: version
-				command: {
-					name: "sh"
-					flags: "-c": #"""
-						curl -sfL -S https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | \
-						tar -zx -C /tmp && \
-						mv /tmp/linux-amd64/helm /usr/local/bin && \
-						chmod +x /usr/local/bin/helm
-						"""#
-				}
-			},
-			// if (kubeconfig & string) != _|_ {
-			//  #WriteFile & {
-			//   contents: kubeconfig
-			//   path: "/kubeconfig"
-			//  }
-			// },
-			if chart != null {
-				fs.#WriteFile & {
-					contents: chart
-					path:     "/helm/chart"
-				}
-			},
-			if values != null {
-				fs.#WriteFile & {
-					contents: values
-					path:     "/helm/values.yaml"
-				}
-			},
-			docker.#Run & {
-				always: true
-				command: {
-					name: "sh"
-					flags: "-c": #code
-				}
-				env: {
-					KUBECONFIG:     "/kubeconfig"
-					KUBE_NAMESPACE: namespace
+	// build: docker.#Build & {
+	//  steps: [
+	//   alpine.#Build & {
+	//    packages: {
+	//     jq: {}
+	//     curl: {}
+	//    }
+	//   },
+	//   docker.#Run & {
+	//    workdir: "/src"
+	//    command: {
+	//     name: "sh"
+	//     flags: "-c": #"""
+	//      curl -LO https://dl.k8s.io/release/\#(kubectlVersion)/bin/linux/amd64/kubectl
+	//      chmod +x kubectl
+	//      mv kubectl /usr/local/bin/
+	//      mkdir /helm
+	//      """#
+	//    }
+	//   },
+	//   docker.#Run & {
+	//    env: HELM_VERSION: version
+	//    command: {
+	//     name: "sh"
+	//     flags: "-c": #"""
+	//      curl -sfL -S https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | \
+	//      tar -zx -C /tmp && \
+	//      mv /tmp/linux-amd64/helm /usr/local/bin && \
+	//      chmod +x /usr/local/bin/helm
+	//      """#
+	//    }
+	//   },
+	//   // if (kubeconfig & string) != _|_ {
+	//   //  #WriteFile & {
+	//   //   contents: kubeconfig
+	//   //   path: "/kubeconfig"
+	//   //  }
+	//   // },
 
-					if repository != null {
-						HELM_REPO: repository
-					}
-					HELM_NAME:    name
-					HELM_ACTION:  action
-					HELM_TIMEOUT: timeout
-					HELM_WAIT:    strconv.FormatBool(wait)
-					HELM_ATOMIC:  strconv.FormatBool(atomic)
-				}
-				mounts: {
-					if chartSource != null && chart == null {
-						"/helm/chart": from: chartSource
-					}
+	//  ]
+	// }
+	writeYaml: output: dagger.#FS
 
-					"kubeconfig": {
-						dest:     "/kubeconfig"
-						contents: kubeconfig
-					}
-					// if (kubeconfig & dagger.#Secret) != _|_ {
-					//  "/kubeconfig": secret: kubeconfig
-					// }
-					// if waitFor != null {
-					//  for dest, o in waitFor {
-					//   "\(dest)": o
-					//  }
-					// }
-				}
-				// export: directories: "/output": _
-			},
-		]
-	}
-
-	done: docker.#Run & {
-		always: true
-		input:  build.output
-		command: {
-			name: "sh"
-			flags: "-c": "echo helm-install-done"
+	if values != null {
+		writeYaml: dagger.#WriteFile & {
+			input:    dagger.#Scratch
+			path:     "/values.yaml"
+			contents: values
 		}
 	}
 
-	success: done.success
+	// if values != null {
+	//  writeYaml: dagger.#WriteFile & {
+	//   input:    dagger.#Scratch
+	//   path:     "/values.yaml"
+	//   contents: values
+	//  }
+	// }
+
+	// writeChart: dagger.#WriteFile & {
+	//  input:    dagger.#Scratch
+	//  path:     "/chart.yaml"
+	//  contents: chart
+	// }
+
+	// build: docker.#Run & {
+	//  input: _kubectl.output
+	//  mounts: {
+	//   "helm": {
+	//    contents: writeYaml.output
+	//    dest:     "/helm"
+	//   }
+	//  }
+	// }
+
+	run: docker.#Run & {
+		input:  _kubectl.output
+		always: true
+		command: {
+			name: "sh"
+			flags: "-c": #code
+		}
+		env: {
+			"waitFor":      strconv.FormatBool(waitFor)
+			KUBECONFIG:     "/kubeconfig"
+			KUBE_NAMESPACE: namespace
+
+			if repository != null {
+				HELM_REPO: repository
+			}
+			HELM_NAME:    name
+			CHART_NAME:   chart
+			HELM_ACTION:  action
+			HELM_TIMEOUT: timeout
+			HELM_WAIT:    strconv.FormatBool(wait)
+			HELM_ATOMIC:  strconv.FormatBool(atomic)
+		}
+		mounts: {
+			// if chartSource != null && chart == null {
+			//  "/helm/chart": from: chartSource
+			// }
+
+			"kubeconfig": {
+				dest:     "/kubeconfig"
+				contents: kubeconfig
+			}
+
+			if values != null {
+				helm: {
+					contents: writeYaml.output
+					dest:     "/helm"
+				}
+			}
+		}
+		// export: directories: "/output": _
+	}
+
+	output: run.output
+
+	success: run.success
 }
