@@ -2,13 +2,14 @@ package main
 
 import (
 	"dagger.io/dagger"
-	// "universe.dagger.io/alpine"
-	// "universe.dagger.io/bash"
+	"universe.dagger.io/alpine"
+	"universe.dagger.io/bash"
 	// "universe.dagger.io/docker"
 )
 
 dagger.#Plan & {
 	client: {
+		filesystem: "output.yaml": write: contents: actions.up.readFile.contents
 		commands: kubeconfig: {
 			name: "cat"
 			args: ["\(env.KUBECONFIG)"]
@@ -20,70 +21,36 @@ dagger.#Plan & {
 			ORGANIZATION: string
 			GITHUB_TOKEN: dagger.#Secret
 		}
-		filesystem: code: read: contents:    dagger.#FS
-		filesystem: output: write: contents: actions.up.run.output
 	}
 
 	actions: {
-		up: initRepos: {
-			applicationName: client.env.APP_NAME
-			accessToken:     client.env.GITHUB_TOKEN
-			organization:    client.env.ORGANIZATION
-			sourceCodeDir:   client.filesystem.code.read.contents
-
-			initRepo: #InitRepo & {
-				sourceCodePath:    "go-gin"
-				suffix:            ""
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-				"sourceCodeDir":   sourceCodeDir
+		up: {
+			base: alpine.#Build & {
+				packages: {
+					bash: {}
+				}
 			}
-
-			initFrontendRepo: #InitRepo & {
-				suffix:            "-front"
-				sourceCodePath:    "vue-front"
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-				"sourceCodeDir":   sourceCodeDir
+			run: bash.#Run & {
+				input:  base.output
+				always: true
+				env: {
+					KC: client.env.KUBECONFIG
+					AN: client.env.APP_NAME
+					OG: client.env.ORGANIZATION
+					GT: client.env.GITHUB_TOKEN
+				}
+				script: contents: #"""
+					echo kubeconfig: $KC >> /result.yaml
+					echo applicationname: $AN >> /result.yaml
+					echo organization: $OG >> /result.yaml
+					echo githubtoken: $GT >> /result.yaml
+					"""#
 			}
-
-			initHelmRepo: #InitRepo & {
-				suffix:            "-deploy"
-				sourceCodePath:    "helm"
-				isHelmChart:       "true"
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-				"sourceCodeDir":   sourceCodeDir
+			readFile: dagger.#ReadFile & {
+				input: run.output.rootfs
+				path:  "/result.yaml"
 			}
-		}
-		down: deleteRepos: {
-			applicationName: client.env.APP_NAME
-			accessToken:     client.env.GITHUB_TOKEN
-			organization:    client.env.ORGANIZATION
-
-			deleteRepo: #DeleteRepo & {
-				suffix:            ""
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-			}
-
-			deleteFrontendRepo: #DeleteRepo & {
-				suffix:            "-front"
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-			}
-
-			deleteHelmRepo: #DeleteRepo & {
-				suffix:            "-deploy"
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-			}
+			output: readFile.contents
 		}
 	}
 }
