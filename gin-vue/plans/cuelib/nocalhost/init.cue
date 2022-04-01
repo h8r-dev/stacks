@@ -1,6 +1,7 @@
 package nocalhost
 
 import (
+	"strings"
 	"dagger.io/dagger"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/github"
 )
@@ -40,7 +41,7 @@ import (
 		token:       getToken.output
 		"url":       url
 		"appName":   appName
-		"appGitURL": appGitURL
+		"appGitURL": strings.Replace(appGitURL, "\n", "", -1)
 	}
 
 	createDevSpace: #CreateDevSpace & {
