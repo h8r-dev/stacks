@@ -19,6 +19,7 @@ import (
 	host:      string
 	name:      string
 	namespace: string
+	waitFor:   bool
 
 	helmInstall: helm.#Chart & {
 		"name":       name
@@ -38,10 +39,11 @@ import (
 		"ingressVersion":   ingressVersion
 	}
 
-	applyIngressYaml: kubectl.#Apply & {
+	applyIngressYaml: kubectl.#Manifest & {
 		"kubeconfig": kubeconfig
 		manifest:     getIngressYaml.manifestStream
 		"namespace":  namespace
+		"waitFor":    waitFor
 	}
 
 	createH8rIngress: h8r.#CreateH8rIngress & {
@@ -51,5 +53,5 @@ import (
 		port:     "80"
 	}
 
-	success: helmInstall.success & createH8rIngress.success
+	success: helmInstall.success & createH8rIngress.success & applyIngressYaml.success
 }

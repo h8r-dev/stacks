@@ -2,12 +2,25 @@ package nocalhost
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/bash"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/nocalhost"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/random"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
+	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
 )
+
+ingressNginxSetting: #"""
+	controller:
+	  service:
+	    type: LoadBalancer
+	  metrics:
+	    enabled: true
+	  podAnnotations:
+	    prometheus.io/scrape: "true"
+	    prometheus.io/port: "10254"
+	"""#
+
+uri:         random.#String
+infraDomain: ".stack.h8r.io"
 
 dagger.#Plan & {
 	client: {
@@ -25,35 +38,28 @@ dagger.#Plan & {
 	}
 
 	actions: {
-		uri:         random.#String
-		infraDomain: ".stack.h8r.io"
-		_kubectl:    kubectl.#Kubectl
-		// get ingress endpoint
 		getIngressEndPoint: ingress.#GetIngressEndpoint & {
 			kubeconfig: client.commands.kubeconfig.stdout
 		}
 
-		getIngressVersion: bash.#Run & {
-			input:   _kubectl.output
-			workdir: "/src"
-			mounts: "KubeConfig Data": {
-				dest:     "/kubeconfig"
-				contents: client.commands.kubeconfig.stdout
-			}
-			script: contents: #"""
-				ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
-				if [[ $ingress_result =~ "v1beta1" ]]; then
-				 echo 'v1beta1' > /result
-				else
-				 echo 'v1' > /result
-				fi
-				"""#
-			export: files: "/result": string
+		getIngressVersion: ingress.#GetIngressVersion & {
+			kubeconfig: client.commands.kubeconfig.stdout
+		}
+
+		installIngress: helm.#Chart & {
+			name:       "ingress-nginx"
+			repository: "https://h8r-helm.pkg.coding.net/release/helm"
+			chart:      "ingress-nginx"
+			namespace:  "ingress-nginx"
+			action:     "installOrUpgrade"
+			kubeconfig: client.commands.kubeconfig.stdout
+			values:     ingressNginxSetting
+			wait:       true
 		}
 
 		test: {
 			initNocalhost: nocalhost.#InitData & {
-				url:                "http://\(uri.output).nocalhost.stack.h8r.io"
+				url:                "\(uri.output).nocalhost" + infraDomain
 				githubAccessToken:  client.env.GITHUB_TOKEN
 				githubOrganization: client.env.ORGANIZATION
 				kubeconfig:         client.commands.kubeconfig.stdout
@@ -66,11 +72,12 @@ dagger.#Plan & {
 			installNocalhost: nocalhost.#Install & {
 				"uri":          "just-test" + uri.output
 				kubeconfig:     client.commands.kubeconfig.stdout
-				ingressVersion: getIngressVersion.export.files."/result"
+				ingressVersion: getIngressVersion.content
 				domain:         uri.output + ".nocalhost" + infraDomain
-				host:           getIngressEndPoint.endPoint
+				host:           getIngressEndPoint.content
 				namespace:      "nocalhost"
 				name:           "nocalhost"
+				waitFor:        installIngress.success
 			}
 		}
 	}
