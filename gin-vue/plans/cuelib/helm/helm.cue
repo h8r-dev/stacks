@@ -100,15 +100,17 @@ import (
 
 	//  ]
 	// }
-	writeYaml: output: dagger.#FS
+	_writeYaml: output: dagger.#FS
 
 	if values != null {
-		writeYaml: dagger.#WriteFile & {
+		_writeYaml: dagger.#WriteFile & {
 			input:    dagger.#Scratch
 			path:     "/values.yaml"
 			contents: values
 		}
 	}
+
+	_writeYamlOutput: _writeYaml.output
 
 	// if values != null {
 	//  writeYaml: dagger.#WriteFile & {
@@ -168,7 +170,7 @@ import (
 
 			if values != null {
 				helm: {
-					contents: writeYaml.output
+					contents: _writeYamlOutput
 					dest:     "/helm"
 				}
 			}

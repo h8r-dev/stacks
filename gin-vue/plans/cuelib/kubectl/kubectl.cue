@@ -181,12 +181,14 @@ import (
 
 	kubectlImage: base.#Kubectl
 
-	writeSH: dagger.#WriteFile & {
+	_writeSH: dagger.#WriteFile & {
 		input:       dagger.#Scratch
 		path:        "/run.sh"
 		contents:    code
 		permissions: 0o755
 	}
+
+	_writeOutput: _writeSH.output
 
 	run: bash.#Run & {
 		input: kubectlImage.output
@@ -200,7 +202,7 @@ import (
 			}
 			shell: {
 				dest:     "/shell"
-				contents: writeSH.output
+				contents: _writeOutput
 			}
 		}
 		env: {
