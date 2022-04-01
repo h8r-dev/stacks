@@ -3,6 +3,7 @@ package kubectl
 import (
 	"strconv"
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
@@ -42,12 +43,12 @@ import (
 
 	run: bash.#Run & {
 		input: _kubectl.output
-		mounts: "kubeconfig": dagger.#Mount & {
+		mounts: "kubeconfig": core.#Mount & {
 			dest:     "/kubeconfig"
 			type:     "secret"
 			contents: kubeconfig
 		}
-		mounts: github: dagger.#Mount & {
+		mounts: github: core.#Mount & {
 			dest:     "/run/secrets/github"
 			type:     "secret"
 			contents: password
@@ -76,18 +77,6 @@ import (
 	kubeconfig: string | dagger.#Secret
 
 	kubectlImage: base.#Kubectl
-	// writeSH: dagger.#WriteFile & {
-	//  input:       dagger.#Scratch
-	//  path:        "/run.sh"
-	//  contents:    code
-	//  permissions: 0o755
-	// }
-
-	// writeYaml: dagger.#WriteFile & {
-	//  input:    dagger.#Scratch
-	//  path:     "/k8s.yaml"
-	//  contents: manifest
-	// }
 
 	waitFor: bool | *true
 
@@ -181,12 +170,14 @@ import (
 
 	kubectlImage: base.#Kubectl
 
-	writeSH: dagger.#WriteFile & {
+	_writeSH: core.#WriteFile & {
 		input:       dagger.#Scratch
 		path:        "/run.sh"
 		contents:    code
 		permissions: 0o755
 	}
+
+	_writeOutput: _writeSH.output
 
 	run: bash.#Run & {
 		input: kubectlImage.output
@@ -200,7 +191,7 @@ import (
 			}
 			shell: {
 				dest:     "/shell"
-				contents: writeSH.output
+				contents: _writeOutput
 			}
 		}
 		env: {

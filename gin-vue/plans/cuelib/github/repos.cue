@@ -2,6 +2,7 @@ package github
 
 import (
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
@@ -47,7 +48,7 @@ import (
 	fetchinfo: #FetchGithubInfo & {
 		"githubtoken": githubtoken
 	}
-	backendcode: dagger.#Subdir & {
+	backendcode: core.#Subdir & {
 		input: sourcecode
 		path:  "/go-gin"
 	}
@@ -57,7 +58,7 @@ import (
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
 	}
-	frontendcode: dagger.#Subdir & {
+	frontendcode: core.#Subdir & {
 		input: sourcecode
 		path:  "/vue-front"
 	}
@@ -67,7 +68,7 @@ import (
 		githubinfo:    fetchinfo.output
 		"githubtoken": githubtoken
 	}
-	deploycode: dagger.#Subdir & {
+	deploycode: core.#Subdir & {
 		input: sourcecode
 		path:  "/helm"
 	}
@@ -129,7 +130,7 @@ import (
 			},
 		]
 	}
-	export: dagger.#Subdir & {
+	export: core.#Subdir & {
 		input: run.output.rootfs
 		path:  "/github"
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"strings"
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	//"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
@@ -65,7 +66,7 @@ import (
 
 	run: bash.#Run & {
 		input: deps.output
-		mounts: "/etc/kubernetes/config": dagger.#Mount & {
+		mounts: "/etc/kubernetes/config": core.#Mount & {
 			dest:     "/etc/kubernetes/config"
 			type:     "secret"
 			contents: kubeconfig
@@ -171,7 +172,7 @@ import (
 
 	run: bash.#Run & {
 		input: deps.output
-		mounts: "/etc/kubernetes/config": dagger.#Mount & {
+		mounts: "/etc/kubernetes/config": core.#Mount & {
 			dest:     "/etc/kubernetes/config"
 			type:     "secret"
 			contents: kubeconfig

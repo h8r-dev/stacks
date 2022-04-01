@@ -17,7 +17,6 @@ import (
 	password: string
 
 	// Wait Grafana installed
-	// waitGrafana: dagger.#Artifact
 	waitFor: bool | *true
 
 	code: #"""

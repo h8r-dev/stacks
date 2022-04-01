@@ -3,6 +3,7 @@ package fs
 import (
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 )
 
 // Build step that copies files into the container image
@@ -13,7 +14,7 @@ import (
 	permissions: *0o600 | int
 
 	// Execute write operation
-	_copy: dagger.#WriteFile & {
+	_copy: core.#WriteFile & {
 		"input":       input.rootfs
 		"contents":    contents
 		"path":        path

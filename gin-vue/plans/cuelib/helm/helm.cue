@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
 )
 
@@ -100,39 +101,17 @@ import (
 
 	//  ]
 	// }
-	writeYaml: output: dagger.#FS
+	_writeYaml: output: core.#FS
 
 	if values != null {
-		writeYaml: dagger.#WriteFile & {
+		_writeYaml: core.#WriteFile & {
 			input:    dagger.#Scratch
 			path:     "/values.yaml"
 			contents: values
 		}
 	}
 
-	// if values != null {
-	//  writeYaml: dagger.#WriteFile & {
-	//   input:    dagger.#Scratch
-	//   path:     "/values.yaml"
-	//   contents: values
-	//  }
-	// }
-
-	// writeChart: dagger.#WriteFile & {
-	//  input:    dagger.#Scratch
-	//  path:     "/chart.yaml"
-	//  contents: chart
-	// }
-
-	// build: docker.#Run & {
-	//  input: _kubectl.output
-	//  mounts: {
-	//   "helm": {
-	//    contents: writeYaml.output
-	//    dest:     "/helm"
-	//   }
-	//  }
-	// }
+	_writeYamlOutput: _writeYaml.output
 
 	run: docker.#Run & {
 		input:  _kubectl.output
@@ -168,7 +147,7 @@ import (
 
 			if values != null {
 				helm: {
-					contents: writeYaml.output
+					contents: _writeYamlOutput
 					dest:     "/helm"
 				}
 			}
