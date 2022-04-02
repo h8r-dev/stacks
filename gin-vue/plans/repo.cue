@@ -170,6 +170,9 @@ import (
 			    yq3 w -i /root/helm/values.yaml frontImage.repository ghcr.io/$GITHUB_ID/$FRONTEND_NAME
 			    yq3 w -i /root/helm/values.yaml nocalhost.backend.dev.gitUrl git@github.com:$GITHUB_ID/$BACKEND_NAME.git
 			    yq3 w -i /root/helm/values.yaml nocalhost.frontend.dev.gitUrl git@github.com:$GITHUB_ID/$FRONTEND_NAME.git
+			    yq3 w -i /root/helm/values.yaml ingress.hosts[0].path[0].serviceName $BACKEND_NAME
+			    yq3 w -i /root/helm/values.yaml ingress.hosts[0].path[1].serviceName $BACKEND_NAME-front
+
 			    yq3 w -i /root/helm/Chart.yaml name $BACKEND_NAME
 			fi
 
