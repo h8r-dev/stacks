@@ -156,6 +156,8 @@ import (
 	// Kube config file
 	kubeconfig: string | dagger.#Secret
 
+	waitFor: bool | *true
+
 	code: #"""
 		kubectl create namespace "$KUBE_NAMESPACE"  > /dev/null 2>&1 || true
 		#if [ -d /source ] || [ -f /source ]; then
@@ -200,6 +202,7 @@ import (
 			if url != null {
 				DEPLOYMENT_URL: url
 			}
+			WAIT_FOR: strconv.FormatBool(waitFor)
 		}
 		always: true
 	}
