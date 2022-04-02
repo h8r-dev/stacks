@@ -71,8 +71,10 @@ ingress:
       paths:
         - path: /
           servicename: xxx-front
+          servicePort: 80
         - path: /api
           servicename: xxx
+          servicePort: 8000
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
