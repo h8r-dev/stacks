@@ -28,11 +28,14 @@ import (
 	domain:         string
 	host:           string
 
+	waitFor: bool
+
 	// ArgoCD admin password
 	install: kubectl.#Apply & {
 		url:          "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
 		"namespace":  namespace
 		"kubeconfig": kubeconfig
+		"waitFor":    waitFor
 	}
 
 	argoIngress: ingress.#Ingress & {

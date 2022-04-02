@@ -111,6 +111,7 @@ dagger.#Plan & {
 				ingressVersion: getIngressVersion.content
 				domain:         argocdDomain
 				host:           getIngressEndPoint.content
+				waitFor:        installIngress.success
 			}
 
 			createApp: argocd.#App & {
