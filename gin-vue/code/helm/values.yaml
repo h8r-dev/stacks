@@ -70,7 +70,9 @@ ingress:
     - host: dev.go-gin.h8r.app
       paths:
         - path: /
-          pathType: ImplementationSpecific
+          servicename: xxx-front
+        - path: /api
+          servicename: xxx
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:

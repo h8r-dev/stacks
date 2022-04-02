@@ -44,16 +44,16 @@ spec:
           {{- range .paths }}
           - path: {{ .path }}
             {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
+            pathType: ImplementationSpecific
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}-front
+                name: {{ .serviceName }}
                 port:
                   number: 80
               {{- else }}
-              serviceName: {{ $fullName }}
+              serviceName: {{ .serviceName }}
               servicePort: 80
               {{- end }}
           {{- end }}
