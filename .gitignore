@@ -2,4 +2,4 @@
 .DS_Store
 .tmp
 .vscode
-*/cue.mod/
+*/cue.mod/pkg/
