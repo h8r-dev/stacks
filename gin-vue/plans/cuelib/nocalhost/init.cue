@@ -2,7 +2,7 @@ package nocalhost
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/github"
+	"github.com/h8r-dev/cuelib/github"
 )
 
 #InitData: {

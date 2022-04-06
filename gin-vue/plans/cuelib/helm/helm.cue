@@ -5,7 +5,7 @@ import (
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
+	"github.com/h8r-dev/cuelib/base"
 )
 
 // Install a Helm chart
