@@ -2,10 +2,10 @@ package nocalhost
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/nocalhost"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/random"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
+	"github.com/h8r-dev/cuelib/nocalhost"
+	"github.com/h8r-dev/cuelib/random"
+	"github.com/h8r-dev/cuelib/ingress"
+	"github.com/h8r-dev/cuelib/helm"
 )
 
 ingressNginxSetting: #"""

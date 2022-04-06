@@ -2,7 +2,7 @@ package kubectl
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
+	"github.com/h8r-dev/cuelib/kubectl"
 )
 
 testyaml: #"""

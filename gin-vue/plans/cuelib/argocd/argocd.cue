@@ -5,10 +5,10 @@ import (
 	"dagger.io/dagger/core"
 	"strconv"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/h8r"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
+	"github.com/h8r-dev/cuelib/kubectl"
+	"github.com/h8r-dev/cuelib/base"
+	"github.com/h8r-dev/cuelib/h8r"
+	"github.com/h8r-dev/cuelib/ingress"
 )
 
 #Install: {

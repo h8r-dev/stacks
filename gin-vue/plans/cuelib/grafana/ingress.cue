@@ -2,7 +2,7 @@ package grafana
 
 import (
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/base"
+	"github.com/h8r-dev/cuelib/base"
 	"strconv"
 )
 

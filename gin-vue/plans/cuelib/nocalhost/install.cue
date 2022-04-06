@@ -3,10 +3,10 @@ package nocalhost
 import (
 	"strings"
 	"dagger.io/dagger"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/helm"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/kubectl"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/ingress"
-	"github.com/h8r-dev/gin-vue/plans/cuelib/h8r"
+	"github.com/h8r-dev/cuelib/helm"
+	"github.com/h8r-dev/cuelib/kubectl"
+	"github.com/h8r-dev/cuelib/ingress"
+	"github.com/h8r-dev/cuelib/h8r"
 )
 
 // install nocalhost
