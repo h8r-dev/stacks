@@ -2,14 +2,15 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/helm"
-	"github.com/h8r-dev/cuelib/ingress"
-	"github.com/h8r-dev/cuelib/grafana"
-	"github.com/h8r-dev/cuelib/argocd"
-	"github.com/h8r-dev/cuelib/kubectl"
-	"github.com/h8r-dev/cuelib/prometheus"
-	"github.com/h8r-dev/cuelib/h8r"
-	"github.com/h8r-dev/cuelib/nocalhost"
+	"github.com/h8r-dev/cuelib/deploy/helm"
+	"github.com/h8r-dev/cuelib/network/ingress"
+	"github.com/h8r-dev/cuelib/monitoring/grafana"
+	"github.com/h8r-dev/cuelib/cd/argocd"
+	"github.com/h8r-dev/cuelib/deploy/kubectl"
+	"github.com/h8r-dev/cuelib/monitoring/prometheus"
+	"github.com/h8r-dev/cuelib/h8r/h8r"
+	"github.com/h8r-dev/cuelib/dev/nocalhost"
+	"github.com/h8r-dev/cuelib/scm/github"
 )
 
 dagger.#Plan & {
@@ -141,7 +142,7 @@ dagger.#Plan & {
 
 			// install prometheus and loki stack
 			installPrometheusLokiStack: {
-				installPrometheus: prometheus.#installPrometheusStack & {
+				installPrometheus: prometheus.#InstallPrometheusStack & {
 					"uri":                uri.output
 					kubeconfig:           client.commands.kubeconfig.stdout
 					ingressVersion:       getIngressVersion.content
@@ -195,7 +196,7 @@ dagger.#Plan & {
 				organization:    client.env.ORGANIZATION
 				sourceCodeDir:   client.filesystem.code.read.contents
 
-				initRepo: #InitRepo & {
+				initRepo: github.#InitRepo & {
 					sourceCodePath:    "go-gin"
 					suffix:            ""
 					"applicationName": applicationName
@@ -204,7 +205,7 @@ dagger.#Plan & {
 					"sourceCodeDir":   sourceCodeDir
 				}
 
-				initFrontendRepo: #InitRepo & {
+				initFrontendRepo: github.#InitRepo & {
 					suffix:            "-front"
 					sourceCodePath:    "vue-front"
 					"applicationName": applicationName
@@ -213,7 +214,7 @@ dagger.#Plan & {
 					"sourceCodeDir":   sourceCodeDir
 				}
 
-				initHelmRepo: #InitRepo & {
+				initHelmRepo: github.#InitRepo & {
 					suffix:            "-deploy"
 					sourceCodePath:    "helm"
 					isHelmChart:       "true"
@@ -260,21 +261,21 @@ dagger.#Plan & {
 			accessToken:     client.env.GITHUB_TOKEN
 			organization:    client.env.ORGANIZATION
 
-			deleteRepo: #DeleteRepo & {
+			deleteRepo: github.#DeleteRepo & {
 				suffix:            ""
 				"applicationName": applicationName
 				"accessToken":     accessToken
 				"organization":    organization
 			}
 
-			deleteFrontendRepo: #DeleteRepo & {
+			deleteFrontendRepo: github.#DeleteRepo & {
 				suffix:            "-front"
 				"applicationName": applicationName
 				"accessToken":     accessToken
 				"organization":    organization
 			}
 
-			deleteHelmRepo: #DeleteRepo & {
+			deleteHelmRepo: github.#DeleteRepo & {
 				suffix:            "-deploy"
 				"applicationName": applicationName
 				"accessToken":     accessToken
@@ -282,7 +283,7 @@ dagger.#Plan & {
 			}
 		}
 
-		deleteNocalhost: #DeleteChart & {
+		deleteNocalhost: github.#DeleteChart & {
 			releasename: "nocalhost"
 			kubeconfig:  client.env.KUBECONFIG_DATA
 		}

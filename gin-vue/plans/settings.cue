@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/h8r-dev/cuelib/random"
+	"github.com/h8r-dev/cuelib/utils/random"
 )
 
 // random uri
