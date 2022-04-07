@@ -93,7 +93,7 @@ import (
 		script: contents: #"""
 			mkdir -p /run/secrets
 			echo $GITHUB_TOKEN > /run/secrets/github
-			HELM_SUFFIX='-helm'
+			HELM_SUFFIX='-deploy'
 			FRONT_SUFFIX='-front'
 			REPO_NAME=$APPLICATION_NAME$SUFFIX
 			if [ "$ISHELMCHART" == "true" ]; then
