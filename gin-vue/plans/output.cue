@@ -3,7 +3,7 @@ package main
 import (
 	"universe.dagger.io/bash"
 	"encoding/yaml"
-	"github.com/h8r-dev/cuelib/base"
+	"github.com/h8r-dev/cuelib/utils/base"
 )
 
 // output cue struct
