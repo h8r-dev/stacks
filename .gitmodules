@@ -1,3 +1,6 @@
 [submodule "gin-vue/plans/cuelib"]
 	path = gin-vue/plans/cuelib
 	url = https://github.com/h8r-dev/cuelib.git
+[submodule "kratos-next/plans/cuelib"]
+	path = kratos-next/plans/cuelib
+	url = https://github.com/h8r-dev/cuelib.git

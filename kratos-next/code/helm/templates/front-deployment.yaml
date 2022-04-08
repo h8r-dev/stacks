@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "go-gin-stack.fullname" . }}-front
+  labels:
+    app: {{ include "go-gin-stack.fullname" . }}-front
+  annotations:
+    dev.nocalhost: |-
+      {{ tpl (.Files.Get .Values.nocalhost.frontend.annotations.path) . | nindent 6 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "go-gin-stack.fullname" . }}-front
+  template:
+    metadata:
+      labels:
+        app: {{ include "go-gin-stack.fullname" . }}-front
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-front
+        image: "{{ .Values.frontImage.repository }}:{{ .Values.frontImage.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.frontImage.pullPolicy }}
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d
+          readOnly: true
+          name: nginx-conf
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: {{ include "go-gin-stack.fullname" . }}-nginx-conf
+          items:
+            - key: default.conf
+              path: default.conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "go-gin-stack.fullname" . }}-front
+  labels:
+    app: {{ include "go-gin-stack.fullname" . }}-front
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+    protocol: TCP
+  selector:
+    app: {{ include "go-gin-stack.fullname" . }}-front
