@@ -1,0 +1,24 @@
+containers:
+  - name: {{ .Chart.Name }}-front
+    dev:
+      gitUrl: {{ .Values.nocalhost.frontend.dev.gitUrl }}
+      image: nocalhost-docker.pkg.coding.net/nocalhost/dev-images/node:14
+      shell: bash
+      workDir: /home/nocalhost-dev
+      command:
+        run: [ "npm", "install", "&&", "npm", "run", "dev" ]
+      sync:
+        type: send
+        filePattern:
+          - ./
+        ignoreFilePattern:
+          - ".git"
+          - ".idea"
+          - ".github"
+      resources:
+        limits:
+          cpu: "2"
+          memory: 2Gi
+        requests:
+          cpu: "0.2"
+          memory: 256Mi
