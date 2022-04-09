@@ -1,9 +1,9 @@
-name: gin-vue
+name: gin-next
 version: 1.0.0
 owner:
-  name: Wei Wang
-  contact: wei.wang@h8r.io
-description: This is go-gin stack
+  name: Heighliner
+  contact: heighliner@h8r.io
+description: This is gin-next stack
 icon: https://raw.githubusercontent.com/gin-gonic/logo/master/color.png
 url: https://gin-gonic.com/
 tags: ["go", "gin", "microservice", "redis", "mysql"]
