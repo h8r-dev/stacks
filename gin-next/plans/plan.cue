@@ -216,7 +216,7 @@ dagger.#Plan & {
 					"applicationName": applicationName
 					"accessToken":     accessToken
 					"organization":    organization
-					"sourceCodeDir":   addGithubAction.output.rootfs
+					sourceCodeDir:     addGithubAction.output.rootfs
 				}
 
 				initRepo: github.#InitRepo & {
