@@ -7,7 +7,7 @@ WORKDIR /root
 COPY . /root
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 
-
+# TODO change to distroless
 FROM ubuntu:latest as prod
 WORKDIR /root/
 COPY --from=builder /root/app .

@@ -7,18 +7,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"h8r.io/models"
-	"h8r.io/pkg/gredis"
-	"h8r.io/pkg/logging"
-	"h8r.io/pkg/setting"
-	"h8r.io/pkg/util"
-	"h8r.io/routers"
+	"go-gin/models"
+	"go-gin/pkg/gredis"
+	"go-gin/pkg/setting"
+	"go-gin/pkg/util"
+	"go-gin/routers"
 )
 
 func init() {
 	setting.Setup()
 	models.Setup()
-	logging.Setup()
 	gredis.Setup()
 	util.Setup()
 }
@@ -28,7 +26,7 @@ func init() {
 // @description An example of gin
 // @termsOfService https://h8r.io
 // @license.name MIT
-// @license.url https://h8r.io/blob/master/LICENSE
+// @license.url https://go-gin/blob/master/LICENSE
 func main() {
 	gin.SetMode(setting.ServerSetting.RunMode)
 
@@ -49,18 +47,4 @@ func main() {
 	log.Printf("[info] start http server listening %s", endPoint)
 
 	server.ListenAndServe()
-
-	// If you want Graceful Restart, you need a Unix system and download github.com/fvbock/endless
-	//endless.DefaultReadTimeOut = readTimeout
-	//endless.DefaultWriteTimeOut = writeTimeout
-	//endless.DefaultMaxHeaderBytes = maxHeaderBytes
-	//server := endless.NewServer(endPoint, routersInit)
-	//server.BeforeBegin = func(add string) {
-	//	log.Printf("Actual pid is %d", syscall.Getpid())
-	//}
-	//
-	//err := server.ListenAndServe()
-	//if err != nil {
-	//	log.Printf("Server err: %v", err)
-	//}
 }

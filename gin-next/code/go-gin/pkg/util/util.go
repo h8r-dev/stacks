@@ -1,6 +1,6 @@
 package util
 
-import "h8r.io/pkg/setting"
+import "go-gin/pkg/setting"
 
 // Setup Initialize the util
 func Setup() {

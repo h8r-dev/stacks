@@ -1,15 +1,14 @@
 package api
 
 import (
+	"go-gin/internal/e"
 	"net/http"
 
-	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 
-	"h8r.io/pkg/app"
-	"h8r.io/pkg/e"
-	"h8r.io/pkg/util"
-	"h8r.io/service/auth_service"
+	"go-gin/internal/app"
+	"go-gin/pkg/util"
+	"go-gin/service/auth_service"
 )
 
 type auth struct {
@@ -17,6 +16,7 @@ type auth struct {
 	Password string `valid:"Required; MaxSize(50)"`
 }
 
+// GetAuth 获取token
 // @Summary Get Auth
 // @Produce  json
 // @Param username query string true "userName"
@@ -26,35 +26,25 @@ type auth struct {
 // @Router /auth [get]
 func GetAuth(c *gin.Context) {
 	appG := app.Gin{C: c}
-	valid := validation.Validation{}
 
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 
-	a := auth{Username: username, Password: password}
-	ok, _ := valid.Valid(&a)
-
-	if !ok {
-		app.MarkErrors(valid.Errors)
-		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
-		return
-	}
-
 	authService := auth_service.Auth{Username: username, Password: password}
 	isExist, err := authService.Check()
 	if err != nil {
-		appG.Response(http.StatusInternalServerError, e.ERROR_AUTH_CHECK_TOKEN_FAIL, nil)
+		appG.Response(http.StatusInternalServerError, e.ERROR, nil)
 		return
 	}
 
 	if !isExist {
-		appG.Response(http.StatusUnauthorized, e.ERROR_AUTH, nil)
+		appG.Response(http.StatusUnauthorized, e.ERROR, nil)
 		return
 	}
 
 	token, err := util.GenerateToken(username, password)
 	if err != nil {
-		appG.Response(http.StatusInternalServerError, e.ERROR_AUTH_TOKEN, nil)
+		appG.Response(http.StatusInternalServerError, e.ERROR, nil)
 		return
 	}
 
