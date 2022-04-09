@@ -1,13 +1,13 @@
 package jwt
 
 import (
+	"github.com/golang-jwt/jwt/v4"
+	e2 "go-gin/internal/e"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
-	"h8r.io/pkg/e"
-	"h8r.io/pkg/util"
+	"go-gin/pkg/util"
 )
 
 // JWT is jwt middleware
@@ -16,26 +16,26 @@ func JWT() gin.HandlerFunc {
 		var code int
 		var data interface{}
 
-		code = e.SUCCESS
+		code = e2.SUCCESS
 		token := c.Query("token")
 		if token == "" {
-			code = e.INVALID_PARAMS
+			code = e2.INVALID_PARAMS
 		} else {
 			_, err := util.ParseToken(token)
 			if err != nil {
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired:
-					code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
+					code = e2.INVALID_PARAMS
 				default:
-					code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
+					code = e2.INVALID_PARAMS
 				}
 			}
 		}
 
-		if code != e.SUCCESS {
+		if code != e2.SUCCESS {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": code,
-				"msg":  e.GetMsg(code),
+				"msg":  e2.GetMsg(code),
 				"data": data,
 			})
 

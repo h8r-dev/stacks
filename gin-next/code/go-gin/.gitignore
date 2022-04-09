@@ -7,5 +7,6 @@ runtime/*
 
 front/dist
 front/node_modules
+bin
 .dagger
 .vscode

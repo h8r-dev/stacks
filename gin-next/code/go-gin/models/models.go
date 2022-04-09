@@ -7,9 +7,11 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
-	"h8r.io/pkg/setting"
+	"go-gin/pkg/setting"
 	"time"
 )
+
+// TODO update gorm to v2
 
 var db *gorm.DB
 

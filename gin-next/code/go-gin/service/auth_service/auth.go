@@ -1,6 +1,6 @@
 package auth_service
 
-import "h8r.io/models"
+import "go-gin/models"
 
 type Auth struct {
 	Username string

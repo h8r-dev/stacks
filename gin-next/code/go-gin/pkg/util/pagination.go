@@ -1,10 +1,9 @@
 package util
 
 import (
-	"github.com/unknwon/com"
 	"github.com/gin-gonic/gin"
-
-	"h8r.io/pkg/setting"
+	"github.com/unknwon/com"
+	"go-gin/pkg/setting"
 )
 
 // GetPage get page parameters
