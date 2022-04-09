@@ -9,3 +9,21 @@ Cloud native stacks for application development.
 2. change your `plans/cuelib` code
 3. `hof mod vendor cue`
 4. `dagger do up`
+
+# Use remote buildkit
+
+- Start buildkit:
+```
+ssh root@VPS_IP
+nohup buildkitd --addr tcp://127.0.0.1:1234 > ~/buildkit.log 2>&1 &
+```
+- SSH port forward
+```
+ssh -L 1235:127.0.0.1:1234 $VPS_USER@$VPS_IP -N
+```
+
+- Execute plan
+```
+export BUILDKIT_HOST=tcp://127.0.0.1:1235
+dagger do -p ./plans up
+```
