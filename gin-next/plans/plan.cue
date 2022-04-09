@@ -11,6 +11,8 @@ import (
 	"github.com/h8r-dev/cuelib/h8r/h8r"
 	"github.com/h8r-dev/cuelib/dev/nocalhost"
 	"github.com/h8r-dev/cuelib/scm/github"
+	"github.com/h8r-dev/cuelib/framework/react/next"
+	githubAction "github.com/h8r-dev/cuelib/ci/github"
 )
 
 dagger.#Plan & {
@@ -196,18 +198,30 @@ dagger.#Plan & {
 				organization:    client.env.ORGANIZATION
 				sourceCodeDir:   client.filesystem.code.read.contents
 
-				initRepo: github.#InitRepo & {
-					sourceCodePath:    "go-gin"
-					suffix:            ""
-					"applicationName": applicationName
-					"accessToken":     accessToken
-					"organization":    organization
-					"sourceCodeDir":   sourceCodeDir
+				//framework: "next"
+				// frontend framework next
+				frontend: next.#Create & {
+					name:       applicationName
+					typescript: true
+				}
+				// add github action
+				addGithubAction: githubAction.#Create & {
+					input: frontend.output
+					path:  applicationName + "/.github/workflows"
 				}
 
 				initFrontendRepo: github.#InitRepo & {
 					suffix:            "-front"
-					sourceCodePath:    "vue-front"
+					sourceCodePath:    "root/" + applicationName
+					"applicationName": applicationName
+					"accessToken":     accessToken
+					"organization":    organization
+					"sourceCodeDir":   addGithubAction.output.rootfs
+				}
+
+				initRepo: github.#InitRepo & {
+					sourceCodePath:    "go-gin"
+					suffix:            ""
 					"applicationName": applicationName
 					"accessToken":     accessToken
 					"organization":    organization
