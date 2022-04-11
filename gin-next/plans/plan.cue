@@ -91,6 +91,14 @@ dagger.#Plan & {
 					appGitURL:          initRepos.initHelmRepo.url
 					waitFor:            install.success
 				}
+
+				// create image pull secret for dev namespace
+				createImagePullSecretForDevNs: kubectl.#CreateImagePullSecret & {
+					kubeconfig: client.commands.kubeconfig.stdout
+					username:   client.env.ORGANIZATION
+					password:   client.env.GITHUB_TOKEN
+					namespace:  init.nsOutput
+				}
 			}
 
 			// upgrade ingress nginx for serviceMonitor
