@@ -11,7 +11,7 @@ Cloud native stacks for application development.
 git clone --recursive git@github.com:h8r-dev/stacks.git
 
 # Install dependencies
-hof mod vendor cue
+hof mod vendor cue && dagger project update
 dagger do up
 ```
 
