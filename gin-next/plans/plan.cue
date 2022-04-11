@@ -58,14 +58,15 @@ dagger.#Plan & {
 			}
 
 			installIngress: helm.#Chart & {
-				name:       "ingress-nginx"
-				repository: "https://h8r-helm.pkg.coding.net/release/helm"
-				chart:      "ingress-nginx"
-				namespace:  "ingress-nginx"
-				action:     "installOrUpgrade"
-				kubeconfig: client.commands.kubeconfig.stdout
-				values:     ingressNginxSetting
-				wait:       true
+				name:         "ingress-nginx"
+				repository:   "https://kubernetes.github.io/ingress-nginx"
+				chart:        "ingress-nginx"
+				namespace:    "ingress-nginx"
+				action:       "installOrUpgrade"
+				kubeconfig:   client.commands.kubeconfig.stdout
+				values:       ingressNginxSetting
+				wait:         true
+				chartVersion: "4.0.19"
 			}
 
 			installNocalhost: {
@@ -78,6 +79,7 @@ dagger.#Plan & {
 					namespace:      "nocalhost"
 					name:           "nocalhost"
 					waitFor:        installIngress.success
+					chartVersion:   "0.6.16"
 				}
 
 				init: nocalhost.#InitData & {
@@ -94,22 +96,23 @@ dagger.#Plan & {
 			// upgrade ingress nginx for serviceMonitor
 			// should wait for installIngress and installPrometheusStack
 			upgradeIngress: helm.#Chart & {
-				name:       "ingress-nginx"
-				repository: "https://h8r-helm.pkg.coding.net/release/helm"
-				chart:      "ingress-nginx"
-				namespace:  "ingress-nginx"
-				action:     "installOrUpgrade"
-				kubeconfig: client.commands.kubeconfig.stdout
-				values:     ingressNginxUpgradeSetting
-				wait:       true
-				waitFor:    installIngress.success & installPrometheusLokiStack.success
+				name:         "ingress-nginx"
+				repository:   "https://kubernetes.github.io/ingress-nginx"
+				chart:        "ingress-nginx"
+				namespace:    "ingress-nginx"
+				action:       "installOrUpgrade"
+				kubeconfig:   client.commands.kubeconfig.stdout
+				values:       ingressNginxUpgradeSetting
+				wait:         true
+				waitFor:      installIngress.success & installPrometheusLokiStack.success
+				chartVersion: "4.0.19"
 			}
 
 			// install argocd
 			installArgoCD: argocd.#Install & {
 				kubeconfig:     client.commands.kubeconfig.stdout
 				namespace:      argoCDNamespace
-				url:            "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+				url:            "https://raw.githubusercontent.com/argoproj/argo-cd/v2.3.3/manifests/install.yaml"
 				"uri":          uri.output
 				ingressVersion: getIngressVersion.content
 				domain:         argocdDomain
@@ -155,17 +158,20 @@ dagger.#Plan & {
 					name:                 prometheusReleaseName
 					namespace:            prometheusNamespace
 					waitFor:              installIngress.success
+					chartVersion:         "34.9.0"
 				}
 
 				installLoki: prometheus.#installLokiStack & {
-					namespace:  lokiNamespace
-					kubeconfig: client.commands.kubeconfig.stdout
+					namespace:    lokiNamespace
+					kubeconfig:   client.commands.kubeconfig.stdout
+					chartVersion: "2.6.2"
 				}
 
 				getGrafanaSecret: grafana.#GetGrafanaSecret & {
 					kubeconfig: client.commands.kubeconfig.stdout
 					secretName: prometheusReleaseName + "-grafana"
 					namespace:  prometheusNamespace
+					waitFor:    installPrometheus.success
 				}
 
 				initIngressNginxDashboard: grafana.#CreateIngressDashboard & {
