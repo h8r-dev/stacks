@@ -2,7 +2,6 @@ FROM golang:alpine as builder
 
 RUN apk add git
 
-ENV GOPROXY https://goproxy.cn,direct
 WORKDIR /root
 COPY . /root
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
