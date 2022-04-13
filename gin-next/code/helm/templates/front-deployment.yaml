@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "go-gin-stack.fullname" . }}-front
+  name: {{ include "gin-next.fullname" . }}-front
   labels:
-    app: {{ include "go-gin-stack.fullname" . }}-front
+    app: {{ include "gin-next.fullname" . }}-front
   annotations:
     dev.nocalhost: |-
       {{ tpl (.Files.Get .Values.nocalhost.frontend.annotations.path) . | nindent 6 }}
@@ -11,11 +11,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "go-gin-stack.fullname" . }}-front
+      app: {{ include "gin-next.fullname" . }}-front
   template:
     metadata:
       labels:
-        app: {{ include "go-gin-stack.fullname" . }}-front
+        app: {{ include "gin-next.fullname" . }}-front
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -34,7 +34,7 @@ spec:
       volumes:
       - name: nginx-conf
         configMap:
-          name: {{ include "go-gin-stack.fullname" . }}-nginx-conf
+          name: {{ include "gin-next.fullname" . }}-nginx-conf
           items:
             - key: default.conf
               path: default.conf
@@ -43,9 +43,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "go-gin-stack.fullname" . }}-front
+  name: {{ include "gin-next.fullname" . }}-front
   labels:
-    app: {{ include "go-gin-stack.fullname" . }}-front
+    app: {{ include "gin-next.fullname" . }}-front
 spec:
   type: ClusterIP
   ports:
@@ -54,4 +54,4 @@ spec:
     name: http
     protocol: TCP
   selector:
-    app: {{ include "go-gin-stack.fullname" . }}-front
+    app: {{ include "gin-next.fullname" . }}-front
