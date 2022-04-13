@@ -1,0 +1,9 @@
+module "github.com/h8r-dev/stack"
+
+cue 0.4.0
+
+require (
+  github.com/h8r-dev/cuelib v0.0.0
+)
+
+replace github.com/h8r-dev/cuelib => ./cuelib

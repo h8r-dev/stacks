@@ -1,4 +1,4 @@
-module github.com/h8r-dev/gin-vue
+module github.com/h8r-dev/gin-next
 
 cue 0.4.0
 
@@ -6,4 +6,4 @@ require (
   github.com/h8r-dev/cuelib v0.0.0
 )
 
-replace github.com/h8r-dev/cuelib => ./plans/cuelib
+replace github.com/h8r-dev/cuelib => ../cuelib
