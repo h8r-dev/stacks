@@ -14,6 +14,11 @@ cd gin-next
 hof mod vendor cue && dagger project update
 dagger do up -p ./plans --log-format plain
 ```
+## Run test
+```shell
+cd cuelib
+dagger project update && dagger do test -p ./utils/status/test --log-format plain
+```
 
 ## Documentation
 
