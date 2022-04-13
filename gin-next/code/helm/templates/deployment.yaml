@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "go-gin-stack.fullname" . }}
+  name: {{ include "gin-next.fullname" . }}
   labels:
-    {{- include "go-gin-stack.labels" . | nindent 4 }}
+    {{- include "gin-next.labels" . | nindent 4 }}
   annotations:
     dev.nocalhost: |-
       {{ tpl (.Files.Get .Values.nocalhost.backend.annotations.path) . | nindent 6 }}
@@ -13,7 +13,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "go-gin-stack.selectorLabels" . | nindent 6 }}
+      {{- include "gin-next.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -21,20 +21,20 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "go-gin-stack.selectorLabels" . | nindent 8 }}
+        {{- include "gin-next.selectorLabels" . | nindent 8 }}
         date: "{{ now | unixEpoch }}"
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "go-gin-stack.serviceAccountName" . }}
+      serviceAccountName: {{ include "gin-next.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
         - name: config
           configMap:
-            name: {{ include "go-gin-stack.fullname" . }}
+            name: {{ include "gin-next.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
