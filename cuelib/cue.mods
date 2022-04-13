@@ -1,0 +1,3 @@
+module github.com/h8r-dev/cuelib
+
+cue 0.4.0

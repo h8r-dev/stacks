@@ -1,6 +1,0 @@
-[submodule "gin-vue/plans/cuelib"]
-	path = gin-vue/plans/cuelib
-	url = https://github.com/h8r-dev/cuelib.git
-[submodule "gin-next/plans/cuelib"]
-	path = gin-next/plans/cuelib
-	url = https://github.com/h8r-dev/cuelib.git
