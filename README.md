@@ -5,15 +5,16 @@ Cloud native stacks for application development.
 ## Local Development
 
 ```shell
-# Clone the repo if you do not have it.
-# If you have a repo cloned already, run:
+# Clone the repo or just do `git pull`
 git clone git@github.com:h8r-dev/stacks.git
 
-# Install dependencies
-cd gin-next
-hof mod vendor cue && dagger project update
-dagger do up -p ./plans --log-format plain
+# Install `air` to watch files change.
+go install github.com/cosmtrek/air@latest
+
+# Watch files and Develop
+make watch
 ```
+
 ## Run test
 ```shell
 cd cuelib
