@@ -24,13 +24,13 @@ cuefmt: # Format all cue files
 cuelint: cuefmt # Lint and format all cue files
 	@test -z "$$(git status -s . | grep -e "^ M"  | grep "\.cue" | cut -d ' ' -f3 | tee /dev/stderr)"
 
-# Install air
+.PHONY: install_air
 install_air:
 	export PATH=$(HOME)/go/bin:$(PATH)
 	which air || go install github.com/cosmtrek/air@latest
 
 # Watch cuelib files change, and install new codes into stack cude.mod folder automatically.
 # Firstly: Execute `go install github.com/cosmtrek/air@latest` to install `air`.
-watch:
-	make install_air
+.PHONY: watch
+watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 	export PATH=$(HOME)/go/bin:$(PATH) && ulimit -n 10240 && air
