@@ -8,10 +8,7 @@ Cloud native stacks for application development.
 # Clone the repo or just do `git pull`
 git clone git@github.com:h8r-dev/stacks.git
 
-# Install `air` to watch files change.
-go install github.com/cosmtrek/air@latest
-
-# Watch files and Develop
+# Watch files and develop
 make watch
 ```
 
