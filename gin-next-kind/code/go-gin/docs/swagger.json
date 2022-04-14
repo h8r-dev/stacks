@@ -1,0 +1,68 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "An example of gin",
+        "title": "Golang Gin API",
+        "termsOfService": "https://h8r.io",
+        "contact": {},
+        "license": {
+            "name": "MIT",
+            "url": "https://go-gin/blob/master/LICENSE"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/auth": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get Auth",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userName",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "app.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
