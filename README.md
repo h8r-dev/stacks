@@ -13,10 +13,9 @@ make watch
 ```
 
 ## Run test
-```shell
-cd cuelib
-dagger project update && dagger do test -p ./utils/status/test --log-format plain
-```
+
+Each stack has its own test suite.
+See [gin-vue test](./gin-vue/test/README.md) for example.
 
 ## Documentation
 

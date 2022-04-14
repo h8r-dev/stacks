@@ -1,8 +1,3 @@
-# About Dagger Usage
-
-* List environment input: `dagger -e local input list`
-* Input environment: dagger -e local input [TYPE] [NAME] [VALUES]
-
 # Go Gin Example [![rcard](https://goreportcard.com/badge/h8r.io)](https://goreportcard.com/report/h8r.io) [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/h8r.io) [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/EDDYCJY/go-gin-example/master/LICENSE)
 
 An example of gin contains many useful features
