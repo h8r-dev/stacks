@@ -27,4 +27,4 @@ cuelint: cuefmt # Lint and format all cue files
 # Watch cuelib files change, and install new codes into stack cude.mod folder automatically.
 # Firstly: Execute `go install github.com/cosmtrek/air@latest` to install `air`.
 watch:
-	ulimit -n 10240 && air
+	export PATH=$(HOME)/go/bin:$(PATH) && ulimit -n 10240 && air
