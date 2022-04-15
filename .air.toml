@@ -4,7 +4,7 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "bash ./scripts/hot-reload.sh"
+  cmd = "make vendor"
   delay = 1000
   exclude_dir = ["cue.mod", "code", "vendor", "testdata"]
   exclude_file = []

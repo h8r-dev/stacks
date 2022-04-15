@@ -10,6 +10,15 @@ export XDG_CONFIG_HOME
 .DEFAULT_GOAL := help
 HELP_TARGET_DEPTH ?= \#
 
+HOF_VER ?= 0.6.1
+
+# Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
+ifeq (,$(shell go env GOBIN))
+GOBIN=$(shell go env GOPATH)/bin
+else
+GOBIN=$(shell go env GOBIN)
+endif
+
 .PHONY: help
 help: # Show how to get started & what targets are available
 	@printf "This is a list of all the make targets that you can run, e.g. $(BOLD)make dagger$(NORMAL) - or $(BOLD)m dagger$(NORMAL)\n\n"
@@ -36,9 +45,33 @@ watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 	export PATH=$(HOME)/go/bin:$(PATH) && ulimit -n 10240 && air
 
 .PHONY: tar
-tar: # Package stacks into ./tars dir
+tar: vendor # Package stacks into ./tars dir
 	@rm -r tars; mkdir tars
 	@find . -maxdepth 1 -mindepth 1 -type d \
 	 ! -name '.*' ! -name 'tars' \
 	 ! -name 'tmp' ! -name 'scripts' \
-	 -exec tar -zcvf tars/{}-latest.tar.gz {}  \;
+	 -exec tar -zcvf tars/{}-latest.tar.gz {} \;
+
+.PHONY: vendor
+vendor: hof # Run hof mod vendor cue to each stack
+	@find . -maxdepth 1 -mindepth 1 -type d \
+	 ! -name '.*' ! -name 'tars' \
+	 ! -name 'tmp' ! -name 'scripts' \
+	 ! -name 'cuelib' \
+	 -exec ./scripts/vendor.sh ${HOF} {} \;
+
+.PHONY: hof
+hof: install-hof
+ifneq ($(shell which hof),)
+HOF=$(shell which hof)
+else
+HOF=${GOBIN}/hof
+endif
+
+.PHONY: install-hof
+install-hof: 
+ifeq ($(shell which hof),)
+	@curl -LO https://github.com/hofstadter-io/hof/releases/download/v${HOF_VER}/hof_${HOF_VER}_$(shell uname)_x86_64
+	@mv hof_${HOF_VER}_$(shell uname)_x86_64 ${GOBIN}/hof
+	@chmod +x ${GOBIN}/hof
+endif
