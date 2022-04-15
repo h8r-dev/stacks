@@ -35,14 +35,14 @@ cuelint: cuefmt # Lint and format all cue files
 
 .PHONY: install_air
 install_air:
-	export PATH=$(HOME)/go/bin:$(PATH)
+	export PATH=${GOBIN}:$(PATH)
 	which air || go install github.com/cosmtrek/air@latest
 
 # Watch cuelib files change, and install new codes into stack cude.mod folder automatically.
 # Firstly: Execute `go install github.com/cosmtrek/air@latest` to install `air`.
 .PHONY: watch
 watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
-	export PATH=$(HOME)/go/bin:$(PATH) && ulimit -n 10240 && air
+	export PATH=${GOBIN}:$(PATH) && ulimit -n 10240 && air
 
 .PHONY: tar
 tar: vendor # Package stacks into ./tars dir
