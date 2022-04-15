@@ -72,6 +72,7 @@ endif
 install-hof: 
 ifeq ($(shell which hof),)
 	@curl -LO https://github.com/hofstadter-io/hof/releases/download/v${HOF_VER}/hof_${HOF_VER}_$(shell uname)_x86_64
+	@mkdir -p ${GOBIN}
 	@mv hof_${HOF_VER}_$(shell uname)_x86_64 ${GOBIN}/hof
 	@chmod +x ${GOBIN}/hof
 endif
