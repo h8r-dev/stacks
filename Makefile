@@ -34,3 +34,11 @@ install_air:
 .PHONY: watch
 watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 	export PATH=$(HOME)/go/bin:$(PATH) && ulimit -n 10240 && air
+
+.PHONY: tar
+tar: # Package stacks into ./tars dir
+	@rm -r tars; mkdir tars
+	@find . -maxdepth 1 -mindepth 1 -type d \
+	 ! -name '.*' ! -name 'tars' \
+	 ! -name 'tmp' ! -name 'scripts' \
+	 -exec tar -zcvf tars/{}-latest.tar.gz {}  \;

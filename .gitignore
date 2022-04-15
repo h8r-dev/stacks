@@ -2,6 +2,7 @@
 .DS_Store
 .tmp
 .vscode
-*/cue.mod/pkg/
+**/cue.mod/pkg/
 output.yaml
 tmp
+tars
