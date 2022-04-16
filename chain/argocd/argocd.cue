@@ -5,8 +5,8 @@ import (
 )
 
 #Instance: {
-	input:   #Input
-	install: kubectl.#Apply & {
+	input: #Input
+	do:    kubectl.#Apply & {
 		url:         input.url
 		"namespace": input.namespace
 		kubeconfig:  input.kubeconfig

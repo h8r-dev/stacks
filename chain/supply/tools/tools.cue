@@ -15,7 +15,7 @@ import (
 
 	input: #Input
 
-	install: {
+	do: {
 		for i in input.tools {
 			"\(i.name)": tools[i.name].#Instance & {
 				"input": tools[i.name].#Input & {

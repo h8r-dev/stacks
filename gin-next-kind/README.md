@@ -1,16 +1,12 @@
-# gin-next Stack
+# gin-next-kind Stack
 
 ## Requirements
 
-1. 一个公网可访问的 `K8s` 集群，版本 1.20+，且具备 `LoadBalancer` 能力
-1. kubectl
-1. `hln` CLI
+1. Kind v0.12.0+
+1. Docker
 
 ## 已知问题
 
-1. 每次运行将产生新的访问 URL
-1. Infra 应用在初始化安装时，如时间超过 10 分钟（例如镜像拉取）则会导致失败
-1. 只支持创建公开权限的仓库
 
 ## Quick Start
 
