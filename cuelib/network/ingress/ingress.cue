@@ -149,11 +149,18 @@ import (
 			contents: kubeconfig
 		}
 		script: contents: #"""
+			set +e
 			ingress_result=$(kubectl --kubeconfig /kubeconfig api-resources --api-group=networking.k8s.io)
-			if [[ $ingress_result =~ "v1beta1" ]]; then
+			set -e
+			if [[ $ingress_result =~ "networking.k8s.io/v1beta1" ]]; then
+				echo "the ingress version is v1beta1"
 				printf 'v1beta1' > /result
-			else
+			elif [[ $ingress_result =~ "networking.k8s.io/v1" ]]; then
+				echo "the ingress version is v1"
 				printf 'v1' > /result
+			else
+				echo "error: could not find ingress version"
+				exit 1
 			fi
 			"""#
 		//export: files: "/result": string
