@@ -5,8 +5,9 @@ import (
 )
 
 #Input: {
-	name:  string
-	image: docker.#Image
+	name:      string
+	chartName: string
+	image:     docker.#Image
 	// Helm values set
 	// Format: '.image.repository = "rep" | .image.tag = "tag"'
 	set: string | *""

@@ -32,17 +32,17 @@ dagger.#Plan & {
 					framework:  "helm"
 					visibility: "private"
 					ci:         "github"
-					addons: [
-						{
-							name: "prometheus"
-						},
-						{
-							name: "loki"
-						},
-						{
-							name: "nocalhost"
-						},
-					]
+				},
+			]
+			addons: [
+				{
+					name: "prometheus"
+				},
+				{
+					name: "loki"
+				},
+				{
+					name: "nocalhost"
 				},
 			]
 		}
@@ -53,8 +53,8 @@ dagger.#Plan & {
 			input:  _run.output.image
 			always: true
 			script: contents: """
-				cd /scaffold
-				ls
+				ls /scaffold
+				ls /scaffold/docs-deploy
 				"""
 		}
 	}

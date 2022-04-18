@@ -13,7 +13,7 @@ import (
 				ENV DEBIAN_FRONTEND=noninteractive
 				RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 				RUN sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
-				RUN apt-get update && apt install curl wget jq git apt-transport-https gnupg nodejs npm -y
+				RUN apt-get update && apt install curl wget jq git apt-transport-https gnupg nodejs npm tar -y
 				# set yarn config
 				RUN npm install -g yarn
 				RUN yarn config set registry https://registry.npm.taobao.org/

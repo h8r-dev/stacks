@@ -10,7 +10,7 @@ import (
 	input:  #Input
 	_build: bash.#Run & {
 		env: {
-			NAME:     input.name
+			NAME:     input.chartName
 			HELM_SET: input.set
 		}
 		"input": input.image
@@ -26,12 +26,12 @@ import (
 	}
 	_outputHelm: core.#Subdir & {
 		"input": _build.output.rootfs
-		path:    "/tmp/\(input.name)"
+		path:    "/tmp/\(input.chartName)"
 	}
 	do: docker.#Copy & {
 		"input":  input.image
 		contents: _outputHelm.output
-		dest:     "/scaffold/\(input.name)"
+		dest:     "/scaffold/\(input.name)/\(input.chartName)"
 	}
 	output: #Output & {
 		image: do.output
