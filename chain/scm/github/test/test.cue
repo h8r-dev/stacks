@@ -2,32 +2,43 @@ package test
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/bash"
 	"github.com/h8r-dev/chain/supply/scaffold"
+	"github.com/h8r-dev/chain/scm/github"
 )
 
 dagger.#Plan & {
+	client: {
+		// commands: kubeconfig: {
+		//  name: "cat"
+		//  args: ["\(env.KUBECONFIG)"]
+		//  stdout: dagger.#Secret
+		// }
+		env: {
+			ORGANIZATION: string
+			GITHUB_TOKEN: dagger.#Secret
+		}
+	}
 	actions: {
 		_input: scaffold.#Input & {
 			scm:          "github"
 			organization: "lyzhang1999"
 			repository: [
 				{
-					name:       "docs-frontend"
+					name:       "cart1-frontend"
 					type:       "frontend"
 					framework:  "next"
 					visibility: "private"
 					ci:         "github"
 				},
 				{
-					name:       "docs-backend"
+					name:       "cart1-backend"
 					type:       "backend"
 					framework:  "gin"
 					visibility: "private"
 					ci:         "github"
 				},
 				{
-					name:       "docs-deploy"
+					name:       "cart1-deploy"
 					type:       "deploy"
 					framework:  "helm"
 					visibility: "private"
@@ -49,13 +60,12 @@ dagger.#Plan & {
 		_run: scaffold.#Instance & {
 			input: _input
 		}
-		test: bash.#Run & {
-			input:  _run.output.image
-			always: true
-			script: contents: """
-				ls /scaffold
-				ls /scaffold/docs-deploy
-				"""
+		test: github.#Instance & {
+			input: github.#Input & {
+				image:               _run.output.image
+				organization:        client.env.ORGANIZATION
+				personalAccessToken: client.env.GITHUB_TOKEN
+			}
 		}
 	}
 }

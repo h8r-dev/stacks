@@ -5,7 +5,7 @@ import (
 )
 
 #Input: {
-	provider:     string | *"github"
+	scm:          string | *"github"
 	organization: string
 	repository: [...base.#Repository]
 	addons?: [...base.#Addons]

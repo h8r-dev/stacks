@@ -7,7 +7,8 @@ package base
 
 #Repository: {
 	// Repository name
-	name: string
+	// RFC 1035: https://tools.ietf.org/html/rfc1035
+	name: =~"^[a-zA-Z]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\\.[a-zA-Z]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$"
 
 	// Repository type
 	"type": string | *"frontend" | "backend" | "deploy"
