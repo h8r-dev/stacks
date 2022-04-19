@@ -5,10 +5,10 @@ import (
 	"dagger.io/dagger/core"
 	"strconv"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/cuelib/deploy/kubectl"
-	"github.com/h8r-dev/cuelib/utils/base"
-	"github.com/h8r-dev/cuelib/h8r/h8r"
-	"github.com/h8r-dev/cuelib/network/ingress"
+	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
+	"github.com/h8r-dev/stacks/cuelib/utils/base"
+	"github.com/h8r-dev/stacks/cuelib/h8r/h8r"
+	"github.com/h8r-dev/stacks/cuelib/network/ingress"
 )
 
 #Install: {

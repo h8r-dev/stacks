@@ -2,7 +2,7 @@ package github
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/ci/github"
+	"github.com/h8r-dev/stacks/cuelib/ci/github"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 )

@@ -4,7 +4,7 @@ import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 
-	"github.com/h8r-dev/cuelib/scm/github"
+	"github.com/h8r-dev/stacks/cuelib/scm/github"
 )
 
 dagger.#Plan & {

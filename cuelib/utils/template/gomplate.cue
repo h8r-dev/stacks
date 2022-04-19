@@ -5,7 +5,7 @@ import (
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 	"universe.dagger.io/alpine"
-	"github.com/h8r-dev/cuelib/utils/fs"
+	"github.com/h8r-dev/stacks/cuelib/utils/fs"
 )
 
 #RenderDir: {

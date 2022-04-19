@@ -3,7 +3,7 @@ package status
 import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/cuelib/utils/status"
+	"github.com/h8r-dev/stacks/cuelib/utils/status"
 )
 
 dagger.#Plan & {

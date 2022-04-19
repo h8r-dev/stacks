@@ -2,11 +2,11 @@ package grafana
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/monitoring/grafana"
-	"github.com/h8r-dev/cuelib/monitoring/prometheus"
-	"github.com/h8r-dev/cuelib/deploy/helm"
-	"github.com/h8r-dev/cuelib/network/ingress"
-	"github.com/h8r-dev/cuelib/utils/random"
+	"github.com/h8r-dev/stacks/cuelib/monitoring/grafana"
+	"github.com/h8r-dev/stacks/cuelib/monitoring/prometheus"
+	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
+	"github.com/h8r-dev/stacks/cuelib/network/ingress"
+	"github.com/h8r-dev/stacks/cuelib/utils/random"
 )
 
 ingressNginxSetting: #"""
