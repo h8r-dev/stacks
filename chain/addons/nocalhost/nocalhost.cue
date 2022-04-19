@@ -15,8 +15,8 @@ import (
 		workdir: "/tmp"
 		script: contents: #"""
 				helm pull nocalhost --repo https://nocalhost.github.io/charts --version $VERSION
-				mkdir -p /scaffold/$OUTPUT_PATH
-				tar -zxvf ./nocalhost-$VERSION.tgz -C /scaffold/$OUTPUT_PATH
+				mkdir -p /scaffold/$OUTPUT_PATH/infra
+				tar -zxvf ./nocalhost-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
 			"""#
 	}
 	output: #Output & {

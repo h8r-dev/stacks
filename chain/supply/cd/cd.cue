@@ -2,40 +2,41 @@ package cd
 
 import (
 	"github.com/h8r-dev/chain/supply/tools"
+	"github.com/h8r-dev/chain/tools/argocd"
 )
 
 #Instance: {
-	provider: {
-		"argocd": argocd
-	}
+	provider: "argocd": argocd
 
 	input: #Input
 
 	_install: tools.#Instance & {
-		input: tools.#Input & {
-			"kubeconfig": input.kubeconfig
+		"input": tools.#Input & {
+			kubeconfig: input.kubeconfig
 			tools:
 			[
 				{
-					name:    "argocd"
+					name:    input.provider
 					version: "v2.3.3"
+					domain:  input.domain
 				},
 			]
+			image: input.repositorys
 		}
 	}
 
 	do: {
-		// provider[input.provider].#Instance & {
-		//  "input": provider[input.provider].#Input & {
-		//   personalAccessToken: input.personalAccessToken
-		//   organization:        input.organization
-		//   image:               input.repositorys
-		//  }
-		// }
+		// do provider init
+		provider[input.provider].#Init & {
+			"input": provider[input.provider].#Input & {
+				kubeconfig: input.kubeconfig
+				image:      _install.output.image
+			}
+		}
 	}
 
 	output: #Output & {
-		image:   _install.output.image
-		success: _install.output.success
+		image:   do.output.image
+		success: do.output.success
 	}
 }

@@ -11,7 +11,7 @@ package base
 	name: =~"^[a-zA-Z]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\\.[a-zA-Z]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*$"
 
 	// Repository type
-	"type": string | *"frontend" | "backend" | "deploy"
+	type: string | *"frontend" | "backend" | "deploy"
 
 	// Framework
 	framework: string | *"gin" | "helm" | "next" | "react" | "vue"
@@ -25,4 +25,19 @@ package base
 	// Helm set values
 	// Format: '.image.repository = "rep" | .image.tag = "tag"'
 	set?: string | *""
+}
+
+#DefaultDomain: {
+	application: {
+		domain:              ".h8r.application"
+		productionNamespace: "production"
+	}
+	infra: {
+		domain:       ".h8r.infra"
+		argocd:       "argocd" + domain
+		prometheus:   "prometheus" + domain
+		alertManager: "alert" + domain
+		grafana:      "grafana" + domain
+		nocalhost:    "nocalhost" + domain
+	}
 }

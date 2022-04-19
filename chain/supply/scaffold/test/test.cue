@@ -31,7 +31,6 @@ dagger.#Plan & {
 					type:       "deploy"
 					framework:  "helm"
 					visibility: "private"
-					ci:         "github"
 				},
 			]
 			addons: [

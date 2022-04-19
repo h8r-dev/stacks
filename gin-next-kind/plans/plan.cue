@@ -37,9 +37,7 @@ dagger.#Plan & {
 		}
 	}
 
-	actions: {
-		up: {
+	actions: up: {
 
-		}
 	}
 }

@@ -7,16 +7,16 @@ import (
 #Instance: {
 	input:   #Input
 	install: helm.#Chart & {
-		name:           "ingress-nginx"
-		repository:     input.repository
-		chart:          "ingress-nginx"
-		"namespace":    input.namespace
-		action:         input.action
-		kubeconfig:     input.kubeconfig
-		values:         input.values
-		wait:           input.wait
-		"chartVersion": input.version
-		waitFor:        input.waitFor
+		name:         "ingress-nginx"
+		repository:   input.repository
+		chart:        "ingress-nginx"
+		namespace:    input.namespace
+		action:       input.action
+		kubeconfig:   input.kubeconfig
+		values:       input.values
+		wait:         input.wait
+		chartVersion: input.version
+		waitFor:      input.waitFor
 	}
 	output: #Output & {
 		image:   install.output

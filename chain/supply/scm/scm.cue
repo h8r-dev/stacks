@@ -5,9 +5,7 @@ import (
 )
 
 #Instance: {
-	provider: {
-		"github": github
-	}
+	provider: "github": github
 
 	input: #Input
 

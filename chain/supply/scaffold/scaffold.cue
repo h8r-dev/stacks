@@ -7,6 +7,7 @@ import (
 	"github.com/h8r-dev/chain/addons/loki"
 	"github.com/h8r-dev/chain/addons/nocalhost"
 	"github.com/h8r-dev/chain/addons/prometheus"
+	"github.com/h8r-dev/chain/ci/github"
 	"github.com/h8r-dev/cuelib/utils/base"
 	"universe.dagger.io/docker"
 )
@@ -22,11 +23,17 @@ import (
 		"prometheus": prometheus
 		"nocalhost":  nocalhost
 	}
+	ci: {
+		"github": github
+	}
+
 	input:                    #Input
 	output:                   #Output
 	_baseImage:               base.#Image & {}
 	_repositoryScaffoldImage: docker.#Image
 	_helmScaffoldImage:       docker.#Image
+	_doCIScaffoldImage:       docker.#Image
+
 	frontendAndbackendScaffold: [ for t in input.repository if t.type != "deploy" {t}]
 	helmScaffold: [ for t in input.repository if t.type == "deploy" {t}]
 	do: {
@@ -39,9 +46,9 @@ import (
 				if idx > 0 {
 					_output: do["\(idx-1)"].output.image
 				}
-				"input": framework[i.framework].#Input & {
-					"name":  i.name
-					"image": _output
+				input: framework[i.framework].#Input & {
+					name:  i.name
+					image: _output
 				}
 			}
 		}
@@ -64,10 +71,10 @@ import (
 				if idx > 0 {
 					_output: doHelmScaffold["\(idx-1)"].output.image
 				}
-				"input": helm.#Input & {
-					"chartName": i.name
-					"image":     _output
-					"name":      helmScaffold[0].name
+				input: helm.#Input & {
+					chartName: i.name
+					image:     _output
+					name:      helmScaffold[0].name
 				}
 			}
 		}
@@ -80,19 +87,44 @@ import (
 		// }
 	}
 
-	doAddonsScaffold: {
-		for idx, i in input.addons {
-			"\(idx)": addons[i.name].#Instance & {
+	doCIScaffold: {
+		for idx, i in frontendAndbackendScaffold {
+			"\(idx)": ci[i.ci].#Instance & {
 				_output: docker.#Image
 				if idx == 0 {
 					_output: _helmScaffoldImage
 				}
 				if idx > 0 {
+					_output: doCIScaffold["\(idx-1)"].output.image
+				}
+				"input": ci[i.ci].#Input & {
+					name:         i.name
+					image:        _output
+					organization: input.organization
+					deployRepo:   helmScaffold[0].name
+				}
+			}
+		}
+	}
+
+	if len(doCIScaffold) > 0 {
+		_doCIScaffoldImage: doCIScaffold["\(len(doCIScaffold)-1)"].output.image
+	}
+
+	// should do latest
+	doAddonsScaffold: {
+		for idx, i in input.addons {
+			"\(idx)": addons[i.name].#Instance & {
+				_output: docker.#Image
+				if idx == 0 {
+					_output: _doCIScaffoldImage
+				}
+				if idx > 0 {
 					_output: doAddonsScaffold["\(idx-1)"].output.image
 				}
 				"input": addons[i.name].#Input & {
-					"helmName": helmScaffold[0].name
-					"image":    _output
+					helmName: helmScaffold[0].name
+					image:    _output
 				}
 			}
 		}

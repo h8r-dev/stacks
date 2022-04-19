@@ -9,7 +9,7 @@ import (
 #Instance: {
 	input:  #Input
 	_build: next.#Create & {
-		"name": input.name
+		name: input.name
 	}
 	_outputFramework: core.#Subdir & {
 		"input": _build.output.rootfs

@@ -3,10 +3,10 @@
 ## Requirements
 
 1. Kind v0.12.0+
-1. Docker
+1. Docker, **Docker daemon resource setting > 4C, 8G**
 
 ## 已知问题
-
+1. 开启全局代理会导致本地 Hosts 配置失效，无法通过默认域名访问
 
 ## Quick Start
 
