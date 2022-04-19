@@ -6,6 +6,7 @@ import (
 	"github.com/h8r-dev/cuelib/utils/random"
 	"github.com/h8r-dev/cuelib/network/ingress"
 	"github.com/h8r-dev/cuelib/deploy/helm"
+	"github.com/h8r-dev/cuelib/deploy/kubectl"
 )
 
 ingressNginxSetting: #"""
@@ -79,6 +80,13 @@ dagger.#Plan & {
 				namespace:      "nocalhost"
 				name:           "nocalhost"
 				waitFor:        installIngress.success
+			}
+
+			createImagePullSecretForDevNs: kubectl.#CreateImagePullSecret & {
+				kubeconfig: client.commands.kubeconfig.stdout
+				username:   client.env.ORGANIZATION
+				password:   client.env.GITHUB_TOKEN
+				namespace:  initNocalhost.nsOutput
 			}
 		}
 	}
