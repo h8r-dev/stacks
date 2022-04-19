@@ -32,6 +32,7 @@ dagger.#Plan & {
 				"accessToken":     accessToken
 				"organization":    organization
 				sourceCodeDir:     _source.output
+				repoVisibility:    "public"
 			}
 
 			getOrganizationMembers: github.#GetOrganizationMembers & {

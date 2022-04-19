@@ -42,7 +42,7 @@ export TF_VAR_github_token=$GITHUB_TOKEN
 # Repo urls
 REPO_HTTP_URL=https://github.com/$ORGANIZATION/$REPO_NAME.git
 REPO_AUTH_HTTP_URL=https://$ORGANIZATION:$GITHUB_TOKEN@github.com/$ORGANIZATION/$REPO_NAME.git
-REPO_SSH_URL=git@github.com:$ORGANIZATION/$REPO_NAME.git
+# REPO_SSH_URL=git@github.com:$ORGANIZATION/$REPO_NAME.git
 
 # ================================================= #
 # Modify repo files to match current config

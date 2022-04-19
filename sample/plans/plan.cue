@@ -20,6 +20,7 @@ dagger.#Plan & {
 			APP_NAME:     string
 			ORGANIZATION: string
 			GITHUB_TOKEN: dagger.#Secret
+			REPO_VISIBILITY: "public" | *"private"
 		}
 	}
 

@@ -59,7 +59,7 @@ import (
 	isHelmChart: string | *"false"
 
 	// Repository visibility, default is private.
-	repoVisibility: string | *"private"
+	repoVisibility: "public" | "private"
 
 	terraformDir: "/terraform"
 
