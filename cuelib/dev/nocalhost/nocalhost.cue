@@ -198,6 +198,7 @@ import (
 
 			URL="\#(url)/v1/dev_space"
 			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
+			touch /namespaces
 			for id in ${user_ids[@]}; do
 				[[ "${had_space_ids[@]}" =~ "$id" ]] && continue
 				DATA_RAW='{"cluster_id":'"$cluster_id"',"cluster_admin":0,"user_id":'"$id"',"space_name":"","space_resource_limit":null}'
