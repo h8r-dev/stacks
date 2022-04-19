@@ -2,7 +2,7 @@ package kubectl
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/deploy/helm"
+	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
 )
 
 dagger.#Plan & {

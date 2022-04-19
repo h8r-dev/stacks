@@ -2,10 +2,10 @@ package nocalhost
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/network/ingress"
-	"github.com/h8r-dev/cuelib/deploy/helm"
-	"github.com/h8r-dev/cuelib/deploy/kubectl"
-	"github.com/h8r-dev/cuelib/h8r/h8r"
+	"github.com/h8r-dev/stacks/cuelib/network/ingress"
+	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
+	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
+	"github.com/h8r-dev/stacks/cuelib/h8r/h8r"
 )
 
 // install nocalhost

@@ -2,7 +2,7 @@ package certmanager
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/secure/certmanager"
+	"github.com/h8r-dev/stacks/cuelib/secure/certmanager"
 )
 
 // for test

@@ -4,7 +4,7 @@ import (
 	"dagger.io/dagger"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/cuelib/utils/random"
+	"github.com/h8r-dev/stacks/cuelib/utils/random"
 )
 
 dagger.#Plan & {

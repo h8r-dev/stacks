@@ -2,7 +2,7 @@ package next
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/framework/react/next"
+	"github.com/h8r-dev/stacks/cuelib/framework/react/next"
 	"universe.dagger.io/docker"
 )
 
