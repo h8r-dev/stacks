@@ -3,7 +3,7 @@ package tools
 import (
 	nginxKind "github.com/h8r-dev/chain/ingress/nginx/kind"
 	nginxCloud "github.com/h8r-dev/chain/ingress/nginx/cloud"
-	"github.com/h8r-dev/chain/argocd"
+	"github.com/h8r-dev/chain/tools/argocd"
 )
 
 #Instance: {
