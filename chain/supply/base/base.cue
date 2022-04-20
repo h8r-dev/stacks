@@ -1,7 +1,7 @@
 package base
 
 #Addons: {
-	name:     string | "prometheus" | "loki" | "nocalhost"
+	name:     string | "prometheus" | "loki" | "nocalhost" | "ingress-nginx"
 	version?: string
 }
 
@@ -25,6 +25,8 @@ package base
 	// Helm set values
 	// Format: '.image.repository = "rep" | .image.tag = "tag"'
 	set?: string | *""
+
+	registry: string | *"github"
 }
 
 #DefaultDomain: {

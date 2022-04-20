@@ -9,4 +9,5 @@ import (
 	organization: string
 	repository: [...base.#Repository]
 	addons?: [...base.#Addons]
+	cloudProvider: string | *"kind" | "minikube" | "aws" | "gcp" | "azure" | "alicloud" | "tencent" | "huawei"
 }

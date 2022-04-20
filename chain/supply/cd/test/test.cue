@@ -15,15 +15,17 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
-			KUBECONFIG:   string
+			ORGANIZATION:   string
+			GITHUB_TOKEN:   dagger.#Secret
+			KUBECONFIG:     string
+			CLOUD_PROVIDER: string
 		}
 	}
 	actions: {
 		_input: scaffold.#Input & {
-			scm:          "github"
-			organization: "lyzhang1999"
+			scm:           "github"
+			organization:  client.env.ORGANIZATION
+			cloudProvider: client.env.CLOUD_PROVIDER
 			repository: [
 				{
 					name:       "cart1-frontend"
@@ -47,6 +49,9 @@ dagger.#Plan & {
 				},
 			]
 			addons: [
+				{
+					name: "ingress-nginx"
+				},
 				{
 					name: "prometheus"
 				},
