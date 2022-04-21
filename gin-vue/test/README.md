@@ -28,7 +28,7 @@ Before running the tests, you need to run the stack first:
 ```shell
 # Go to the gin-vue stack directory
 cd ..
-hln up --dir ./plans
+hln up --set KUBECONFIG=~/.kube/config --set APP_NAME=testapp --set GITHUB_TOKEN=<YOUR_TOKEN> --set ORGANIZATION=<YOUR_ORGANIZATION>
 ```
 
 Then run the e2e tests:
@@ -37,4 +37,12 @@ Then run the e2e tests:
 # Go to the test directory
 cd test/
 ginkgo
+```
+
+Clean up your app
+
+```shell
+# Go to the gin-vue stack directory
+cd ..
+hln down
 ```
