@@ -9,4 +9,5 @@ import (
 	organization:        string
 	personalAccessToken: dagger.#Secret
 	image:               docker.#Image
+	visibility:          string
 }

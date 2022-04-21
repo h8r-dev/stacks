@@ -3,71 +3,71 @@
 ## Requirements
 
 1. Kind v0.12.0+
-1. Docker, **Docker daemon resource setting > 4C, 8G**
+1. Docker, **Docker daemon resource setting > 8C, 16G**
+1. Kubectl v1.20+
 
-## 已知问题
+## 注意
 1. 开启全局代理会导致本地 Hosts 配置失效，无法通过默认域名访问
+1. Github Personal Access Token(PAT) 将会存储在集群和仓库中，公开仓库可能会导致凭据泄露
 
 ## Quick Start
 
-1. 处理依赖：`hof mod vendor cue`
+1. 安装 Kind：https://kind.sigs.k8s.io/docs/user/quick-start/#installation
+1. 创建 Kind 集群
+    ```
+cat <<EOF | kind create cluster --config=-
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+  - containerPort: 31234
+    hostPort: 1234
+EOF
+    ```
+1. 部署 Buildkit
+    ```shell
+    kubectl apply -f https://raw.githubusercontent.com/h8r-dev/stacks/main/gin-next-kind/resources/buildkit.yaml
+    # waiting for ready
+    kubectl wait --for=condition=Available deployment buildkitd --timeout 600s
+    ```
+1. 导出 kubeconfig，并修改 API Server 地址
+    ```shell
+    kubectl config view --flatten --minify > ~/.kube/kind
+    vi ~/.kube/kind
+    # 修改第五行 Api Server `https://127.0.0.1:port` 为 `https://kubernetes.default.svc`
+    ```
 1. 初始化参数：
 
     ```shell
-    export KUBECONFIG=[Your kubeconfig path, e.g. ~/.kube/config]
+    export BUILDKIT_HOST=tcp://127.0.0.1:1234
+    export KUBECONFIG=~/.kube/kind
     export APP_NAME="orders"
     export GITHUB_TOKEN=[Github personal access token]
-    export GITHUB_ORG=[organization name or github id]
+    export ORGANIZATION=[organization name or github id]
     ```
 
 1. 运行：`dagger do up -p ./plans`
+
+1. 确认 Ingress nginx Ready
+    ```shell
+    kubectl wait --for=condition=Available deployment ingress-nginx-controller -n ingress-nginx --timeout 600s
+    ```
+1. Ingress-nginx Ready，添加 Hosts，浏览器访问
+    ```
+    127.0.0.1 argocd.h8r.infra
+    ```
+    
 1. 删除: `dagger do down -p ./plans`
-
-## 功能预览
-
-1. 检查前置条件
-2. 自动创建 `Github` 仓库和初始化 `Helm Chart`：包含 `go-gin` 框架的后端仓库，`next.js` 的前端仓库以及 `Helm` 仓库
-3. 部署应用，支持 Ingress 访问(h8r.app)
-4. 创建并配置 Infra 层应用，包括 Nocalhost、Loki、Prometheus、Grafana、Alertmanager，支持 Ingress 访问(h8r.io)
-5. 使用 Github Organization 创建 Nocalhost 用户，初始化应用、集群、开发空间
-6. Nocalhost 一键开发和调试
-
-### check.cue
-
-1. 计划增加 `kubeconfig` 连通性检查
-
-### init.cue
-
-1. 将 `Stack` 的 `go-gin` 目录初始化到目标仓库，并配置 `Github action` 以及调整 `Helm Chart` 参数
-2. 初始化 `Nocalhost` 用户、应用、集群、开发空间信息
-
-### deploy.cue
-
-1. 使用目标仓库的 `Helm Chart` 部署到集群指定的 `Namespace`
-2. 创建应用的 `H8r Ingress`
-
-### infra.cue
-
-1. 安装 `infra` 应用，包括 Nocalhost、Loki、Prometheus、Grafana 等
-2. 创建目标集群 `Ingress`
-3. 创建 `H8r Ingress`
-
-### Stack 执行结果
-
-TODO: key=value 方式写到本地文件或 /dev/stdout
-
-```shell
-Output                                                            Value                               Description
-showAppDomain                                                     "production.sakgww.go-gin.h8r.app"  Show App domain
-helmDeploy.install                                                "sakgww.go-gin.h8r.app"  Application URL
-suffix.out                                                        "sakgww"                            generated random string
-nocalhostDomain                                                   "sakgww.nocalhost.stack.h8r.io"     Nocalhost URL
-grafanaDomain                                                     "sakgww.grafana.stack.h8r.io"       Grafana URL
-prometheusDomain                                                  "sakgww.prom.stack.h8r.io"          Prometheus URL
-alertmanagerDomain                                                "sakgww.alert.stack.h8r.io"         Alertmanager URL
-installIngress.targetIngressEndpoint.get                          "129.226.98.247"  Ingress nginx endpoint
-installLokiStack.grafanaIngressToTargetCluster.grafanaSecret.get  "qzMg8Q4XJIa4pm0nQppjysX5wLNDAaMFOV72KI83"  Grafana secret, password of admin user
-initRepo.gitUrl                                                   "https://github.com/coding-spinnaker/orders22.git"  Git URL
-initFrontendRepo.gitUrl                                           "https://github.com/coding-spinnaker/orders22-front.git"  Git URL
-initHelmRepo.gitUrl                                               "https://github.com/coding-spinnaker/orders22-helm.git"  Git URL
-```

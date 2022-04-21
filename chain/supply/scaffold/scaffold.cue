@@ -54,6 +54,7 @@ import (
 	frontendAndbackendScaffold: [ for t in input.repository if t.type != "deploy" {t}]
 	helmScaffold: [ for t in input.repository if t.type == "deploy" {t}]
 
+	// Do framework scaffold
 	do: {
 		for idx, i in frontendAndbackendScaffold {
 			"\(idx)": framework[i.framework].#Instance & {
@@ -90,6 +91,9 @@ import (
 					chartName: i.name
 					image:     _output
 					name:      helmScaffold[0].name
+					if i.extraArgs.helmSet != _|_ {
+						set: i.extraArgs.helmSet
+					}
 				}
 			}
 		}
@@ -111,10 +115,11 @@ import (
 					_output: doHelmRegistryScaffold["\(idx-1)"].output.image
 				}
 				"input": registry[i.registry].#Input & {
-					name:           i.name
-					image:          _output
-					chartName:      helmScaffold[0].name
-					"organization": input.organization
+					name:      i.name
+					image:     _output
+					chartName: helmScaffold[0].name
+					username:  input.organization
+					password:  input.personalAccessToken
 				}
 			}
 		}

@@ -15,6 +15,7 @@ import (
 				personalAccessToken: input.personalAccessToken
 				organization:        input.organization
 				image:               input.repositorys
+				visibility:          input.visibility
 			}
 		}
 	}

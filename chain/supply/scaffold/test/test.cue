@@ -22,9 +22,10 @@ dagger.#Plan & {
 	}
 	actions: {
 		_input: scaffold.#Input & {
-			scm:           "github"
-			organization:  "lyzhang1999"
-			cloudProvider: client.env.CLOUD_PROVIDER
+			scm:                 "github"
+			organization:        "lyzhang1999"
+			personalAccessToken: client.env.GITHUB_TOKEN
+			cloudProvider:       client.env.CLOUD_PROVIDER
 			repository: [
 				{
 					name:       "cart1-frontend"

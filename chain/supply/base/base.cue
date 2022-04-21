@@ -16,9 +16,6 @@ package base
 	// Framework
 	framework: string | *"gin" | "helm" | "next" | "react" | "vue"
 
-	// TODO Repository visibility
-	visibility: string | *"public" | "private"
-
 	// CI
 	ci: string | *"github"
 
@@ -27,6 +24,9 @@ package base
 	set?: string | *""
 
 	registry: string | *"github"
+
+	// extraArgs use for helm set now
+	extraArgs?: {...}
 }
 
 #DefaultDomain: {
@@ -37,6 +37,21 @@ package base
 	infra: {
 		domain:       ".h8r.infra"
 		argocd:       "argocd" + domain
+		prometheus:   "prometheus" + domain
+		alertManager: "alert" + domain
+		grafana:      "grafana" + domain
+		nocalhost:    "nocalhost" + domain
+	}
+}
+
+#DefaultInternalDomain: {
+	application: {
+		domain:              ""
+		productionNamespace: "production"
+	}
+	infra: {
+		domain:       ".svc"
+		argocd:       "argocd-server.argocd" + domain
 		prometheus:   "prometheus" + domain
 		alertManager: "alert" + domain
 		grafana:      "grafana" + domain

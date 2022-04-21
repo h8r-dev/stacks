@@ -19,33 +19,39 @@ dagger.#Plan & {
 			GITHUB_TOKEN:   dagger.#Secret
 			KUBECONFIG:     string
 			CLOUD_PROVIDER: string
+			APP_NAME:       string
 		}
 	}
 	actions: {
 		_input: scaffold.#Input & {
-			scm:           "github"
-			organization:  client.env.ORGANIZATION
-			cloudProvider: client.env.CLOUD_PROVIDER
+			scm:                 "github"
+			organization:        client.env.ORGANIZATION
+			personalAccessToken: client.env.GITHUB_TOKEN
+			cloudProvider:       client.env.CLOUD_PROVIDER
 			repository: [
 				{
-					name:       "cart1-frontend"
-					type:       "frontend"
-					framework:  "next"
-					visibility: "private"
-					ci:         "github"
+					name:      client.env.APP_NAME + "-frontend"
+					type:      "frontend"
+					framework: "next"
+					ci:        "github"
+					registry:  "github"
+					extraArgs: {
+						helmSet: """
+						'.securityContext = {"runAsUser": 0}'
+						"""
+					}
 				},
 				{
-					name:       "cart1-backend"
-					type:       "backend"
-					framework:  "gin"
-					visibility: "private"
-					ci:         "github"
+					name:      client.env.APP_NAME + "-backend"
+					type:      "backend"
+					framework: "gin"
+					ci:        "github"
+					registry:  "github"
 				},
 				{
-					name:       "cart1-deploy"
-					type:       "deploy"
-					framework:  "helm"
-					visibility: "private"
+					name:      client.env.APP_NAME + "-deploy"
+					type:      "deploy"
+					framework: "helm"
 				},
 			]
 			addons: [
@@ -72,6 +78,7 @@ dagger.#Plan & {
 			personalAccessToken: client.env.GITHUB_TOKEN
 			organization:        client.env.ORGANIZATION
 			repositorys:         _run.output.image
+			visibility:          "private"
 		}
 
 		_git: scm.#Instance & {

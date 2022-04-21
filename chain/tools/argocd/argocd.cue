@@ -51,7 +51,7 @@ import (
 	do: {
 		bash.#Run & {
 			env: {
-				ARGO_SERVER:   base.#DefaultDomain.infra.argocd
+				ARGO_SERVER:   base.#DefaultInternalDomain.infra.argocd
 				ARGO_USERNAME: "admin"
 				if input.set != null {
 					HELM_SET: input.set
@@ -79,11 +79,17 @@ import (
 					repoURL=$(git config --get remote.origin.url | tr -d '\n')
 					# wait until argocd is ready
 					curl --retry 300 --retry-delay 2 $ARGO_SERVER --fail --insecure >> /dev/null 2>&1  
-					argocd login "$ARGO_SERVER" --username "$ARGO_USERNAME" --password "$(cat /infra/argocd/secret)" --insecure --grpc-web
+					echo 'y' | argocd login "$ARGO_SERVER" --username "$ARGO_USERNAME" --password "$(cat /infra/argocd/secret)" --insecure --grpc-web
+					
+					# Add argocd repo
+					argocd repo add $repoURL --username $(cat /scm/github/organization) --password $(cat /scm/github/pat)
+
 					# Create business application for ArgoCD
-					for file in ./*
+					# look for directory, ignore files
+					for file in */ ;
 					do
-						APP_NAME=$(echo $file | tr -d './')
+						APP_NAME=$(echo $file | tr -d '/')
+						echo $APP_NAME
 						if [ $APP_NAME == "infra" ]; then
 							continue
 						fi
@@ -95,6 +101,7 @@ import (
 							--sync-option CreateNamespace=true \
 							--sync-policy automated \
 							--grpc-web \
+							--insecure \
 							--upsert \
 							$setOps;
 						do 
@@ -105,17 +112,18 @@ import (
 
 					# Create infra application for ArgoCD
 					cd ./infra
-					for file in ./*
+					for file in */ ;
 					do
-						APP_NAME=$(echo $file | tr -d './')
+						APP_NAME=$(echo $file | tr -d '/')
 						while ! argocd app create "$APP_NAME" \
 							--repo "$repoURL" \
-							--path "./infra/$APP_NAME" \
+							--path "infra/$APP_NAME" \
 							--dest-server "$APP_SERVER" \
 							--dest-namespace "$APP_NAME" \
 							--sync-option CreateNamespace=true \
 							--sync-policy automated \
 							--grpc-web \
+							--insecure \
 							--upsert \
 							$setOps;
 						do

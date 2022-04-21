@@ -10,4 +10,6 @@ import (
 	personalAccessToken: dagger.#Secret
 	organization:        string
 	repositorys:         docker.#Image
+	// Repo visibility
+	visibility: string | "public" | *"private"
 }
