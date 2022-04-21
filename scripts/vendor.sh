@@ -2,4 +2,4 @@
 
 set -x
 
-cd $2 && $1 mod vendor cue
+cd $2 && $1 mod vendor cue && dagger project update

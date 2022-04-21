@@ -173,6 +173,12 @@ import (
 	// Helm set values, such as "key1=value1,key2=value2"
 	helmSet: string | *""
 
+	// Github Access Token
+	githubToken: dagger.#Secret
+
+	// Github Organization
+	githubOrganization: string
+
 	waitFor: bool
 
 	_cli: #CLI & {
@@ -181,9 +187,24 @@ import (
 
 	run: bash.#Run & {
 		input: _cli.output
+		env: {
+			APP_NAME:            name
+			APP_REPO:            repo
+			APP_PATH:            path
+			APP_SERVER:          server
+			APP_NAMESPACE:       namespace
+			HELM_SET:            helmSet
+			WAIT_FOR:            strconv.FormatBool(waitFor)
+			GITHUB_TOKEN:        githubToken
+			GITHUB_ORGANIZATION: githubOrganization
+		}
 		script: contents: #"""
 			echo $APP_NAME'-'$APP_REPO'-'$APP_PATH'-'$APP_SERVER'-'$APP_NAMESPACE
+
+			argocd repo add $APP_REPO --username $GITHUB_ORGANIZATION --password $GITHUB_TOKEN
+
 			APP_REPO=$(echo $APP_REPO | xargs)
+
 			setOps=""
 			for i in $(echo $HELM_SET | tr "," "\n")
 			do
@@ -206,15 +227,6 @@ import (
 			done
 			"""#
 		always: true
-		env: {
-			APP_NAME:      name
-			APP_REPO:      repo
-			APP_PATH:      path
-			APP_SERVER:    server
-			APP_NAMESPACE: namespace
-			HELM_SET:      helmSet
-			WAIT_FOR:      strconv.FormatBool(waitFor)
-		}
 	}
 
 	output: run.output
