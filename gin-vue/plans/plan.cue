@@ -29,10 +29,10 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			KUBECONFIG:   string
-			APP_NAME:     string
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
+			KUBECONFIG:      string
+			APP_NAME:        string
+			ORGANIZATION:    string
+			GITHUB_TOKEN:    dagger.#Secret
 			REPO_VISIBILITY: "public" | *"private"
 		}
 		// filesystem: "config.yaml": write: {
@@ -126,13 +126,13 @@ dagger.#Plan & {
 						password: installArgoCD.content
 					}
 				}
-				name:      client.env.APP_NAME
-				repo:      initRepos.initHelmRepo.url
-				namespace: applicationInstallNamespace
-				path:      "."
-				helmSet:   "ingress.hosts[0].paths[0].servicePort=80,ingress.hosts[0].paths[1].servicePort=8000,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[1].path=/api,ingress.hosts[0].host=" + appDomain + ",ingress.hosts[0].paths[0].serviceName=" + client.env.APP_NAME + "-front,ingress.hosts[0].paths[1].serviceName=" + client.env.APP_NAME
-				githubToken: client.env.GITHUB_TOKEN
-				githubOrganization:   client.env.ORGANIZATION
+				name:               client.env.APP_NAME
+				repo:               initRepos.initHelmRepo.url
+				namespace:          applicationInstallNamespace
+				path:               "."
+				helmSet:            "ingress.hosts[0].paths[0].servicePort=80,ingress.hosts[0].paths[1].servicePort=8000,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[1].path=/api,ingress.hosts[0].host=" + appDomain + ",ingress.hosts[0].paths[0].serviceName=" + client.env.APP_NAME + "-front,ingress.hosts[0].paths[1].serviceName=" + client.env.APP_NAME
+				githubToken:        client.env.GITHUB_TOKEN
+				githubOrganization: client.env.ORGANIZATION
 			}
 
 			// create image pull secret for argocd

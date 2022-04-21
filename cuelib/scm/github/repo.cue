@@ -61,8 +61,8 @@ import (
 			},
 			docker.#Copy & {
 				contents: _loadTerraformFiles.output
-				dest: 		terraformDir
-			}
+				dest:     terraformDir
+			},
 		]
 	}
 
@@ -73,14 +73,12 @@ import (
 
 	run: bash.#Run & {
 		input: base.output
-		export: files: "/create.json" : _
+		export: files: "/create.json": _
 		workdir: "/root"
 		always:  true
-		mounts: {
-			"kubeconfig": {
-				dest: "/kubeconfig"
-				contents: kubeconfig
-			}
+		mounts: "kubeconfig": {
+			dest:     "/kubeconfig"
+			contents: kubeconfig
 		}
 		env: {
 			GITHUB_TOKEN:     accessToken
@@ -97,7 +95,7 @@ import (
 		}
 		script: {
 			directory: _loadScripts.output
-			filename: "manage-repo.sh"
+			filename:  "manage-repo.sh"
 		}
 	}
 

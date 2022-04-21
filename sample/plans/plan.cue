@@ -16,10 +16,10 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			KUBECONFIG:   string
-			APP_NAME:     string
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
+			KUBECONFIG:      string
+			APP_NAME:        string
+			ORGANIZATION:    string
+			GITHUB_TOKEN:    dagger.#Secret
 			REPO_VISIBILITY: "public" | *"private"
 		}
 	}

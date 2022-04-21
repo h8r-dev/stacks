@@ -188,14 +188,14 @@ import (
 	run: bash.#Run & {
 		input: _cli.output
 		env: {
-			APP_NAME:      name
-			APP_REPO:      repo
-			APP_PATH:      path
-			APP_SERVER:    server
-			APP_NAMESPACE: namespace
-			HELM_SET:      helmSet
-			WAIT_FOR:      strconv.FormatBool(waitFor)
-			GITHUB_TOKEN:  githubToken
+			APP_NAME:            name
+			APP_REPO:            repo
+			APP_PATH:            path
+			APP_SERVER:          server
+			APP_NAMESPACE:       namespace
+			HELM_SET:            helmSet
+			WAIT_FOR:            strconv.FormatBool(waitFor)
+			GITHUB_TOKEN:        githubToken
 			GITHUB_ORGANIZATION: githubOrganization
 		}
 		script: contents: #"""
