@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "go-gin-stack.name" -}}
+{{- define "gin-next.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "go-gin-stack.fullname" -}}
+{{- define "gin-next.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "go-gin-stack.chart" -}}
+{{- define "gin-next.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "go-gin-stack.labels" -}}
-helm.sh/chart: {{ include "go-gin-stack.chart" . }}
-{{ include "go-gin-stack.selectorLabels" . }}
+{{- define "gin-next.labels" -}}
+helm.sh/chart: {{ include "gin-next.chart" . }}
+{{ include "gin-next.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "go-gin-stack.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "go-gin-stack.name" . }}
+{{- define "gin-next.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "gin-next.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "go-gin-stack.serviceAccountName" -}}
+{{- define "gin-next.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "go-gin-stack.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "gin-next.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

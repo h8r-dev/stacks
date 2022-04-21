@@ -101,7 +101,6 @@ import (
 			HELM_CHART_VERSION: chartVersion
 		}
 		mounts: {
-
 			"kubeconfig": {
 				dest:     "/kubeconfig"
 				contents: kubeconfig

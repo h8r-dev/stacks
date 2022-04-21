@@ -8,35 +8,7 @@ import (
 	"universe.dagger.io/docker"
 )
 
-#DeleteRepo: {
-	// Application name, will be set as repo name
-	applicationName: string
-
-	// Suffix
-	suffix: *"" | string
-
-	accessToken: dagger.#Secret
-
-	organization: string
-
-	base: alpine.#Build & {
-		packages: {
-			bash: {}
-			curl: {}
-		}
-	}
-
-	run: bash.#Run & {
-		input:  base.output
-		always: true
-		env: GITHUB_TOKEN: accessToken
-		script: contents:  #"""
-		curl -sSH "Authorization: token $GITHUB_TOKEN" -XDELETE  https://api.github.com/repos/\#(organization)/\#(applicationName)\#(suffix)
-		"""#
-	}
-}
-
-#InitRepo: {
+#ManageRepo: {
 
 	// Application name, will be set as repo name
 	applicationName: string
@@ -63,6 +35,10 @@ import (
 
 	terraformDir: "/terraform"
 
+	kubeconfig: string | dagger.#Secret
+
+	operationType: "init" | "delete"
+
 	_loadTerraformFiles: core.#Source & {
 		path: "./terraform"
 		include: ["*.tf"]
@@ -73,9 +49,6 @@ import (
 			alpine.#Build & {
 				packages: {
 					bash: {}
-					curl: {}
-					wget: {}
-					"github-cli": {}
 					git: {}
 					jq: {}
 					terraform: {}
@@ -103,6 +76,12 @@ import (
 		export: files: "/create.json" : _
 		workdir: "/root"
 		always:  true
+		mounts: {
+			"kubeconfig": {
+				dest: "/kubeconfig"
+				contents: kubeconfig
+			}
+		}
 		env: {
 			GITHUB_TOKEN:     accessToken
 			APPLICATION_NAME: applicationName
@@ -113,10 +92,12 @@ import (
 			REPO_VISIBILITY:  repoVisibility
 			TERRAFORM_DIR:    terraformDir
 			OUTPUT_FILE:      "/create.json"
+			KUBE_CONFIG_PATH: "/kubeconfig"
+			OPERATION_TYPE:   operationType
 		}
 		script: {
 			directory: _loadScripts.output
-			filename: "init-repos.sh"
+			filename: "manage-repo.sh"
 		}
 	}
 

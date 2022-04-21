@@ -35,7 +35,7 @@ dagger.#Plan & {
 			APP_NAME:     string
 			ORGANIZATION: string
 			GITHUB_TOKEN: dagger.#Secret
-			REPO_VISIBILITY: "public" | *"private"
+			REPO_VISIBILITY: "public" | "private"
 		}
 		// filesystem: "config.yaml": write: {
 		//  // Convert a CUE value into a YAML formatted string
@@ -215,19 +215,18 @@ dagger.#Plan & {
 				organization:    client.env.ORGANIZATION
 				sourceCodeDir:   client.filesystem.code.read.contents
 
-				//framework: "next"
-				// frontend framework next
 				frontend: next.#Create & {
 					name:       applicationName
 					typescript: true
 				}
+
 				// add github action
 				addGithubAction: githubAction.#Create & {
 					input: frontend.output
 					path:  applicationName + "/.github/workflows"
 				}
 
-				initFrontendRepo: github.#InitRepo & {
+				initFrontendRepo: github.#ManageRepo & {
 					suffix:            "-front"
 					sourceCodePath:    "root/" + applicationName
 					"applicationName": applicationName
@@ -235,9 +234,11 @@ dagger.#Plan & {
 					"organization":    organization
 					sourceCodeDir:     addGithubAction.output.rootfs
 					repoVisibility:    client.env.REPO_VISIBILITY
+					kubeconfig:        client.commands.kubeconfig.stdout
+					operationType:     "init"
 				}
 
-				initRepo: github.#InitRepo & {
+				initRepo: github.#ManageRepo & {
 					sourceCodePath:    "go-gin"
 					suffix:            ""
 					"applicationName": applicationName
@@ -245,9 +246,11 @@ dagger.#Plan & {
 					"organization":    organization
 					"sourceCodeDir":   sourceCodeDir
 					repoVisibility:    client.env.REPO_VISIBILITY
+					kubeconfig:        client.commands.kubeconfig.stdout
+					operationType:     "init"
 				}
 
-				initHelmRepo: github.#InitRepo & {
+				initHelmRepo: github.#ManageRepo & {
 					suffix:            "-deploy"
 					sourceCodePath:    "helm"
 					isHelmChart:       "true"
@@ -256,6 +259,8 @@ dagger.#Plan & {
 					"organization":    organization
 					"sourceCodeDir":   sourceCodeDir
 					repoVisibility:    client.env.REPO_VISIBILITY
+					kubeconfig:        client.commands.kubeconfig.stdout
+					operationType:     "init"
 				}
 			}
 
@@ -294,26 +299,43 @@ dagger.#Plan & {
 			applicationName: client.env.APP_NAME
 			accessToken:     client.env.GITHUB_TOKEN
 			organization:    client.env.ORGANIZATION
+			sourceCodeDir:   client.filesystem.code.read.contents
 
-			deleteRepo: github.#DeleteRepo & {
-				suffix:            ""
-				"applicationName": applicationName
-				"accessToken":     accessToken
-				"organization":    organization
-			}
-
-			deleteFrontendRepo: github.#DeleteRepo & {
+			deleteFrontendRepo: github.#ManageRepo & {
 				suffix:            "-front"
+				sourceCodePath:    "frontend"
 				"applicationName": applicationName
 				"accessToken":     accessToken
 				"organization":    organization
+				"sourceCodeDir":     sourceCodeDir
+				repoVisibility:    client.env.REPO_VISIBILITY
+				kubeconfig:        client.commands.kubeconfig.stdout
+				operationType:     "delete"
 			}
 
-			deleteHelmRepo: github.#DeleteRepo & {
-				suffix:            "-deploy"
+			deleteRepo: github.#ManageRepo & {
+				suffix:            ""
+				sourceCodePath:    "go-gin"
 				"applicationName": applicationName
 				"accessToken":     accessToken
 				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
+				repoVisibility:    client.env.REPO_VISIBILITY
+				kubeconfig:        client.commands.kubeconfig.stdout
+				operationType:     "delete"
+			}
+
+			deleteHelmRepo: github.#ManageRepo & {
+				suffix:            "-deploy"
+				sourceCodePath:    "helm"
+				isHelmChart:       "true"
+				"applicationName": applicationName
+				"accessToken":     accessToken
+				"organization":    organization
+				"sourceCodeDir":   sourceCodeDir
+				repoVisibility:    client.env.REPO_VISIBILITY
+				kubeconfig:        client.commands.kubeconfig.stdout
+				operationType:     "delete"
 			}
 		}
 
