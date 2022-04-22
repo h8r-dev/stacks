@@ -43,7 +43,7 @@ EOF
     # waiting for ready
     kubectl wait --for=condition=Available deployment buildkitd --timeout 600s
     ```
-1. 导出 Kind kubeconfig，并修改 API Server 地址
+1. 导出 Kind kubeconfig，并修改 API Server 地址(考虑自动化)
     ```shell
     kubectl config view --flatten --minify | sed -e 's?server: https://127.0.0.1:[0-9]*?server: https://kubernetes.default.svc?' > ~/.kube/kind
     ```
