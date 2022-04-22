@@ -53,6 +53,10 @@
         hostPort: 1234
     EOF
     ```
+1. 切换 Kind context
+    ```
+    kind export kubeconfig
+    ```
 1. 部署 Buildkit(考虑自动化)
     ```shell
     kubectl apply -f https://raw.githubusercontent.com/h8r-dev/stacks/main/gin-next-europa/resources/buildkit.yaml
