@@ -27,9 +27,20 @@ Learn more about [how to use hln](https://heighliner.dev/docs/cli/hln/overview).
 
 ## Run
 
-Before running the tests, you need to run the stack first:
+Before running the tests, you need to run the stack, which requires some arguments passed by environment variables.
 
-> Set up the environment variables that stack required properly.
+> Set up the environment variables properly. <br>
+For example, if you are tesing gin-vue stack, according to `client.filesystem.env` in the stack, you should set:
+
+```shell
+export KUBECONFIG=~/.kube/config
+export APP_NAME=test-app
+export ORGANIZATION=<your-github-org>
+export GITHUB_TOKEN=<your-github-token>
+export REPO_VISIBILITY=private
+```
+
+Then you can run the stack:
 
 ```shell
 # Go to the gin-vue stack directory
