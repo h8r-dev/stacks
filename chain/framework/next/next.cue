@@ -4,7 +4,7 @@ import (
 	"universe.dagger.io/docker"
 	//"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
-	"github.com/h8r-dev/cuelib/framework/react/next"
+	"github.com/h8r-dev/stacks/cuelib/framework/react/next"
 	//"strconv"
 )
 

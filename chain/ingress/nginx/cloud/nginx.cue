@@ -1,7 +1,7 @@
 package cloud
 
 import (
-	"github.com/h8r-dev/cuelib/deploy/helm"
+	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
 )
 
 #Instance: {

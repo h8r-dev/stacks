@@ -1,9 +1,9 @@
 package argocd
 
 import (
-	"github.com/h8r-dev/cuelib/deploy/kubectl"
-	"github.com/h8r-dev/cuelib/cd/argocd"
-	"github.com/h8r-dev/cuelib/network/ingress"
+	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
+	"github.com/h8r-dev/stacks/cuelib/cd/argocd"
+	"github.com/h8r-dev/stacks/cuelib/network/ingress"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/chain/supply/base"
 )

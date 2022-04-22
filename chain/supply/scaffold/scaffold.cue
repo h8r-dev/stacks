@@ -12,7 +12,7 @@ import (
 	// registry
 	githubRegistry "github.com/h8r-dev/chain/registry/github"
 	"github.com/h8r-dev/chain/ci/github"
-	"github.com/h8r-dev/cuelib/utils/base"
+	"github.com/h8r-dev/stacks/cuelib/utils/base"
 	"universe.dagger.io/docker"
 	"list"
 )

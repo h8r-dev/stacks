@@ -4,7 +4,7 @@ import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/chain/framework/helm"
-	"github.com/h8r-dev/cuelib/utils/base"
+	"github.com/h8r-dev/stacks/cuelib/utils/base"
 )
 
 dagger.#Plan & {
