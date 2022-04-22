@@ -74,7 +74,7 @@
     export CLOUD_PROVIDER=kind
     ```
 
-1. 运行：`dagger do up -p ./plans`
+1. 运行：`hof mod vendor cue && dagger project update && dagger do up -p ./plans  --log-format plain`
 
 1. 确认 Ingress nginx Ready
     ```shell
@@ -90,4 +90,4 @@
     127.0.0.1 prometheus.h8r.infra
     ```
 
-1. 删除: `dagger do down -p ./plans`
+1. 删除: `dagger do down -p ./plans` (暂不支持)
