@@ -35,11 +35,9 @@ dagger.#Plan & {
 					framework: "next"
 					ci:        "github"
 					registry:  "github"
-					extraArgs: {
-						helmSet: """
+					extraArgs: helmSet: """
 						'.securityContext = {"runAsUser": 0}'
 						"""
-					}
 				},
 				{
 					name:      client.env.APP_NAME + "-backend"

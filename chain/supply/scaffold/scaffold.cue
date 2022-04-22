@@ -35,13 +35,9 @@ import (
 		"ingress-nginx-minikube": nginxKind
 	}
 
-	ci: {
-		"github": github
-	}
+	ci: "github": github
 
-	registry: {
-		"github": githubRegistry
-	}
+	registry: github: githubRegistry
 
 	input:                      #Input
 	output:                     #Output
@@ -65,7 +61,7 @@ import (
 				if idx > 0 {
 					_output: do["\(idx-1)"].output.image
 				}
-				"input": framework[i.framework].#Input & {
+				input: framework[i.framework].#Input & {
 					name:  i.name
 					image: _output
 				}
@@ -87,7 +83,7 @@ import (
 				if idx > 0 {
 					_output: doHelmScaffold["\(idx-1)"].output.image
 				}
-				"input": helm.#Input & {
+				input: helm.#Input & {
 					chartName: i.name
 					image:     _output
 					name:      helmScaffold[0].name
@@ -141,10 +137,10 @@ import (
 					_output: doCIScaffold["\(idx-1)"].output.image
 				}
 				"input": ci[i.ci].#Input & {
-					name:           i.name
-					image:          _output
-					"organization": input.organization
-					deployRepo:     helmScaffold[0].name
+					name:         i.name
+					image:        _output
+					organization: input.organization
+					deployRepo:   helmScaffold[0].name
 				}
 			}
 		}
@@ -216,7 +212,7 @@ import (
 				if idx > 0 {
 					_output: doAddonsScaffold["\(idx-1)"].output.image
 				}
-				"input": addons[i.name].#Input & {
+				input: addons[i.name].#Input & {
 					helmName: helmScaffold[0].name
 					image:    _output
 				}

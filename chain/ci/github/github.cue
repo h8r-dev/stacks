@@ -21,11 +21,9 @@ import (
 
 	do: bash.#Run & {
 		"input": input.image
-		mounts: {
-			helm: {
-				contents: _writeYamlOutput
-				dest:     "/h8r/ci/\(input.name)"
-			}
+		mounts: helm: {
+			contents: _writeYamlOutput
+			dest:     "/h8r/ci/\(input.name)"
 		}
 		script: contents: """
 				mkdir -p /scaffold/\(input.name)/.github/workflows
