@@ -82,7 +82,7 @@
 
 1. 确认 Ingress nginx Ready
     ```shell
-    kubectl wait --for=condition=Available deployment ingress-nginx-controller -n ingress-nginx --timeout 600s
+    kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s
     ```
 1. Ingress-nginx Ready，添加 Hosts，打开浏览器访问
     ```shell
