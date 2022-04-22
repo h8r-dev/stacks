@@ -2,7 +2,7 @@ package cloudflare
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/network/dns/cloudflare"
+	"github.com/h8r-dev/stacks/cuelib/network/dns/cloudflare"
 )
 
 // for test

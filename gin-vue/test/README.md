@@ -12,7 +12,7 @@ Go to the test directory:
 cd gin-vue/test
 ```
 
-Install ginkgo:
+### Install ginkgo:
 
 ```shell
 go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
@@ -21,14 +21,31 @@ go get github.com/onsi/gomega/...
 
 This fetches Ginkgo and installs the ginkgo executable under `$GOBIN` - you'll want that on your `$PATH`. It also fetches the core Gomega matcher library and its set of supporting libraries.
 
+### Install [hln](https://heighliner.dev/docs/getting_started/installation) 
+
+Learn more about [how to use hln](https://heighliner.dev/docs/cli/hln/overview).
+
 ## Run
 
-Before running the tests, you need to run the stack first:
+Before running the tests, you need to run the stack, which requires some arguments passed by environment variables.
+
+> Set up the environment variables properly. <br>
+For example, if you are tesing gin-vue stack, according to `client.filesystem.env` in the stack, you should set:
+
+```shell
+export KUBECONFIG=~/.kube/config
+export APP_NAME=test-app
+export ORGANIZATION=<your-github-org>
+export GITHUB_TOKEN=<your-github-token>
+export REPO_VISIBILITY=private
+```
+
+Then you can run the stack:
 
 ```shell
 # Go to the gin-vue stack directory
 cd ..
-hln up --dir ./plans
+hln up
 ```
 
 Then run the e2e tests:
@@ -37,4 +54,12 @@ Then run the e2e tests:
 # Go to the test directory
 cd test/
 ginkgo
+```
+
+Clean up your app
+
+```shell
+# Go to the gin-vue stack directory
+cd ..
+hln down
 ```

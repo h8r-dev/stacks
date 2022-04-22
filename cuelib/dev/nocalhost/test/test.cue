@@ -2,10 +2,11 @@ package nocalhost
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/dev/nocalhost"
-	"github.com/h8r-dev/cuelib/utils/random"
-	"github.com/h8r-dev/cuelib/network/ingress"
-	"github.com/h8r-dev/cuelib/deploy/helm"
+	"github.com/h8r-dev/stacks/cuelib/dev/nocalhost"
+	"github.com/h8r-dev/stacks/cuelib/utils/random"
+	"github.com/h8r-dev/stacks/cuelib/network/ingress"
+	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
+	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
 )
 
 ingressNginxSetting: #"""
@@ -79,6 +80,13 @@ dagger.#Plan & {
 				namespace:      "nocalhost"
 				name:           "nocalhost"
 				waitFor:        installIngress.success
+			}
+
+			createImagePullSecretForDevNs: kubectl.#CreateImagePullSecret & {
+				kubeconfig: client.commands.kubeconfig.stdout
+				username:   client.env.ORGANIZATION
+				password:   client.env.GITHUB_TOKEN
+				namespace:  initNocalhost.nsOutput
 			}
 		}
 	}

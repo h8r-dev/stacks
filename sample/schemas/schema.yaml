@@ -17,4 +17,8 @@ parameters:
     description: Which github organization do you want to use?
     key: ORGANIZATION
     required: true
+  - title: github repository visibility
+    default: private
+    description: Which kind of repository do you want, public or private ?
+    key: REPO_VISIBILITY
     

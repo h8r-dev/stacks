@@ -8,4 +8,3 @@
 ## Documentation
 
 - [Tutorial](https://heighliner.dev/docs/tutorials/gin_vue)
-

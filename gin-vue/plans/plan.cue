@@ -2,15 +2,15 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/deploy/helm"
-	"github.com/h8r-dev/cuelib/network/ingress"
-	"github.com/h8r-dev/cuelib/monitoring/grafana"
-	"github.com/h8r-dev/cuelib/cd/argocd"
-	"github.com/h8r-dev/cuelib/deploy/kubectl"
-	"github.com/h8r-dev/cuelib/monitoring/prometheus"
-	"github.com/h8r-dev/cuelib/h8r/h8r"
-	"github.com/h8r-dev/cuelib/dev/nocalhost"
-	"github.com/h8r-dev/cuelib/scm/github"
+	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
+	"github.com/h8r-dev/stacks/cuelib/network/ingress"
+	"github.com/h8r-dev/stacks/cuelib/monitoring/grafana"
+	"github.com/h8r-dev/stacks/cuelib/cd/argocd"
+	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
+	"github.com/h8r-dev/stacks/cuelib/monitoring/prometheus"
+	"github.com/h8r-dev/stacks/cuelib/h8r/h8r"
+	"github.com/h8r-dev/stacks/cuelib/dev/nocalhost"
+	"github.com/h8r-dev/stacks/cuelib/scm/github"
 )
 
 dagger.#Plan & {
@@ -29,10 +29,11 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			KUBECONFIG:   string
-			APP_NAME:     string
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
+			KUBECONFIG:      string
+			APP_NAME:        string
+			ORGANIZATION:    string
+			GITHUB_TOKEN:    dagger.#Secret
+			REPO_VISIBILITY: "public" | *"private"
 		}
 		// filesystem: "config.yaml": write: {
 		//  // Convert a CUE value into a YAML formatted string
@@ -125,11 +126,13 @@ dagger.#Plan & {
 						password: installArgoCD.content
 					}
 				}
-				name:      client.env.APP_NAME
-				repo:      initRepos.initHelmRepo.url
-				namespace: applicationInstallNamespace
-				path:      "."
-				helmSet:   "ingress.hosts[0].paths[0].servicePort=80,ingress.hosts[0].paths[1].servicePort=8000,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[1].path=/api,ingress.hosts[0].host=" + appDomain + ",ingress.hosts[0].paths[0].serviceName=" + client.env.APP_NAME + "-front,ingress.hosts[0].paths[1].serviceName=" + client.env.APP_NAME
+				name:               client.env.APP_NAME
+				repo:               initRepos.initHelmRepo.url
+				namespace:          applicationInstallNamespace
+				path:               "."
+				helmSet:            "ingress.hosts[0].paths[0].servicePort=80,ingress.hosts[0].paths[1].servicePort=8000,ingress.hosts[0].paths[0].path=/,ingress.hosts[0].paths[1].path=/api,ingress.hosts[0].host=" + appDomain + ",ingress.hosts[0].paths[0].serviceName=" + client.env.APP_NAME + "-front,ingress.hosts[0].paths[1].serviceName=" + client.env.APP_NAME
+				githubToken:        client.env.GITHUB_TOKEN
+				githubOrganization: client.env.ORGANIZATION
 			}
 
 			// create image pull secret for argocd
@@ -203,6 +206,7 @@ dagger.#Plan & {
 					"accessToken":     accessToken
 					"organization":    organization
 					"sourceCodeDir":   sourceCodeDir
+					repoVisibility:    client.env.REPO_VISIBILITY
 				}
 
 				initFrontendRepo: github.#InitRepo & {
@@ -212,6 +216,7 @@ dagger.#Plan & {
 					"accessToken":     accessToken
 					"organization":    organization
 					"sourceCodeDir":   sourceCodeDir
+					repoVisibility:    client.env.REPO_VISIBILITY
 				}
 
 				initHelmRepo: github.#InitRepo & {
@@ -222,6 +227,7 @@ dagger.#Plan & {
 					"accessToken":     accessToken
 					"organization":    organization
 					"sourceCodeDir":   sourceCodeDir
+					repoVisibility:    client.env.REPO_VISIBILITY
 				}
 			}
 

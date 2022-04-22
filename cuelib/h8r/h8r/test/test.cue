@@ -2,8 +2,8 @@ package h8r
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/h8r/h8r"
-	"github.com/h8r-dev/cuelib/utils/random"
+	"github.com/h8r-dev/stacks/cuelib/h8r/h8r"
+	"github.com/h8r-dev/stacks/cuelib/utils/random"
 )
 
 dagger.#Plan & {

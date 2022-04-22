@@ -2,7 +2,7 @@ package argocd
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/cd/argocd"
+	"github.com/h8r-dev/stacks/cuelib/cd/argocd"
 )
 
 dagger.#Plan & {

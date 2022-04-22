@@ -103,7 +103,6 @@ import (
 			}
 		}
 		mounts: {
-
 			"kubeconfig": {
 				dest:     "/kubeconfig"
 				contents: kubeconfig

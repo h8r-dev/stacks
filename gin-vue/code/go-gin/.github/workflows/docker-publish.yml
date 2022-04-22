@@ -51,6 +51,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           repository: ${{ env.ORG }}/${{ env.HELM_REPO }}
+          token: ${{ secrets.PAT }}
           ref: refs/heads/main
           persist-credentials: false
           fetch-depth: 0

@@ -2,7 +2,7 @@ package nocalhost
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/cuelib/scm/github"
+	"github.com/h8r-dev/stacks/cuelib/scm/github"
 )
 
 #InitData: {
