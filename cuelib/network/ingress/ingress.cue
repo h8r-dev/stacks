@@ -7,7 +7,7 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/cuelib/utils/base"
+	"github.com/h8r-dev/stacks/cuelib/utils/base"
 )
 
 #Ingress: {

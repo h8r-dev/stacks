@@ -3,7 +3,7 @@
 // import (
 //  "universe.dagger.io/bash"
 //  "encoding/yaml"
-//  "github.com/h8r-dev/cuelib/utils/base"
+//  "github.com/h8r-dev/stacks/cuelib/utils/base"
 // )
 
 // // output cue struct
