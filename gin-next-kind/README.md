@@ -43,11 +43,9 @@ EOF
     # waiting for ready
     kubectl wait --for=condition=Available deployment buildkitd --timeout 600s
     ```
-1. 导出 kubeconfig，并修改 API Server 地址
+1. 导出 Kind kubeconfig，并修改 API Server 地址
     ```shell
-    kubectl config view --flatten --minify > ~/.kube/kind
-    vi ~/.kube/kind
-    # 修改第五行 Api Server `https://127.0.0.1:port` 为 `https://kubernetes.default.svc`
+    kubectl config view --flatten --minify | sed -e 's?server: https://127.0.0.1:[0-9]*?server: https://kubernetes.default.svc?' > ~/.kube/kind
     ```
 1. 初始化参数：
 
@@ -57,6 +55,7 @@ EOF
     export APP_NAME="orders"
     export GITHUB_TOKEN=[Github personal access token]
     export ORGANIZATION=[organization name or github id]
+    export CLOUD_PROVIDER=kind
     ```
 
 1. 运行：`dagger do up -p ./plans`
@@ -65,9 +64,14 @@ EOF
     ```shell
     kubectl wait --for=condition=Available deployment ingress-nginx-controller -n ingress-nginx --timeout 600s
     ```
-1. Ingress-nginx Ready，添加 Hosts，浏览器访问
-    ```
+1. Ingress-nginx Ready，添加 Hosts，打开浏览器访问
+    ```shell
     127.0.0.1 argocd.h8r.infra
+    127.0.0.1 orders-frontend.h8r.application
+    127.0.0.1 orders-backend.h8r.application
+    127.0.0.1 grafana.h8r.infra
+    127.0.0.1 alert.h8r.infra
+    127.0.0.1 prometheus.h8r.infra
     ```
-    
+
 1. 删除: `dagger do down -p ./plans`

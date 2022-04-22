@@ -89,7 +89,6 @@ import (
 					for file in */ ;
 					do
 						APP_NAME=$(echo $file | tr -d '/')
-						echo $APP_NAME
 						if [ $APP_NAME == "infra" ]; then
 							continue
 						fi
@@ -102,6 +101,7 @@ import (
 							--sync-policy automated \
 							--grpc-web \
 							--insecure \
+							--plaintext \
 							--upsert \
 							$setOps;
 						do 
@@ -124,6 +124,7 @@ import (
 							--sync-policy automated \
 							--grpc-web \
 							--insecure \
+							--plaintext \
 							--upsert \
 							$setOps;
 						do
