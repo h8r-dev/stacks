@@ -4,7 +4,7 @@
 1. Buildkit 运行在集群内
 1. 使用 ArgoCD 管理所有部署
 1. 不依赖 H8r Server，内部使用 Service Name 访问，外部使用 Hosts 访问
-1. 支持应用组合、添加（待完善）
+1. 支持应用组合、添加应用（待完善）
 1. 优化运行体验和提升运行速度
   1. 自定义执行镜像
   1. 删除不必要的等待
@@ -31,27 +31,27 @@
 1. 安装 Kind：https://kind.sigs.k8s.io/docs/user/quick-start/#installation
 1. 创建 Kind 集群
     ```
-cat <<EOF | kind create cluster --config=-
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-  kubeadmConfigPatches:
-  - |
-    kind: InitConfiguration
-    nodeRegistration:
-      kubeletExtraArgs:
-        node-labels: "ingress-ready=true"
-  extraPortMappings:
-  - containerPort: 80
-    hostPort: 80
-    protocol: TCP
-  - containerPort: 443
-    hostPort: 443
-    protocol: TCP
-  - containerPort: 31234
-    hostPort: 1234
-EOF
+    cat <<EOF | kind create cluster --config=-
+    kind: Cluster
+    apiVersion: kind.x-k8s.io/v1alpha4
+    nodes:
+    - role: control-plane
+      kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+      extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+      - containerPort: 31234
+        hostPort: 1234
+    EOF
     ```
 1. 部署 Buildkit(考虑自动化)
     ```shell
