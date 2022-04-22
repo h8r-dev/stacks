@@ -15,7 +15,9 @@ import (
 	//    ENV DEBIAN_FRONTEND=noninteractive
 	//    RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 	//    RUN sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
-	//    RUN apt-get update && apt install curl wget jq git apt-transport-https gnupg nodejs npm tar -y
+	//    RUN apt-get update && apt install curl wget jq git apt-transport-https gnupg npm tar -y
+	//    # install nodejs 12
+	//    RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 	//    # set yarn config
 	//    RUN npm install -g yarn
 	//    RUN yarn config set registry https://registry.npm.taobao.org/

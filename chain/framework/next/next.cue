@@ -2,8 +2,10 @@ package next
 
 import (
 	"universe.dagger.io/docker"
+	//"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
 	"github.com/h8r-dev/cuelib/framework/react/next"
+	//"strconv"
 )
 
 #Instance: {
@@ -28,6 +30,30 @@ import (
 		contents: _rewrite.output
 		dest:     "/scaffold/\(input.name)"
 	}
+
+	// _build: bash.#Run & {
+	//  "input": input.image
+	//  workdir: "/scaffold\(input.name)"
+	//  env: {
+	//   APP_NAME:   input.name
+	//   TYPESCRIPT: strconv.FormatBool(input.typescript)
+	//  }
+	//  script: contents: #"""
+	//   yarn config set registry http://mirrors.cloud.tencent.com/npm/
+	//   OPTS=""
+	//   [ "$TYPESCRIPT" = "true" ] && OPTS="$OPTS --typescript"
+	//   echo "$APP_NAME" | yarn create next-app $OPTS
+	//   """#
+	// }
+	// _file: core.#Source & {
+	//  path: "template"
+	// }
+	// do: docker.#Copy & {
+	//  "input":  _build.output
+	//  contents: _file.output
+	//  dest:     "/scaffold/\(input.name)"
+	// }
+
 	output: #Output & {
 		image: do.output
 	}

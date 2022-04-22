@@ -5,6 +5,7 @@ import (
 )
 
 #Input: {
-	name:  string
-	image: docker.#Image
+	name:       string
+	image:      docker.#Image
+	typescript: bool | *true
 }
