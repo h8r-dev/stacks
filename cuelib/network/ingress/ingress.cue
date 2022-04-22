@@ -6,6 +6,7 @@ import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
+	"universe.dagger.io/docker"
 	"github.com/h8r-dev/stacks/cuelib/utils/base"
 )
 
@@ -139,10 +140,10 @@ import (
 #GetIngressVersion: {
 	kubeconfig: string | dagger.#Secret
 
-	_kubectl: base.#Kubectl
+	image: docker.#Image | *base.#Kubectl
 
 	get: bash.#Run & {
-		input:   _kubectl.output
+		input:   image
 		workdir: "/src"
 		mounts: "KubeConfig Data": {
 			dest:     "/kubeconfig"

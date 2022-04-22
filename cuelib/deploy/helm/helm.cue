@@ -52,7 +52,7 @@ import (
 	// Helm version
 	version: *"3.5.2" | string
 
-	chartVersion: string | *""
+	chartVersion: string
 
 	// Kubectl version
 	kubectlVersion: *"v1.23.5" | string
@@ -91,14 +91,16 @@ import (
 			if repository != null {
 				HELM_REPO: repository
 			}
-			HELM_NAME:          name
-			CHART_NAME:         chart
-			HELM_ACTION:        action
-			HELM_TIMEOUT:       timeout
-			HELM_WAIT:          strconv.FormatBool(wait)
-			HELM_ATOMIC:        strconv.FormatBool(atomic)
-			HELM_SET:           set
-			HELM_CHART_VERSION: chartVersion
+			HELM_NAME:    name
+			CHART_NAME:   chart
+			HELM_ACTION:  action
+			HELM_TIMEOUT: timeout
+			HELM_WAIT:    strconv.FormatBool(wait)
+			HELM_ATOMIC:  strconv.FormatBool(atomic)
+			HELM_SET:     set
+			if repository != null {
+				HELM_CHART_VERSION: chartVersion
+			}
 		}
 		mounts: {
 			"kubeconfig": {

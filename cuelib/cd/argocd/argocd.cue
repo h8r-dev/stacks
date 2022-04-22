@@ -5,6 +5,7 @@ import (
 	"dagger.io/dagger/core"
 	"strconv"
 	"universe.dagger.io/bash"
+	"universe.dagger.io/docker"
 	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
 	"github.com/h8r-dev/stacks/cuelib/utils/base"
 	"github.com/h8r-dev/stacks/cuelib/h8r/h8r"
@@ -230,4 +231,38 @@ import (
 	}
 
 	output: run.output
+}
+
+#Patch: {
+	kubeconfig: dagger.#Secret
+	input:      docker.#Image
+	namespace:  string | *"argocd"
+	waitFor:    bool
+	do:         bash.#Run & {
+		always:  true
+		"input": input
+		mounts: "kubeconfig": {
+			dest:     "/kubeconfig"
+			contents: kubeconfig
+		}
+		env: {
+			KUBECONFIG: "/kubeconfig"
+			NAMESPACE:  namespace
+			WAIT_FOR:   strconv.FormatBool(waitFor)
+		}
+		script: contents: #"""
+			# patch deployment cause ingress redirct: https://github.com/argoproj/argo-cd/issues/2953
+			kubectl patch deployment argocd-server --patch '{"spec": {"template": {"spec": {"containers": [{"name": "argocd-server","command": ["argocd-server", "--insecure"]}]}}}}' -n $NAMESPACE
+			kubectl patch statefulset argocd-application-controller --patch '{"spec": {"template": {"spec": {"containers": [{"name": "argocd-application-controller","command": ["argocd-application-controller", "--app-resync", "30"]}]}}}}' -n $NAMESPACE
+			kubectl wait --for=condition=Available deployment argocd-server -n $NAMESPACE --timeout 600s
+			kubectl rollout status --watch --timeout=600s statefulset/argocd-application-controller -n $NAMESPACE
+			secret=$(kubectl -n $NAMESPACE get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo)
+			mkdir -p /infra/argocd
+			printf $secret > /infra/argocd/secret
+			"""#
+		export: files: "/infra/argocd/secret": string
+	}
+	output:  do.output
+	secret:  do.export.files."/infra/argocd/secret"
+	success: do.success
 }

@@ -19,5 +19,13 @@ dagger.#Plan & {
 				kubectl version --short --client
 				"""#
 		}
+
+		baseImageUbuntu: base.#Image & {}
+		testBase:        bash.#Run & {
+			input: baseImageUbuntu.output
+			script: contents: #"""
+				gh
+				"""#
+		}
 	}
 }

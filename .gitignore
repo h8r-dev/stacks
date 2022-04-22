@@ -6,4 +6,5 @@
 output.yaml
 tmp
 tars
+cue.mod/pkg/*
 .terraform*

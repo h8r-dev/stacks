@@ -37,6 +37,7 @@ import (
 					TYPESCRIPT: strconv.FormatBool(typescript)
 				}
 				script: contents: #"""
+					yarn config set registry http://mirrors.cloud.tencent.com/npm/
 					OPTS=""
 					[ "$TYPESCRIPT" = "true" ] && OPTS="$OPTS --typescript"
 					echo "$APP_NAME" | yarn create next-app $OPTS

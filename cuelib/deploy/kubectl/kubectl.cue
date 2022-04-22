@@ -122,7 +122,7 @@ import (
 	url: string
 
 	// Kubernetes Namespace to deploy to
-	namespace: string | *"default"
+	namespace: string
 
 	// Kube config file
 	kubeconfig: string | dagger.#Secret
