@@ -37,7 +37,7 @@ nodes:
     hostPort: 1234
 EOF
     ```
-1. 部署 Buildkit
+1. 部署 Buildkit(考虑自动化)
     ```shell
     kubectl apply -f https://raw.githubusercontent.com/h8r-dev/stacks/main/gin-next-kind/resources/buildkit.yaml
     # waiting for ready
