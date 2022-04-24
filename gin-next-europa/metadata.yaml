@@ -1,9 +1,0 @@
-name: gin-next-europa
-version: 1.0.0
-owner:
-  name: Heighliner
-  contact: heighliner@h8r.io
-description: This is gin-next stack
-icon: https://raw.githubusercontent.com/gin-gonic/logo/master/color.png
-url: https://gin-gonic.com/
-tags: ["go", "gin", "microservice", "redis", "mysql"]
