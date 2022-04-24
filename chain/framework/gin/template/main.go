@@ -7,8 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go-gin/models"
-	"go-gin/pkg/gredis"
 	"go-gin/pkg/setting"
 	"go-gin/pkg/util"
 	"go-gin/routers"
@@ -16,8 +14,8 @@ import (
 
 func init() {
 	setting.Setup()
-	models.Setup()
-	gredis.Setup()
+	//models.Setup()
+	//gredis.Setup()
 	util.Setup()
 }
 

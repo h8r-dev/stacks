@@ -42,6 +42,10 @@ import (
 					
 					# Create private or public repository
 					gh repo create $GITHUB_ORGANIZATION/$repoName --$VISIBILITY -d "Heighliner stack init repo"
+
+					# Set PAT for checkout helm chart repositry and push helm chart repositry
+					gh secret set PAT --repos $GITHUB_ORGANIZATION/$repoName < /scm/github/pat
+
 					# set remote url with PAT for git push
 					git remote set-url origin https://$(echo $GITHUB_TOKEN)@github.com/$GITHUB_ORGANIZATION/$repoName
 					git config --global user.email "heighliner@h8r.dev"

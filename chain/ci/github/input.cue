@@ -60,11 +60,12 @@ import (
 		          ref: refs/heads/main
 		          persist-credentials: false
 		          fetch-depth: 0
+		          token: ${{ secrets.PAT }}
 		      - name: Update helm values
 		        uses: mikefarah/yq@master
 		        if: startsWith(github.ref, 'refs/tags/v')
 		        with:
-		          cmd: yq -i '.image.tag = "${{ steps.vars.outputs.tag }}"' 'values.yaml'
+		          cmd: yq -i '.image.tag = "${{ steps.vars.outputs.tag }}"' ./${{ github.event.repository.name }}/values.yaml
 		      - name: Update helm repo
 		        if: startsWith(github.ref, 'refs/tags/v')
 		        run: |

@@ -65,7 +65,7 @@ var cfg *ini.File
 
 // Setup initialize the configuration instance
 func Setup() {
-	configPath := flag.String("c", "/root/conf/app.ini", "Path of config file")
+	configPath := flag.String("c", "conf/app.ini", "Path of config file")
 	flag.Parse()
 	var err error
 	cfg, err = ini.Load(*configPath)
