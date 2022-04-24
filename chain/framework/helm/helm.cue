@@ -28,7 +28,8 @@ import (
 				fi
 				# set domain
 				domain=$NAME\(base.#DefaultDomain.application.domain)
-				yq -i '.ingress.enabled = true | .ingress.hosts[0].host="'$domain'"' values.yaml
+				# TODO RUNNING ROOT USERS IS UNSAFE
+				yq -i '.ingress.enabled = true | .ingress.hosts[0].host="'$domain'" | .securityContext = {"runAsUser": 0}' values.yaml
 				mkdir -p /h8r
 				printf $DIR_NAME > /h8r/application
 			"""

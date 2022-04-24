@@ -59,7 +59,7 @@
     ```
 1. 部署 Buildkit(考虑自动化)
     ```shell
-    kubectl apply -f https://raw.githubusercontent.com/h8r-dev/stacks/main/gin-next-europa/resources/buildkit.yaml
+    kubectl apply -f https://raw.githubusercontent.com/h8r-dev/stacks/main/gin-next/resource/buildkit.yaml
     # waiting for ready
     kubectl wait --for=condition=Available deployment buildkitd --timeout 600s
     ```
@@ -84,7 +84,7 @@
     ```shell
     kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s
     ```
-1. Ingress-nginx Ready，添加 Hosts，打开浏览器访问
+1. Ingress-nginx Ready，添加 Hosts，打开浏览器访问 `ArgoCD`，检查部署状态
     ```shell
     127.0.0.1 argocd.h8r.infra
     127.0.0.1 orders-frontend.h8r.application

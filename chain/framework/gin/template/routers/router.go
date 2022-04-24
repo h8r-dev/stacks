@@ -1,16 +1,18 @@
 package routers
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 
-	swaggerFiles "github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	"github.com/gin-gonic/gin"
+
 	_ "go-gin/docs"
 
-	"github.com/Depado/ginprom"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"go-gin/middleware/jwt"
-	"go-gin/routers/api"
+
+	"github.com/Depado/ginprom"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
@@ -30,16 +32,23 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.GET("/health", func(c *gin.Context) {
+	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "OK")
 	})
-	r.POST("/auth", api.GetAuth)
+
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "heighlienr gin framework"})
+	})
+
+	//r.POST("/auth", api.GetAuth)
 	r.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	apiv1 := r.Group("/api/v1")
 	apiv1.Use(jwt.JWT())
 	{
-
+		apiv1.GET("/hello", func(c *gin.Context) {
+			c.String(http.StatusOK, "Request from frontend")
+		})
 	}
 
 	return r
