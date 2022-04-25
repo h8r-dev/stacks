@@ -9,15 +9,26 @@ import (
 
 dagger.#Plan & {
 	client: {
-		commands: kubeconfig: {
-			name: "cat"
-			args: ["\(env.KUBECONFIG)"]
-			stdout: dagger.#Secret
+		commands: {
+			if env.KUBECONFIG != "" {
+				kubeconfig: {
+					name: "sh"
+					args: ["-c", "cat \(env.KUBECONFIG) | sed -e 's?server: https://.*?server: https://kubernetes.default.svc?'"]
+					stdout: dagger.#Secret
+				}
+			}
+			if env.KUBECONFIG == "" {
+				kubeconfig: {
+					name: "sh"
+					args: ["-c", "kubectl config view --flatten --minify | sed -e 's?server: https://.*?server: https://kubernetes.default.svc?'"]
+					stdout: dagger.#Secret
+				}
+			}
 		}
 		env: {
 			ORGANIZATION:   string
 			GITHUB_TOKEN:   dagger.#Secret
-			KUBECONFIG:     string
+			KUBECONFIG:     string | *""
 			CLOUD_PROVIDER: string
 			APP_NAME:       string
 		}
