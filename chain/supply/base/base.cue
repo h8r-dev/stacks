@@ -55,6 +55,6 @@ package base
 		prometheus:   "prometheus" + domain
 		alertManager: "alert" + domain
 		grafana:      "grafana" + domain
-		nocalhost:    "nocalhost" + domain
+		nocalhost:    "nocalhost-web.nocalhost" + domain
 	}
 }

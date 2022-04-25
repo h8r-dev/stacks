@@ -1,19 +1,18 @@
 package nocalhost
 
 import (
-	"strconv"
 	"dagger.io/dagger"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 )
 
 #GetToken: {
-	url:      string
+	url:      string | *"nocalhost-web.nocalhost"
 	user:     string | *"admin@admin.com"
 	password: string | *"123456"
 	waitFor:  bool
 
-	baseImage: alpine.#Build & {
+	_baseImage: alpine.#Build & {
 		packages: {
 			bash: {}
 			curl: {}
@@ -21,92 +20,128 @@ import (
 		}
 	}
 
-	run: bash.#Run & {
-		env: WAIT_FOR: strconv.FormatBool(waitFor)
+	_run: bash.#Run & {
 		always: true
-		input:  baseImage.output
+		input:  _baseImage.output
+		env: {
+			if waitFor != _|_ {
+				WAIT_FOR: "\(waitFor)"
+			}
+			USER:     user
+			PASSWORD: password
+			NH_HOST:  url
+		}
 		script: contents: #"""
-			until $(curl --output /dev/null --silent --head --fail \#(url)/health); do
-				echo 'nocalhost not ready'
-				sleep 2
+			until $(curl --output /dev/null --silent --head --fail $NH_HOST/health); do
+				echo "nocalhost not ready: $NH_HOST"
+				sleep 10
 			done
-			mkdir /output
-			curl --retry 20 --retry-delay 2 --location --request POST \#(url)/v1/login \
-				--header "Content-Type: application/json" \
-				--data-raw '{"email":"\#(user)","password":"\#(password)"}' > /result
-			printf "$(jq '.data.token' /result)" > /result
-			cat /result
+
+			token=""
+			for i in $(seq 1 10); do
+				token=""
+				DATA_RAW='{"email":"'"$USER"'","password":"'"$PASSWORD"'"}'
+				curl -s --retry 20 --retry-delay 2 --location --request POST $NH_HOST/v1/login \
+					--header "Content-Type: application/json" \
+					--data-raw "$DATA_RAW" > /result
+				token=$(jq -r '.data | .token' /result)
+				if [[ "$token" != "" && $token != "null" ]]; then
+					echo "get token success"
+					break
+				fi
+				echo "nocalhost token not ready: $NH_HOST"
+				sleep 8
+			done
+			printf $token > /result
 			"""#
 		export: files: "/result": string
 	}
 
-	output: run.export.files."/result"
+	output: _run.export.files."/result"
 }
 
 #CreateTeam: {
-	token:    string
-	members:  string
-	url:      string
-	password: string | *"123456"
+	url:         string | *"nocalhost-web.nocalhost"
+	token:       string
+	members:     string
+	password:    string | *"123456"
+	emailSuffix: string | *"@h8r.io"
+	waitFor:     bool
 
-	baseImage: alpine.#Build & {
+	_baseImage: alpine.#Build & {
 		packages: {
 			bash: {}
 			curl: {}
 		}
 	}
 
-	run: bash.#Run & {
+	_run: bash.#Run & {
+		env: {
+			if waitFor != _|_ {
+				WAIT_FOR: "\(waitFor)"
+			}
+			NH_HOST:  url
+			TOKEN:    token
+			PASSWORD: password
+			MEMBERS:  members
+		}
 		always: true
-		input:  baseImage.output
+		input:  _baseImage.output
 		script: contents: #"""
 			sh_c='sh -c'
-			until $(curl --output /dev/null --silent --head --fail \#(url)/health); do
-				echo 'nocalhost ready'
+			until $(curl --output /dev/null --silent --head --fail $NH_HOST/health); do
+				echo "nocalhost not ready: $NH_HOST"
 				sleep 2
 			done
 
-			MEMBERS="\#(members)"
-			URL="\#(url)/v1/users"
-			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
+			URL="$NH_HOST/v1/users"
+			HEADER="--header 'Authorization: Bearer "$TOKEN"' --header 'Content-Type: application/json'"
 			for user in ${MEMBERS[@]}; do
-				DATA_RAW='{"confirm_password":"\#(password)","email":"'"$user"'@h8r.io","is_admin":0,"name":"'"$user"'","password":"\#(password)","status":1}'
+			  email="$user$EMAIL_SUFFIX"
+				DATA_RAW='{"confirm_password":"'"$PASSWORD"'","email":"'"$email"'","is_admin":0,"name":"'"$user"'","password":"'"$PASSWORD"'","status":1}'
 			  do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 				$sh_c "$do_create"
 			done
 			"""#
 	}
-	success: run.success
+	success: _run.success
 }
 
 #CreateCluster: {
+	url:        string | *"nocalhost-web.nocalhost"
 	token:      string
-	url:        string
+	waitFor:    bool
 	kubeconfig: string | dagger.#Secret
 
-	baseImage: alpine.#Build & {
+	_baseImage: alpine.#Build & {
 		packages: {
 			bash: {}
 			curl: {}
 		}
 	}
 
-	run: bash.#Run & {
+	_run: bash.#Run & {
 		always: true
-		input:  baseImage.output
+		input:  _baseImage.output
+		env: {
+			if waitFor != _|_ {
+				WAIT_FOR: "\(waitFor)"
+			}
+			NH_HOST: url
+			TOKEN:   token
+		}
 		script: contents: #"""
 			sh_c='sh -c'
-			until $(curl --output /dev/null --silent --head --fail \#(url)/health); do
-				echo 'nocalhost ready'
+			until $(curl --output /dev/null --silent --head --fail $NH_HOST/health); do
+				echo "nocalhost not ready: $NH_HOST"
 				sleep 2
 			done
 
 			kubeconfig="$(base64 -w0 /etc/kubernetes/config)"
-			URL="\#(url)/v1/cluster"
-			DATA_RAW='{"name":"initCluster","kubeconfig":"'$kubeconfig'"}'
-			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
+			URL="$NH_HOST/v1/cluster"
+			DATA_RAW='{"name":"initCluster","kubeconfig":"'"$kubeconfig"'"}'
+			HEADER="--header 'Authorization: Bearer "$TOKEN"' --header 'Content-Type: application/json'"
 			do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
-			echo $do_create
 			$sh_c "$do_create"
 			"""#
 		mounts: "kubeconfig": {
@@ -114,37 +149,49 @@ import (
 			contents: kubeconfig
 		}
 	}
-	success: run.success
+	success: _run.success
 }
 
 #CreateApplication: {
+	url:         string | *"nocalhost-web.nocalhost"
+	waitFor:     bool
 	token:       string
-	url:         string
 	appName:     string
 	appGitURL:   string
 	source:      string | *"git"
 	installType: string | *"helm_chart"
 
-	baseImage: alpine.#Build & {
+	_baseImage: alpine.#Build & {
 		packages: {
 			bash: {}
 			curl: {}
 		}
 	}
 
-	run: bash.#Run & {
+	_run: bash.#Run & {
 		always: true
-		input:  baseImage.output
+		input:  _baseImage.output
+		env: {
+			if waitFor != _|_ {
+				WAIT_FOR: "\(waitFor)"
+			}
+			TOKEN:        token
+			APP_NAME:     appName
+			APP_GIT_URL:  appGitURL
+			SOURCE:       source
+			INSTALL_TYPE: installType
+			NH_HOST:      url
+		}
 		script: contents: #"""
 			sh_c='sh -c'
-			until $(curl --output /dev/null --silent --head --fail \#(url)/health); do
-				echo 'nocalhost ready'
+			until $(curl --output /dev/null --silent --head --fail $NH_HOST/health); do
+				echo "nocalhost not ready: $NH_HOST"
 				sleep 2
 			done
 
-			URL="\#(url)/v1/application"
-			DATA_RAW='{"context":"{\"application_url\":\"\#(appGitURL)\",\"application_name\":\"\#(appName)\",\"source\":\"\#(source)\",\"install_type\":\"\#(installType)\",\"resource_dir\":[]}","status":1}'
-			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
+			URL="$NH_HOST/v1/application"
+			DATA_RAW='{"context":"{\"application_url\":\"'"$APP_GIT_URL"'\",\"application_name\":\"'"$APP_NAME"'\",\"source\":\"'"$SOURCE"'\",\"install_type\":\"'"$INSTALL_TYPE"'\",\"resource_dir\":[]}","status":1}'
+			HEADER="--header 'Authorization: Bearer "$TOKEN"' --header 'Content-Type: application/json'"
 			do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 			$sh_c "$do_create"
 			"""#
@@ -152,6 +199,7 @@ import (
 }
 
 #CreateDevSpace: {
+	url:     string | *"nocalhost-web.nocalhost"
 	token:   string
 	url:     string
 	waitFor: bool
@@ -168,41 +216,46 @@ import (
 	_run: bash.#Run & {
 		always: true
 		input:  _baseImage.output
-		env: WAIT_FOR:    strconv.FormatBool(waitFor)
+		env: {
+			if waitFor != _|_ {
+				WAIT_FOR: "\(waitFor)"
+			}
+			TOKEN:   token
+			NH_HOST: url
+		}
 		script: contents: #"""
 			sh_c='sh -c'
-			until $(curl --output /dev/null --silent --head --fail \#(url)/health); do
-				echo 'nocalhost ready'
+			until $(curl --output /dev/null --silent --head --fail $NH_HOST/health); do
+				echo "nocalhost not ready: $NH_HOST"
 				sleep 2
 			done
 
-			URL="\#(url)/v2/dev_space/cluster"
-			HEADER="--header 'Authorization: Bearer \#(token)'"
-			do_create="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
-			messages="$($sh_c "$do_create")"
+			URL="$NH_HOST/v2/dev_space/cluster"
+			HEADER="--header 'Authorization: Bearer "$TOKEN"'"
+			do_get="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
+			messages="$($sh_c "$do_get")"
 			cluster_id=$(echo "$messages" | jq '.data | .[0] | .id')
 			if [[ "$cluster_id" == "null" ]]; then
 			  echo "cluster not fond"
 				exit 1
 			fi
 
-			URL="\#(url)/v1/users"
+			URL="$NH_HOST/v1/users"
 			do_create="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
 			messages="$($sh_c "$do_create")"
 			user_ids=$(echo "$messages" | jq -r '.data | .[] | .id')
 
-			URL="\#(url)/v2/dev_space"
-			do_create="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
-			messages="$($sh_c "$do_create")"
+			URL="$NH_HOST/v2/dev_space"
+			do_get="curl --retry 20 --retry-delay 2 $HEADER -s --location --request GET $URL"
+			messages="$($sh_c "$do_get")"
 			had_space_ids=$(echo "$messages" | jq -r '.data | .[] | .user_id')
 
-			URL="\#(url)/v1/dev_space"
-			HEADER="--header 'Authorization: Bearer \#(token)' --header 'Content-Type: application/json'"
+			URL="$NH_HOST/v1/dev_space"
+			HEADER="--header 'Authorization: Bearer "$TOKEN"' --header 'Content-Type: application/json'"
 			touch /namespaces
 			for id in ${user_ids[@]}; do
 				[[ "${had_space_ids[@]}" =~ "$id" ]] && continue
 				DATA_RAW='{"cluster_id":'"$cluster_id"',"cluster_admin":0,"user_id":'"$id"',"space_name":"","space_resource_limit":null}'
-				echo $DATA_RAW
 				do_create="curl --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 				messages="$($sh_c "$do_create")"
 				ns=$(echo "$messages" |  jq -r '.data | .namespace')
