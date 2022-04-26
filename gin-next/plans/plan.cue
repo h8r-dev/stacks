@@ -5,6 +5,7 @@ import (
 	"github.com/h8r-dev/chain/supply/scaffold"
 	"github.com/h8r-dev/chain/supply/scm"
 	"github.com/h8r-dev/chain/supply/cd"
+	"github.com/h8r-dev/chain/dev/nocalhost"
 )
 
 dagger.#Plan & {
@@ -88,12 +89,24 @@ dagger.#Plan & {
 			}
 		}
 
-		up: cd.#Instance & {
-			input: cd.#Input & {
-				provider:    "argocd"
-				repositorys: _git.output.image
-				kubeconfig:  client.commands.kubeconfig.stdout
+		up: {
+			_cd: cd.#Instance & {
+				input: cd.#Input & {
+					provider:    "argocd"
+					repositorys: _git.output.image
+					kubeconfig:  client.commands.kubeconfig.stdout
+				}
+			}
+			_initNocalhost: nocalhost.#Instance & {
+				input: nocalhost.#Input & {
+					image:              _cd.output.image
+					githubAccessToken:  client.env.GITHUB_TOKEN
+					githubOrganization: client.env.ORGANIZATION
+					kubeconfig:         client.commands.kubeconfig.stdout
+					appName:            client.env.APP_NAME
+				}
 			}
 		}
+
 	}
 }

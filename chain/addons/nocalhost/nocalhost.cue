@@ -4,6 +4,7 @@ import (
 	"universe.dagger.io/bash"
 )
 
+// TODO generate nocalhost ingress yaml
 #Instance: {
 	input: #Input
 	do:    bash.#Run & {

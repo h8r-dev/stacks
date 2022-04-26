@@ -6,7 +6,7 @@ import (
 )
 
 #InitData: {
-	url:                string
+	url:                string | *"nocalhost-web.nocalhost"
 	githubAccessToken:  dagger.#Secret
 	githubOrganization: string
 	kubeconfig:         string | dagger.#Secret

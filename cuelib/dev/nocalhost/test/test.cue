@@ -3,26 +3,9 @@ package nocalhost
 import (
 	"dagger.io/dagger"
 	"github.com/h8r-dev/stacks/cuelib/dev/nocalhost"
-	"github.com/h8r-dev/stacks/cuelib/utils/random"
 	"github.com/h8r-dev/stacks/cuelib/network/ingress"
-	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
 	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
 )
-
-ingressNginxSetting: #"""
-	controller:
-	  service:
-	    type: LoadBalancer
-	  metrics:
-	    enabled: true
-	  podAnnotations:
-	    prometheus.io/scrape: "true"
-	    prometheus.io/port: "10254"
-	"""#
-
-uri:          random.#String
-infraDomain:  ".stack.h8r.io"
-nocalhostURL: uri.output + ".nocalhost" + infraDomain
 
 dagger.#Plan & {
 	client: {
@@ -40,28 +23,12 @@ dagger.#Plan & {
 	}
 
 	actions: {
-		getIngressEndPoint: ingress.#GetIngressEndpoint & {
-			kubeconfig: client.commands.kubeconfig.stdout
-		}
-
 		getIngressVersion: ingress.#GetIngressVersion & {
 			kubeconfig: client.commands.kubeconfig.stdout
 		}
 
-		installIngress: helm.#Chart & {
-			name:       "ingress-nginx"
-			repository: "https://h8r-helm.pkg.coding.net/release/helm"
-			chart:      "ingress-nginx"
-			namespace:  "ingress-nginx"
-			action:     "installOrUpgrade"
-			kubeconfig: client.commands.kubeconfig.stdout
-			values:     ingressNginxSetting
-			wait:       true
-		}
-
 		test: {
 			initNocalhost: nocalhost.#InitData & {
-				url:                nocalhostURL
 				githubAccessToken:  client.env.GITHUB_TOKEN
 				githubOrganization: client.env.ORGANIZATION
 				kubeconfig:         client.commands.kubeconfig.stdout
@@ -72,14 +39,13 @@ dagger.#Plan & {
 
 			// installNocalhost: your can wait this action by installNocalhost.success
 			installNocalhost: nocalhost.#Install & {
-				"uri":          "just-test" + uri.output
+				uri:            "just-test"
 				kubeconfig:     client.commands.kubeconfig.stdout
 				ingressVersion: getIngressVersion.content
-				domain:         nocalhostURL
-				host:           getIngressEndPoint.content
+				domain:         "nocalhost.127-0-0-1.nip.io"
 				namespace:      "nocalhost"
 				name:           "nocalhost"
-				waitFor:        installIngress.success
+				chartVersion:   "0.6.16"
 			}
 
 			createImagePullSecretForDevNs: kubectl.#CreateImagePullSecret & {

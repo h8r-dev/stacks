@@ -5,19 +5,18 @@ import (
 	"github.com/h8r-dev/stacks/cuelib/network/ingress"
 	"github.com/h8r-dev/stacks/cuelib/deploy/helm"
 	"github.com/h8r-dev/stacks/cuelib/deploy/kubectl"
-	"github.com/h8r-dev/stacks/cuelib/h8r/h8r"
 )
 
 // install nocalhost
 #Install: {
+	namespace:      string | *"nocalhost"
+	svcName:        string | *"nocalhost-web"
 	uri:            string
 	kubeconfig:     string | dagger.#Secret
 	ingressVersion: string
 	domain:         string
-	// ingress ip
-	host:         string
-	name:         string
-	namespace:    string
+	name:           string
+
 	waitFor:      bool
 	chartVersion: string
 
@@ -28,6 +27,7 @@ import (
 		"namespace":    namespace
 		"kubeconfig":   kubeconfig
 		"chartVersion": chartVersion
+		set:            "service.type=ClusterIP"
 	}
 
 	getIngressYaml: ingress.#Ingress & {
@@ -36,7 +36,7 @@ import (
 		hostName:           domain
 		path:               "/"
 		"namespace":        namespace
-		backendServiceName: "nocalhost-web"
+		backendServiceName: svcName
 		"ingressVersion":   ingressVersion
 	}
 
@@ -47,12 +47,5 @@ import (
 		"waitFor":    waitFor
 	}
 
-	createH8rIngress: h8r.#CreateH8rIngress & {
-		name:     uri + "-nocalhost"
-		"host":   host
-		"domain": domain
-		port:     "80"
-	}
-
-	success: helmInstall.success & createH8rIngress.success & applyIngressYaml.success
+	success: helmInstall.success & applyIngressYaml.success
 }
