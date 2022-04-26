@@ -25,3 +25,7 @@ output "userEmail" {
 output "userFullName" {
   value = data.github_user.currentUser.name
 }
+
+output "repo_url" {
+  value = github_repository.initRepo.html_url
+}
