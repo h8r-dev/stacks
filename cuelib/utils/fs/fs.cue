@@ -10,7 +10,7 @@ import (
 	input:       docker.#Image
 	contents:    string
 	path:        string | *"/"
-	permissions: *0o600 | int
+	permissions: int | *0o600
 
 	// Execute write operation
 	_copy: core.#WriteFile & {
