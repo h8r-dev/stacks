@@ -16,6 +16,7 @@ import (
 				organization:        input.organization
 				image:               input.repositorys
 				visibility:          input.visibility
+				kubeconfig:          input.kubeconfig
 			}
 		}
 	}

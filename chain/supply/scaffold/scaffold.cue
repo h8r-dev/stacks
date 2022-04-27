@@ -14,7 +14,7 @@ import (
 	"github.com/h8r-dev/chain/ci/github"
 	"github.com/h8r-dev/stacks/cuelib/utils/base"
 	"universe.dagger.io/docker"
-	"list"
+	//"list"
 )
 
 #Instance: {
@@ -155,52 +155,31 @@ import (
 	ingressAddonsList: [ for t in input.addons if t.name == "ingress-nginx" {t}]
 	conbineAddons: [...]
 
-	if len(ingressAddonsList) > 0 {
-		_ingressName: string
-		if list.Contains(["kind", "minikube"], input.cloudProvider) {
-			_ingressName: "ingress-nginx-" + input.cloudProvider
-		}
-		if !list.Contains(["kind", "minikube"], input.cloudProvider) {
-			_ingressName: "ingress-nginx-cloud"
-		}
+	// ingress-nginx is pre require
 
-		ingressAddons: [
-			{
-				name:    _ingressName
-				version: ingressAddonsList[0].version
-			},
-		]
-		conbineAddons: exceptNginxIngressAddonsList + ingressAddons
-	}
+	// if len(ingressAddonsList) > 0 {
+	//  _ingressName: string
+	//  if list.Contains(["kind", "minikube"], input.cloudProvider) {
+	//   _ingressName: "ingress-nginx-" + input.cloudProvider
+	//  }
+	//  if !list.Contains(["kind", "minikube"], input.cloudProvider) {
+	//   _ingressName: "ingress-nginx-cloud"
+	//  }
+
+	//  ingressAddons: [
+	//   {
+	//    name:    _ingressName
+	//    version: ingressAddonsList[0].version
+	//   },
+	//  ]
+	//  conbineAddons: exceptNginxIngressAddonsList + ingressAddons
+	// }
 
 	if len(ingressAddonsList) == 0 {
 		conbineAddons: exceptNginxIngressAddonsList
 	}
 	// cue list for loop bug
 	// https://github.com/cue-lang/cue/issues/798
-
-	// fixAddonsList: [
-	//  for t in input.addons {
-	//   _name: string
-	//   if t.name != "ingress-nginx" {
-	//    _name: t.name
-	//   }
-	//   if t.name == "ingrsss-nginx" {
-	//    _name: "ingrsss-nginx-kind"
-	//    // if list.Contains(["kind", "minikube"], input.cloudProvider) {
-	//    //  _name: t.name + "-" + input.cloudProvider
-	//    // }
-	//    // if !list.Contains(["kind", "minikube"], input.cloudProvider) {
-	//    //  _name: t.name + "-" + "cloud"
-	//    // }
-	//    name: _name
-	//   }
-	//   name: _name
-	//   if t.version != _|_ {
-	//    version: t.version
-	//   }
-	//  },
-	// ]
 
 	doAddonsScaffold: {
 		for idx, i in conbineAddons {

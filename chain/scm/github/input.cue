@@ -10,4 +10,5 @@ import (
 	personalAccessToken: dagger.#Secret
 	image:               docker.#Image
 	visibility:          string
+	kubeconfig:          dagger.#Secret
 }

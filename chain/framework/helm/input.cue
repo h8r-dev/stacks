@@ -10,5 +10,5 @@ import (
 	image:     docker.#Image
 	// Helm values set
 	// Format: '.image.repository = "rep" | .image.tag = "tag"'
-	set: string | *""
+	set?: string | *""
 }

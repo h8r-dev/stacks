@@ -11,8 +11,10 @@ import (
 	input: #Input
 	do:    bash.#Run & {
 		env: {
-			NAME:     input.chartName
-			HELM_SET: input.set
+			NAME: input.chartName
+			if input.set != _|_ {
+				HELM_SET: input.set
+			}
 			DIR_NAME: input.name
 		}
 		"input": input.image

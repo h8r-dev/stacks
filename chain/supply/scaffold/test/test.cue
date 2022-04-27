@@ -51,9 +51,9 @@ dagger.#Plan & {
 				},
 			]
 			addons: [
-				{
-					name: "ingress-nginx"
-				},
+				// {
+				//  name: "ingress-nginx"
+				// },
 				{
 					name: "prometheus"
 				},
