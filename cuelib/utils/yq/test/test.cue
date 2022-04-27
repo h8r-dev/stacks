@@ -7,12 +7,10 @@ import (
 
 dagger.#Plan & {
 	actions: test: yq.#Writer & {
-		values: {
-			".a.b[0].c": #"""
-				hello
-				world
-				"""#
-		}
+		values: ".a.b[0].c": #"""
+			hello
+			world
+			"""#
 		output: #"""
 			a:
 			  b:

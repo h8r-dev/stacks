@@ -26,9 +26,7 @@ import (
 			},
 			for key, value in values {
 				docker.#Run & {
-					env: {
-						VALUE: value
-					}
+					env: VALUE: value
 					entrypoint: ["/bin/sh"]
 					command: {
 						name: "-c"
