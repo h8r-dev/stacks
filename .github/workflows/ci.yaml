@@ -140,7 +140,7 @@ jobs:
               exit 1
           fi
 
-  #a stack test example
+  # a stack test example
   test-stack-examples:
     runs-on: ubuntu-latest
     needs:
@@ -180,11 +180,6 @@ jobs:
             ingress_https_port=$(shuf -i 2000-65000 -n 1)
             kube_apiserver_port=$(shuf -i 2000-65000 -n 1)
             buildkit_port=$(shuf -i 2000-65000 -n 1)
-            echo "name: $KIND_NAME"
-            echo "ingress_http_port: $ingress_http_port"
-            echo "ingress_https_port: $ingress_https_port"
-            echo "kube_apiserver_port: $kube_apiserver_port"
-            echo "buildkit_port: $buildkit_port"
             echo "::set-output name=ingress_http_port::$ingress_http_port"
             echo "::set-output name=ingress_https_port::$ingress_https_port"
             echo "::set-output name=kube_apiserver_port::$kube_apiserver_port"
@@ -303,11 +298,6 @@ jobs:
             ingress_https_port=$(shuf -i 2000-65000 -n 1)
             kube_apiserver_port=$(shuf -i 2000-65000 -n 1)
             buildkit_port=$(shuf -i 2000-65000 -n 1)
-            echo "name: $KIND_NAME"
-            echo "ingress_http_port: $ingress_http_port"
-            echo "ingress_https_port: $ingress_https_port"
-            echo "kube_apiserver_port: $kube_apiserver_port"
-            echo "buildkit_port: $buildkit_port"
             echo "::set-output name=ingress_http_port::$ingress_http_port"
             echo "::set-output name=ingress_https_port::$ingress_https_port"
             echo "::set-output name=kube_apiserver_port::$kube_apiserver_port"
@@ -363,6 +353,7 @@ jobs:
           kubectl -n buildkit wait deployment buildkitd --for condition=Available=True --timeout=300s
           kubectl -n buildkit get deployment buildkitd
 
+#      Fix Me: dagger v0.2.8 doesn't work with gin-next
       - name: Install Dagger
         uses: dagger/dagger-for-github@v2
         with:
@@ -373,6 +364,7 @@ jobs:
         run: |
           dagger version
 
+#      Fix Me: `make vendor` not work
       - name: Cue vendor
         run: |
           mkdir -p gin-next/cue.mod/pkg/github.com/h8r-dev/stacks/

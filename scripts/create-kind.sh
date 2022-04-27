@@ -7,14 +7,8 @@ ingress_http_port=$2
 ingress_https_port=$3
 kube_apiserver_port=$4
 buildkit_port=$5
-echo "name: $name"
-echo "ingress_http_port: $ingress_http_port"
-echo "ingress_https_port: $ingress_https_port"
-echo "kube_apiserver_port: $kube_apiserver_port"
-echo "buildkit_port: $buildkit_port"
 
 export KUBECONFIG="$HOME/.kube/config-${name}"
-echo "$KUBECONFIG"
 
 # create kind cluster
 cat <<EOF | kind create cluster --name "${name}" --config=-
