@@ -1,4 +1,4 @@
-module github.com/h8r-dev/gin-next-europa
+module github.com/h8r-dev/gin-next
 
 cue 0.4.0
 

@@ -57,7 +57,6 @@ vendor: hof # Run hof mod vendor cue to each stack
 	@find . -maxdepth 1 -mindepth 1 -type d \
 	 ! -name '.*' ! -name 'tars' \
 	 ! -name 'tmp' ! -name 'scripts' \
-	 ! -name 'cuelib' \
 	 -exec ./scripts/vendor.sh ${HOF} {} \;
 
 .PHONY: hof
