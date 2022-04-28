@@ -15,11 +15,10 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			ORGANIZATION:   string
-			GITHUB_TOKEN:   dagger.#Secret
-			KUBECONFIG:     string
-			CLOUD_PROVIDER: string
-			APP_NAME:       string
+			ORGANIZATION: string
+			GITHUB_TOKEN: dagger.#Secret
+			KUBECONFIG:   string
+			APP_NAME:     string
 		}
 	}
 	actions: {
@@ -27,7 +26,6 @@ dagger.#Plan & {
 			scm:                 "github"
 			organization:        client.env.ORGANIZATION
 			personalAccessToken: client.env.GITHUB_TOKEN
-			cloudProvider:       client.env.CLOUD_PROVIDER
 			repository: [
 				{
 					name:      client.env.APP_NAME + "-frontend"
@@ -53,9 +51,9 @@ dagger.#Plan & {
 				},
 			]
 			addons: [
-				{
-					name: "ingress-nginx"
-				},
+				// {
+				//  name: "ingress-nginx"
+				// },
 				{
 					name: "prometheus"
 				},
@@ -77,6 +75,7 @@ dagger.#Plan & {
 			organization:        client.env.ORGANIZATION
 			repositorys:         _run.output.image
 			visibility:          "private"
+			kubeconfig:          client.commands.kubeconfig.stdout
 		}
 
 		_git: scm.#Instance & {

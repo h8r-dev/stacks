@@ -6,11 +6,12 @@
 1. 不依赖 H8r Server，内部使用 Service Name 访问，外部使用 Hosts 访问
 1. 支持应用组合、添加应用（待完善）
 1. 优化运行体验和提升运行速度
-  1. 自定义执行镜像
-  1. 删除不必要的等待
+    1. 自定义执行镜像
+    1. 删除不必要的等待
 
 ## Requirements
-
+1. hln
+1. Ingress Nginx installed
 1. Kind v0.12.0+
 1. Docker, **Docker daemon resource setting > 8C, 16G**
 1. Kubectl v1.20+
@@ -22,8 +23,6 @@
 ## 已知问题
 1. 初始化完成后，添加新的应用或 Addons 不会生效
 1. 未初始化 Nocalhost 数据
-1. 后端服务缺少配置，无法启动
-1. Release 流程未处理
 1. 暂时缺少 `output.yaml` 输出
 
 ## Quick Start
@@ -49,42 +48,31 @@
       - containerPort: 443
         hostPort: 443
         protocol: TCP
-      - containerPort: 31234
-        hostPort: 1234
     EOF
     ```
 1. 切换 Kind context
     ```
     kind export kubeconfig
     ```
-1. 部署 Buildkit(考虑自动化)
+1. 运行 hln init
     ```shell
-    kubectl apply -f https://raw.githubusercontent.com/h8r-dev/stacks/main/gin-next/resource/buildkit.yaml
-    # waiting for ready
-    kubectl wait --for=condition=Available deployment buildkitd --timeout 600s
-    ```
-1. 导出 Kind kubeconfig，并修改 API Server 地址(考虑自动化)
-    ```shell
-    kubectl config view --flatten --minify | sed -e 's?server: https://127.0.0.1:[0-9]*?server: https://kubernetes.default.svc?' > ~/.kube/kind
+    hln init --install-buildkit
     ```
 1. 初始化参数：
 
     ```shell
-    export BUILDKIT_HOST=tcp://127.0.0.1:1234
-    export KUBECONFIG=~/.kube/kind
+    export KUBECONFIG=~/.kube/config
     export APP_NAME="orders"
     export GITHUB_TOKEN=[Github personal access token]
     export ORGANIZATION=[organization name or github id]
-    export CLOUD_PROVIDER=kind
     ```
 
-1. 运行：`hof mod vendor cue && dagger project update && dagger do up -p ./plans  --log-format plain`
-
-1. 确认 Ingress nginx Ready
+1. 运行：
     ```shell
-    kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=90s
+    hln up -s=gin-next
     ```
-1. Ingress-nginx Ready，添加 Hosts，打开浏览器访问 `ArgoCD`，检查部署状态
+
+1. 添加 Hosts，打开浏览器访问 `ArgoCD`，检查部署状态
     ```shell
     127.0.0.1 argocd.h8r.infra
     127.0.0.1 orders-frontend.h8r.application
