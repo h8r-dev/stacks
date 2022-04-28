@@ -76,3 +76,7 @@ ifeq ($(shell which hof),)
 	@mv hof_${HOF_VER}_$(shell uname)_x86_64 ${GOBIN}/hof
 	@chmod +x ${GOBIN}/hof
 endif
+
+.PHONY: install-hooks
+install-hooks: # Install git hooks
+	git config core.hooksPath ./.git-hooks
