@@ -6,14 +6,14 @@ import (
 )
 
 #Input: {
-	#toolList: {
+	#tool: {
 		name:    string
 		version: string
 		domain:  string
 	}
 
 	// tools name
-	tools: [...#toolList]
+	tools: [...#tool]
 	image: docker.#Image
 	// tools version
 	kubeconfig: dagger.#Secret

@@ -15,9 +15,14 @@ import (
 		workdir: "/tmp"
 		script: contents: #"""
 				helm pull loki-stack --repo https://grafana.github.io/helm-charts --version $VERSION
-				mkdir -p /scaffold/$OUTPUT_PATH/infra
-				tar -zxvf ./loki-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
-				mv /scaffold/$OUTPUT_PATH/infra/loki-stack /scaffold/$OUTPUT_PATH/infra/loki
+				mkdir -p /scaffold/$OUTPUT_PATH/infra/loki
+				tar -zxvf ./loki-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra/loki
+				mv /scaffold/$OUTPUT_PATH/infra/loki/loki-stack /scaffold/$OUTPUT_PATH/infra/loki/app
+				echo "loki..."
+				cat <<EOF >/scaffold/$OUTPUT_PATH/infra/loki/output-hook.sh
+				echo '{"username": "admin", "password": "123456","test":"loki"}'
+				EOF
+				chmod +x /scaffold/$OUTPUT_PATH/infra/loki/output-hook.sh
 			"""#
 	}
 	output: #Output & {

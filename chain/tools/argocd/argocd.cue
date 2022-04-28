@@ -100,10 +100,15 @@ import (
 							continue
 						fi
 						# for output
-						yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						if [ -f "$file/output-hook.sh" ]; then
+							info=$(sh $file/output-hook.sh)
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'", "info": "'$info'"}]' /hln/output.yaml
+						else
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						fi
 						while ! argocd app create "$APP_NAME" \
 							--repo "$repoURL" \
-							--path "$file" \
+							--path "$file/app" \
 							--dest-server "$APP_SERVER" \
 							--dest-namespace "$deployRepoPath-$APP_NAMESPACE" \
 							--sync-option CreateNamespace=true \
@@ -128,10 +133,15 @@ import (
 					for file in */ ;
 					do
 						APP_NAME=$(echo $file | tr -d '/')
-						yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						if [ -f "$file/output-hook.sh" ]; then
+							info=$(sh $file/output-hook.sh)
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'", "info": "'$info'"}]' /hln/output.yaml
+						else
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						fi
 						while ! argocd app create "$APP_NAME" \
 							--repo "$repoURL" \
-							--path "infra/$APP_NAME" \
+							--path "infra/$APP_NAME/app" \
 							--dest-server "$APP_SERVER" \
 							--dest-namespace "$APP_NAME" \
 							--sync-option CreateNamespace=true \

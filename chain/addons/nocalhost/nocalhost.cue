@@ -16,10 +16,16 @@ import (
 		workdir: "/tmp"
 		script: contents: #"""
 				helm pull nocalhost --repo https://nocalhost.github.io/charts --version $VERSION
-				mkdir -p /scaffold/$OUTPUT_PATH/infra
-				tar -zxvf ./nocalhost-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
-				sed -i '/^metadata/a\  annotations:\n    helm.sh/hook: pre-install\n    helm.sh/hook-weight: "-10"' /scaffold/$OUTPUT_PATH/infra/nocalhost/templates/db-init-configmap.yaml
-				sed -i 's/LoadBalancer/ClusterIP/g' /scaffold/$OUTPUT_PATH/infra/nocalhost/values.yaml
+				mkdir -p /scaffold/$OUTPUT_PATH/infra/nocalhost
+				tar -zxvf ./nocalhost-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra/nocalhost
+				mv /scaffold/$OUTPUT_PATH/infra/nocalhost/nocalhost /scaffold/$OUTPUT_PATH/infra/nocalhost/app
+				sed -i '/^metadata/a\  annotations:\n    helm.sh/hook: pre-install\n    helm.sh/hook-weight: "-10"' /scaffold/$OUTPUT_PATH/infra/nocalhost/app/templates/db-init-configmap.yaml
+				sed -i 's/LoadBalancer/ClusterIP/g' /scaffold/$OUTPUT_PATH/infra/nocalhost/app/values.yaml
+				echo "nocalhost..."
+				cat <<EOF > /scaffold/$OUTPUT_PATH/infra/nocalhost/output-hook.sh
+				echo '{"username": "admin", "password": "123456"}'
+				EOF
+				chmod +x /scaffold/$OUTPUT_PATH/infra/nocalhost/output-hook.sh
 			"""#
 	}
 	output: #Output & {
