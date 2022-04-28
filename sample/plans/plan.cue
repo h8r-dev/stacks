@@ -5,6 +5,7 @@ import (
 	"github.com/h8r-dev/chain/supply/scaffold"
 	"github.com/h8r-dev/chain/supply/scm"
 	"github.com/h8r-dev/chain/supply/cd"
+	"github.com/h8r-dev/chain/supply/output"
 )
 
 dagger.#Plan & {
@@ -32,6 +33,8 @@ dagger.#Plan & {
 			KUBECONFIG:   string | *""
 			APP_NAME:     string
 		}
+
+		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
 
 	actions: {
@@ -69,11 +72,17 @@ dagger.#Plan & {
 			}
 		}
 
-		up: _cd: cd.#Instance & {
-			input: cd.#Input & {
-				provider:    "argocd"
-				repositorys: _git.output.image
-				kubeconfig:  client.commands.kubeconfig.stdout
+		up: {
+			_cd: cd.#Instance & {
+				input: cd.#Input & {
+					provider:    "argocd"
+					repositorys: _git.output.image
+					kubeconfig:  client.commands.kubeconfig.stdout
+				}
+			}
+
+			_output: output.#Output & {
+				input: _cd.output
 			}
 		}
 	}
