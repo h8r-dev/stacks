@@ -393,11 +393,9 @@ jobs:
 
       - name: Run Ginkgo
         env:
-          KUBECONFIG: "$HOME/.kube/config"
           APP_NAME: ${{ steps.dagger_test.outputs.app_name }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
-          CLOUD_PROVIDER: kind
         run: |
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
           ginkgo gin-next/test
