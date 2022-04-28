@@ -140,131 +140,14 @@ jobs:
               exit 1
           fi
 
-  # a stack test example
-  test-stack-examples:
-    runs-on: ubuntu-latest
-    needs:
-      - create-vm
-      - install-kind
-    steps:
-      - name: Check out
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Configure SSH
-        env:
-          SSH_KEY: ${{ secrets.TENCENT_CLOUD_SSH_KEY }}
-          SSH_USER: ubuntu
-          SSH_HOST: ${{ needs.create-vm.outputs.public_ip }}
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/kind.key
-          chmod 600 ~/.ssh/kind.key
-          cat >>~/.ssh/config <<END
-          Host kind
-            HostName $SSH_HOST
-            User $SSH_USER
-            IdentityFile ~/.ssh/kind.key
-            StrictHostKeyChecking no
-          END
-
-      - name: Create Kind Cluster
-        id: create-kind-cluster
-        env:
-          KIND_NAME: test-stack-examples
-        run: |
-          n=0
-          until [ $n -ge 5 ] ; do
-            ingress_http_port=$(shuf -i 2000-65000 -n 1)
-            ingress_https_port=$(shuf -i 2000-65000 -n 1)
-            kube_apiserver_port=$(shuf -i 2000-65000 -n 1)
-            buildkit_port=$(shuf -i 2000-65000 -n 1)
-            echo "::set-output name=ingress_http_port::$ingress_http_port"
-            echo "::set-output name=ingress_https_port::$ingress_https_port"
-            echo "::set-output name=kube_apiserver_port::$kube_apiserver_port"
-            echo "::set-output name=buildkit_port::$buildkit_port"
-            if ssh kind 'bash -s' < ./scripts/create-kind.sh $KIND_NAME $ingress_http_port $ingress_https_port $kube_apiserver_port $buildkit_port; then
-              break
-            fi
-            echo "Waiting for kind to be available..."
-            n=$((n+1))
-            sleep 20
-          done
-          if [ $n -ge 5 ]; then
-              echo "Failed to install kind"
-              exit 1
-          fi
-
-      - name: Get Kind kubeconfig
-        env:
-          API_SERVER_PORT: ${{ steps.create-kind-cluster.outputs.kube_apiserver_port }}
-          API_SERVER_HOST: ${{ needs.create-vm.outputs.public_ip }}
-          KIND_NAME: test-stack-examples
-        run: |
-          mkdir -p ~/.kube
-          scp kind:~/.kube/config-$KIND_NAME ~/.kube/config
-          sed -i 's#server: https.*$#server: https://kubernetes:'$API_SERVER_PORT'#g' ~/.kube/config
-          echo "$API_SERVER_HOST kubernetes" | sudo tee -a /etc/hosts
-
-      - name: Install Kubectl
-        uses: azure/setup-kubectl@v2.0
-        with:
-          version: v1.23.4
-
-      - name: Wait for Kind
-        id: wait_for_kube_apiserver
-        run: |
-          n=0
-          until [ $n -ge 20 ] ; do
-            if kubectl get nodes; then
-              break
-            fi
-            n=$((n+1))
-            sleep 10
-          done
-          if [ $n -ge 20 ]; then
-              echo "Timeout waiting for Kind to be running"
-              exit 1
-          fi
-
-      - name: Install Buildkit
-        run: |
-          kubectl create namespace buildkit
-          kubectl -n buildkit apply -f ./scripts/buildkit.yaml
-          kubectl -n buildkit wait deployment buildkitd --for condition=Available=True --timeout=300s
-          kubectl -n buildkit get deployment buildkitd
-
-      - name: Install Dagger
-        uses: dagger/dagger-for-github@v2
-        with:
-          install-only: true
-          version: 0.2.7
-
-      - name: Check Dagger
-        run: |
-          dagger version
-
-#      - name: Cue vendor
-#        run: |
-#          make vendor
-
-      - name: Dagger test
-        env:
-          DAGGER_LOG_LEVEL: "debug"
-          DAGGER_LOG_FORMAT: "plain"
-          BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
-        run: |
-          cd cuelib
-          dagger project update
-          dagger do test -p ./utils/fs/test
-
 
   test-stack-gin-next:
     runs-on: ubuntu-latest
     needs:
       - create-vm
       - install-kind
+    env:
+      stack_dir: gin-next
     steps:
       - name: Check out
         uses: actions/checkout@v2
@@ -291,7 +174,7 @@ jobs:
       - name: Create Kind Cluster
         id: create-kind-cluster
         env:
-          KIND_NAME: test-stack-gin-next
+          KIND_NAME: ${{ env.stack_dir }}
         run: |
           n=0
           until [ $n -ge 5 ] ; do
@@ -303,6 +186,7 @@ jobs:
             echo "::set-output name=ingress_https_port::$ingress_https_port"
             echo "::set-output name=kube_apiserver_port::$kube_apiserver_port"
             echo "::set-output name=buildkit_port::$buildkit_port"
+            export KIND_NAME=$KIND_NAME
             if ssh kind 'bash -s' < ./scripts/create-kind.sh $KIND_NAME $ingress_http_port $ingress_https_port $kube_apiserver_port $buildkit_port; then
               break
             fi
@@ -319,9 +203,10 @@ jobs:
         env:
           API_SERVER_PORT: ${{ steps.create-kind-cluster.outputs.kube_apiserver_port }}
           API_SERVER_HOST: ${{ needs.create-vm.outputs.public_ip }}
-          KIND_NAME: test-stack-gin-next
+          KIND_NAME: ${{ env.stack_dir }}
         run: |
           mkdir -p ~/.kube
+          export KIND_NAME=$KIND_NAME
           scp kind:~/.kube/config-$KIND_NAME ~/.kube/config
           sed -i 's#server: https.*$#server: https://kubernetes:'$API_SERVER_PORT'#g' ~/.kube/config
           echo "$API_SERVER_HOST kubernetes" | sudo tee -a /etc/hosts
@@ -355,7 +240,7 @@ jobs:
           kubectl -n buildkit wait deployment buildkitd --for condition=Available=True --timeout=300s
           kubectl -n buildkit get deployment buildkitd
 
-#      Fix Me: dagger v0.2.8 doesn't work with gin-next
+#      FixMe: dagger v0.2.8 doesn't work with gin-next
       - name: Install Dagger
         uses: dagger/dagger-for-github@v2
         with:
@@ -366,26 +251,27 @@ jobs:
         run: |
           dagger version
 
-#      Fix Me: `make vendor` not work
-#      TODO: change cli to `hln`
+#      FixMe: `make vendor` not work
       - name: Cue vendor
         run: |
           mkdir -p gin-next/cue.mod/pkg/github.com/h8r-dev/stacks/
           ln -s ../../../../../../stacks/chain gin-next/cue.mod/pkg/github.com/h8r-dev/chain
           ln -s ../../../../../../cuelib gin-next/cue.mod/pkg/github.com/h8r-dev/stacks/cuelib
+
+#      TODO: change cli to `hln`
       - name: Dagger test
         id: dagger_test
         env:
           BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
-          APP_NAME: gin-next
+          STACK_DIR: ${{ env.stack-dir }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
           DAGGER_LOG_LEVEL: "debug"
           DAGGER_LOG_FORMAT: "plain"
         run: |
-          cd gin-next
+          cd $STACK_DIR || exit 1
           dagger project update
-          export APP_NAME="$APP_NAME-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
+          export APP_NAME="$STACK_DIR-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
           dagger do up -p ./plans
 
@@ -399,18 +285,18 @@ jobs:
           APP_NAME: ${{ steps.dagger_test.outputs.app_name }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
+          STACK_DIR: ${{ env.stack_dir }}
         run: |
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
-          ginkgo gin-next/test
+          ginkgo $STACK_DIR/test
 
 
   delete-vm:
     runs-on: ubuntu-latest
-    #all stack test job should be added to needs
+    # all stack test job should be added to needs
     needs:
       - create-vm
       - install-kind
-      - test-stack-examples
       - test-stack-gin-next
     if: ${{ always() }}
     steps:
