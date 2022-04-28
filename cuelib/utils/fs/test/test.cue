@@ -13,9 +13,10 @@ dagger.#Plan & {
 		}
 
 		write: fs.#WriteFile & {
-			input:    baseImage.output
-			path:     "/test.txt"
-			contents: "foo-bar"
+			input:       baseImage.output
+			permissions: 0o644
+			path:        "/test.txt"
+			contents:    "foo-bar"
 		}
 
 		test: core.#ReadFile & {
