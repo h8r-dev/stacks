@@ -1,0 +1,320 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  create-vm:
+    runs-on: ubuntu-latest
+    outputs:
+      instance_id: ${{ steps.run_vm.outputs.instance_id }}
+      public_ip: ${{ steps.get_public_ip.outputs.public_ip }}
+    steps:
+      - name: Install Tencent Cloud CLI
+        env:
+          SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+        run: |
+          pip install tccli
+          tccli --version
+          tccli configure set secretId $SECRET_ID
+          tccli configure set secretKey $SECRET_KEY
+          tccli configure set region ap-hongkong  output json
+
+      - name: Run VM Instance
+        id: run_vm
+        run: |
+          instance_id=$(tccli cvm RunInstances --cli-unfold-argument --region ap-hongkong \
+          --Placement.Zone ap-hongkong-2 \
+          --InstanceChargeType POSTPAID_BY_HOUR \
+          --Placement.ProjectId 0 \
+          --InstanceType SA2.LARGE8 \
+          --ImageId img-22trbn9x \
+          --SystemDisk.DiskType CLOUD_PREMIUM \
+          --SystemDisk.DiskSize 50 \
+          --VirtualPrivateCloud.VpcId vpc-ptjdp7uk \
+          --VirtualPrivateCloud.SubnetId subnet-1ekcc1l7 \
+          --VirtualPrivateCloud.AsVpcGateway False \
+          --VirtualPrivateCloud.Ipv6AddressCount 0 \
+          --InternetAccessible.InternetChargeType TRAFFIC_POSTPAID_BY_HOUR \
+          --InternetAccessible.InternetMaxBandwidthOut 100 \
+          --InternetAccessible.PublicIpAssigned True --InstanceCount 1 \
+          --ActionTimer.TimerAction TerminateInstances \
+          --ActionTimer.ActionTime "$(date "+%Y-%m-%d %H:%M:%S" -d "+10 hour")" \
+          --LoginSettings.KeyIds skey-ae7fls9d \
+          --SecurityGroupIds sg-dj3hvhiz \
+          --EnhancedService.SecurityService.Enabled False \
+          --EnhancedService.MonitorService.Enabled False \
+          --EnhancedService.AutomationService.Enabled False \
+          --InstanceName create-by-github-action-kind-$(date +'%Y-%m-%dT%H-%M-%S' -d '+8 hour') | jq -r '.InstanceIdSet[0]' )
+
+          n=0
+          until [ $n -ge 20 ] ; do
+            instance_state=$(tccli cvm DescribeInstancesStatus --cli-unfold-argument --region ap-hongkong --InstanceIds "$instance_id" | jq -r ".InstanceStatusSet[0].InstanceState")
+            echo "CVM instance $instanceId is $instance_state"
+            if [ $instance_state = "RUNNING" ]; then
+              echo "::set-output name=instance_id::$instance_id"
+              break
+            elif [ $instance_state = "PENDING" ]; then
+              sleep 10
+              n=$((n+1))
+              continue
+            else
+              exit 1
+            fi
+          done
+          if [ $n -ge 20 ]; then
+              echo "Failed to create CVM instance"
+              exit 1
+          fi
+
+      - name: Get VM IP
+        env:
+          instance_id: ${{ steps.run_vm.outputs.instance_id }}
+        id: get_public_ip
+        run: |
+          public_ip=$(tccli cvm DescribeInstances --cli-unfold-argument --region ap-hongkong --InstanceIds $instance_id | jq -r ".InstanceSet[0].PublicIpAddresses[0]")             
+          echo "CVM instance $instance_id public ip is $public_ip"
+          echo "::set-output name=public_ip::$public_ip"
+
+
+  install-kind:
+    runs-on: ubuntu-latest
+    needs:
+      - create-vm
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.TENCENT_CLOUD_SSH_KEY }}
+          SSH_USER: ubuntu
+          SSH_HOST: ${{ needs.create-vm.outputs.public_ip }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/kind.key
+          chmod 600 ~/.ssh/kind.key
+          cat >>~/.ssh/config <<END
+          Host kind
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/kind.key
+            StrictHostKeyChecking no
+          END
+          
+          n=0
+          until [ $n -ge 5 ] ; do
+            if ssh kind true; then
+              break
+            fi
+            echo "Waiting for SSH to be available..."
+            n=$((n+1))
+            sleep 10
+          done
+          if [ $n -ge 5 ]; then
+              echo "Failed to connect to SSH"
+              exit 1
+          fi
+
+      - name: Install KIND
+        run: |
+          n=0
+          until [ $n -ge 5 ] ; do
+            if ssh kind < ./scripts/install-kind.sh; then
+              break
+            fi
+            echo "Waiting for docker to be available..."
+            n=$((n+1))
+            sleep 20
+          done
+          if [ $n -ge 5 ]; then
+              echo "Failed to install docker"
+              exit 1
+          fi
+
+
+  test-stack-gin-next:
+    runs-on: ubuntu-latest
+    needs:
+      - create-vm
+      - install-kind
+    env:
+      stack_dir: gin-next
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.TENCENT_CLOUD_SSH_KEY }}
+          SSH_USER: ubuntu
+          SSH_HOST: ${{ needs.create-vm.outputs.public_ip }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/kind.key
+          chmod 600 ~/.ssh/kind.key
+          cat >>~/.ssh/config <<END
+          Host kind
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/kind.key
+            StrictHostKeyChecking no
+          END
+
+      - name: Create Kind Cluster
+        id: create-kind-cluster
+        env:
+          KIND_NAME: ${{ env.stack_dir }}
+        run: |
+          n=0
+          until [ $n -ge 5 ] ; do
+            ingress_http_port=$(shuf -i 2000-65000 -n 1)
+            ingress_https_port=$(shuf -i 2000-65000 -n 1)
+            kube_apiserver_port=$(shuf -i 2000-65000 -n 1)
+            buildkit_port=$(shuf -i 2000-65000 -n 1)
+            echo "::set-output name=ingress_http_port::$ingress_http_port"
+            echo "::set-output name=ingress_https_port::$ingress_https_port"
+            echo "::set-output name=kube_apiserver_port::$kube_apiserver_port"
+            echo "::set-output name=buildkit_port::$buildkit_port"
+            export KIND_NAME=$KIND_NAME
+            if ssh kind 'bash -s' < ./scripts/create-kind.sh $KIND_NAME $ingress_http_port $ingress_https_port $kube_apiserver_port $buildkit_port; then
+              break
+            fi
+            echo "Waiting for kind to be available..."
+            n=$((n+1))
+            sleep 20
+          done
+          if [ $n -ge 5 ]; then
+              echo "Failed to install kind"
+              exit 1
+          fi
+
+      - name: Get Kind kubeconfig
+        env:
+          API_SERVER_PORT: ${{ steps.create-kind-cluster.outputs.kube_apiserver_port }}
+          API_SERVER_HOST: ${{ needs.create-vm.outputs.public_ip }}
+          KIND_NAME: ${{ env.stack_dir }}
+        run: |
+          mkdir -p ~/.kube
+          export KIND_NAME=$KIND_NAME
+          scp kind:~/.kube/config-$KIND_NAME ~/.kube/config
+          sed -i 's#server: https.*$#server: https://kubernetes:'$API_SERVER_PORT'#g' ~/.kube/config
+          echo "$API_SERVER_HOST kubernetes" | sudo tee -a /etc/hosts
+
+      - name: Install Kubectl
+        uses: azure/setup-kubectl@v2.0
+        with:
+          version: v1.23.4
+
+      - name: Wait for Kind
+        id: wait_for_kube_apiserver
+        run: |
+          n=0
+          until [ $n -ge 20 ] ; do
+            if kubectl get nodes; then
+              break
+            fi
+            n=$((n+1))
+            sleep 10
+          done
+          if [ $n -ge 20 ]; then
+              echo "Timeout waiting for Kind to be running"
+              exit 1
+          fi
+
+#     TODO: use hln init to apply buildkit
+      - name: Install Buildkit
+        run: |
+          kubectl create namespace buildkit
+          kubectl -n buildkit apply -f ./scripts/buildkit.yaml
+          kubectl -n buildkit wait deployment buildkitd --for condition=Available=True --timeout=300s
+          kubectl -n buildkit get deployment buildkitd
+
+#      FixMe: dagger v0.2.8 doesn't work with gin-next
+      - name: Install Dagger
+        uses: dagger/dagger-for-github@v2
+        with:
+          install-only: true
+          version: 0.2.7
+
+      - name: Check Dagger
+        run: |
+          dagger version
+
+#      FixMe: `make vendor` not work
+      - name: Cue vendor
+        env:
+          STACK_DIR: ${{ env.stack_dir }}
+        run: |
+          mkdir -p $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/stacks/
+          ln -s ../../../../../../stacks/chain $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/chain
+          ln -s ../../../../../../cuelib $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/stacks/cuelib
+
+#      TODO: change cli to `hln`
+      - name: Dagger test
+        id: dagger_test
+        env:
+          BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
+          STACK_DIR: ${{ env.stack_dir }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          ORGANIZATION: heigliner-robot
+          DAGGER_LOG_LEVEL: "debug"
+          DAGGER_LOG_FORMAT: "plain"
+        run: |
+          cd $STACK_DIR || exit 1
+          dagger project update
+          export APP_NAME="$STACK_DIR-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
+          echo "::set-output name=app_name::$APP_NAME"
+          dagger do up -p ./plans
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
+      - name: Run Ginkgo
+        env:
+          APP_NAME: ${{ steps.dagger_test.outputs.app_name }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          ORGANIZATION: heigliner-robot
+          STACK_DIR: ${{ env.stack_dir }}
+        run: |
+          go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
+          ginkgo $STACK_DIR/test
+
+
+  delete-vm:
+    runs-on: ubuntu-latest
+    # all stack test job should be added to needs
+    needs:
+      - create-vm
+      - install-kind
+      - test-stack-gin-next
+    if: ${{ always() }}
+    steps:
+      - name: Install Tencent Cloud CLI
+        env:
+          SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+        run: |
+          pip install tccli
+          tccli --version
+          tccli configure set secretId $SECRET_ID
+          tccli configure set secretKey $SECRET_KEY
+          tccli configure set region ap-hongkong output json
+      - name: Destroy CVM Instance
+        env:
+          instance_id: ${{ needs.create-vm.outputs.instance_id }}
+        run: |
+          tccli cvm TerminateInstances --cli-unfold-argument --region ap-hongkong --InstanceIds $instance_id
+          echo "CVM instance $instance_id has been destroyed."

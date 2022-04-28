@@ -3,6 +3,7 @@ package main
 import (
 	"dagger.io/dagger"
 	"github.com/h8r-dev/chain/supply/scaffold"
+	"github.com/h8r-dev/chain/supply/output"
 	"github.com/h8r-dev/chain/supply/scm"
 	"github.com/h8r-dev/chain/supply/cd"
 	//"github.com/h8r-dev/chain/dev/nocalhost"
@@ -32,6 +33,7 @@ dagger.#Plan & {
 			KUBECONFIG:   string | *""
 			APP_NAME:     string
 		}
+		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
 	actions: {
 		_scaffold: scaffold.#Instance & {
@@ -102,7 +104,9 @@ dagger.#Plan & {
 			//   appName:            client.env.APP_NAME
 			//  }
 			// }
+			_output: output.#Output & {
+				input: _cd.output
+			}
 		}
-
 	}
 }
