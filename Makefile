@@ -51,15 +51,17 @@ tar: vendor # Package stacks into ./tars dir
 	 ! -name '.*' ! -name 'tars' \
 	 ! -name 'tmp' ! -name 'scripts' \
 	 ! -name 'cue.mod' ! -name 'chain' \
+	 ! -name 'cuelib' \
 	 -exec tar -zcvf tars/{}-latest.tar.gz {} \;
 
 .PHONY: vendor
-vendor: hof # Run hof mod vendor cue to each stack
+vendor: # Run hof mod vendor cue to each stack
 	@find . -maxdepth 1 -mindepth 1 -type d \
 	 ! -name '.*' ! -name 'tars' \
 	 ! -name 'tmp' ! -name 'scripts' \
+	 ! -name 'cue.mod' ! -name 'chain' \
 	 ! -name 'cuelib' \
-	 -exec ./scripts/vendor.sh ${HOF} {} \;
+	 -exec ./scripts/vendor.sh {} \;
 
 .PHONY: hof
 hof: install-hof
