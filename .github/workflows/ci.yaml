@@ -374,11 +374,9 @@ jobs:
         id: dagger_test
         env:
           BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
-          KUBECONFIG: "$HOME/.kube/config"
           APP_NAME: gin-next
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
-          CLOUD_PROVIDER: kind
           DAGGER_LOG_LEVEL: "debug"
           DAGGER_LOG_FORMAT: "plain"
         run: |
