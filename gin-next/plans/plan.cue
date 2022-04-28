@@ -5,7 +5,7 @@ import (
 	"github.com/h8r-dev/chain/supply/scaffold"
 	"github.com/h8r-dev/chain/supply/scm"
 	"github.com/h8r-dev/chain/supply/cd"
-	"github.com/h8r-dev/chain/dev/nocalhost"
+	//"github.com/h8r-dev/chain/dev/nocalhost"
 )
 
 dagger.#Plan & {
