@@ -30,7 +30,7 @@ var _ = Describe("Repos", func() {
 
 		client := github.NewClient(tc)
 		user, _, err := client.Users.Get(ctx, "")
-		
+
 		Expect(err).To(BeNil())
 
 		userName := *user.Login
@@ -40,10 +40,11 @@ var _ = Describe("Repos", func() {
 		// list all repositories
 		if userName == githubOrg {
 			// list all repositories for the authenticated user
-			repos, _, err = client.Repositories.List(ctx, "", nil)
+			opt := &github.RepositoryListOptions{Type: "all", Sort: "created"}
+			repos, _, err = client.Repositories.List(ctx, "", opt)
 		} else {
 			// list public repositories for given org
-			opt := &github.RepositoryListByOrgOptions{Type: "all"}
+			opt := &github.RepositoryListByOrgOptions{Type: "all", Sort: "created"}
 			repos, _, err = client.Repositories.ListByOrg(ctx, githubOrg, opt)
 		}
 
