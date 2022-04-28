@@ -199,7 +199,7 @@ jobs:
               exit 1
           fi
 
-      - name: Get Kind kubeconfig
+      - name: Get Kind Kubeconfig
         env:
           API_SERVER_PORT: ${{ steps.create-kind-cluster.outputs.kube_apiserver_port }}
           API_SERVER_HOST: ${{ needs.create-vm.outputs.public_ip }}
@@ -232,59 +232,44 @@ jobs:
               exit 1
           fi
 
-#     TODO: use hln init to apply buildkit
-      - name: Install Buildkit
-        run: |
-          kubectl create namespace buildkit
-          kubectl -n buildkit apply -f ./scripts/buildkit.yaml
-          kubectl -n buildkit wait deployment buildkitd --for condition=Available=True --timeout=300s
-          kubectl -n buildkit get deployment buildkitd
-
-#      FixMe: dagger v0.2.8 doesn't work with gin-next
-      - name: Install Dagger
-        uses: dagger/dagger-for-github@v2
-        with:
-          install-only: true
-          version: 0.2.7
-
-      - name: Check Dagger
-        run: |
-          dagger version
-
-#      FixMe: `make vendor` not work
-      - name: Cue vendor
+      - name: Install hln
         env:
-          STACK_DIR: ${{ env.stack_dir }}
+          HLN_VERSION: v0.2.3
         run: |
-          mkdir -p $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/stacks/
-          ln -s ../../../../../../stacks/chain $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/chain
-          ln -s ../../../../../../cuelib $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/stacks/cuelib
+          export HLN_TARBALL="heighliner_$HLN_VERSION_linux_amd64.tar.gz"
+          echo "Installing hln, version $HLN_VERSION"
+          curl -L https://github.com/h8r-dev/heighliner/releases/download/${HLN_VERSION}/${HLN_TARBALL} | sudo tar zxf - -C /usr/local/bin
+          hln version
 
-#      TODO: change cli to `hln`
-      - name: Dagger test
-        id: dagger_test
+      - name: Hln Init
+        run: |
+          hln init
+
+      - name: Stacks Cue Vendor
+        run: |
+          make vendor
+
+      - name: Hln Test
+        id: hln_test
         env:
-          BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
           STACK_DIR: ${{ env.stack_dir }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
           DAGGER_LOG_LEVEL: "debug"
           DAGGER_LOG_FORMAT: "plain"
         run: |
-          cd $STACK_DIR || exit 1
-          dagger project update
           export APP_NAME="$STACK_DIR-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
-          dagger do up -p ./plans
+          hln up --dir $STACK_DIR
 
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
 
-      - name: Run Ginkgo
+      - name: Run Ginkgo Tests
         env:
-          APP_NAME: ${{ steps.dagger_test.outputs.app_name }}
+          APP_NAME: ${{ steps.hln_test.outputs.app_name }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
           STACK_DIR: ${{ env.stack_dir }}
