@@ -12,4 +12,5 @@ import (
 	repositorys:         docker.#Image
 	// Repo visibility
 	visibility: string | "public" | *"private"
+	kubeconfig: dagger.#Secret
 }

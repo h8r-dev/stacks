@@ -27,11 +27,10 @@ dagger.#Plan & {
 			}
 		}
 		env: {
-			ORGANIZATION:   string
-			GITHUB_TOKEN:   dagger.#Secret
-			KUBECONFIG:     string | *""
-			CLOUD_PROVIDER: string
-			APP_NAME:       string
+			ORGANIZATION: string
+			GITHUB_TOKEN: dagger.#Secret
+			KUBECONFIG:   string | *""
+			APP_NAME:     string
 		}
 	}
 	actions: {
@@ -40,7 +39,6 @@ dagger.#Plan & {
 				scm:                 "github"
 				organization:        client.env.ORGANIZATION
 				personalAccessToken: client.env.GITHUB_TOKEN
-				cloudProvider:       client.env.CLOUD_PROVIDER
 				repository: [
 					{
 						name:      client.env.APP_NAME + "-frontend"
@@ -64,9 +62,6 @@ dagger.#Plan & {
 				]
 				addons: [
 					{
-						name: "ingress-nginx"
-					},
-					{
 						name: "prometheus"
 					},
 					{
@@ -86,6 +81,7 @@ dagger.#Plan & {
 				organization:        client.env.ORGANIZATION
 				repositorys:         _scaffold.output.image
 				visibility:          "private"
+				kubeconfig:          client.commands.kubeconfig.stdout
 			}
 		}
 
@@ -97,15 +93,15 @@ dagger.#Plan & {
 					kubeconfig:  client.commands.kubeconfig.stdout
 				}
 			}
-			_initNocalhost: nocalhost.#Instance & {
-				input: nocalhost.#Input & {
-					image:              _cd.output.image
-					githubAccessToken:  client.env.GITHUB_TOKEN
-					githubOrganization: client.env.ORGANIZATION
-					kubeconfig:         client.commands.kubeconfig.stdout
-					appName:            client.env.APP_NAME
-				}
-			}
+			// _initNocalhost: nocalhost.#Instance & {
+			//  input: nocalhost.#Input & {
+			//   image:              _cd.output.image
+			//   githubAccessToken:  client.env.GITHUB_TOKEN
+			//   githubOrganization: client.env.ORGANIZATION
+			//   kubeconfig:         client.commands.kubeconfig.stdout
+			//   appName:            client.env.APP_NAME
+			//  }
+			// }
 		}
 
 	}
