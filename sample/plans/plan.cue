@@ -2,52 +2,88 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/alpine"
-	"universe.dagger.io/bash"
-	// "universe.dagger.io/docker"
+	"github.com/h8r-dev/chain/supply/scaffold"
+	"github.com/h8r-dev/chain/supply/scm"
+	"github.com/h8r-dev/chain/supply/cd"
+	"github.com/h8r-dev/chain/supply/output"
 )
 
 dagger.#Plan & {
 	client: {
-		filesystem: "output.yaml": write: contents: actions.up.readFile.contents
-		commands: kubeconfig: {
-			name: "cat"
-			args: ["\(env.KUBECONFIG)"]
-			stdout: dagger.#Secret
+		commands: {
+			if env.KUBECONFIG != "" {
+				kubeconfig: {
+					name: "sh"
+					args: ["-c", "cat \(env.KUBECONFIG) | sed -e 's?server: https://.*?server: https://kubernetes.default.svc?'"]
+					stdout: dagger.#Secret
+				}
+			}
+			if env.KUBECONFIG == "" {
+				kubeconfig: {
+					name: "sh"
+					args: ["-c", "kubectl config view --flatten --minify | sed -e 's?server: https://.*?server: https://kubernetes.default.svc?'"]
+					stdout: dagger.#Secret
+				}
+			}
 		}
+
 		env: {
-			KUBECONFIG:      string
-			APP_NAME:        string
-			ORGANIZATION:    string
-			GITHUB_TOKEN:    dagger.#Secret
-			REPO_VISIBILITY: "public" | *"private"
+			ORGANIZATION: string
+			GITHUB_TOKEN: dagger.#Secret
+			KUBECONFIG:   string | *""
+			APP_NAME:     string
 		}
+
+		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
 
-	actions: up: {
-		base: alpine.#Build & {
-			packages: bash: {}
-		}
-		run: bash.#Run & {
-			input:  base.output
-			always: true
-			env: {
-				KC: client.env.KUBECONFIG
-				AN: client.env.APP_NAME
-				OG: client.env.ORGANIZATION
-				GT: client.env.GITHUB_TOKEN
+	actions: {
+		_scaffold: scaffold.#Instance & {
+			input: scaffold.#Input & {
+				scm:                 "github"
+				organization:        client.env.ORGANIZATION
+				personalAccessToken: client.env.GITHUB_TOKEN
+				repository: [
+					{
+						name:      client.env.APP_NAME + "-frontend"
+						type:      "frontend"
+						framework: "next"
+						ci:        "github"
+						registry:  "github"
+					},
+					{
+						name:      client.env.APP_NAME + "-deploy"
+						type:      "deploy"
+						framework: "helm"
+					},
+				]
+				addons: []
 			}
-			script: contents: #"""
-				echo kubeconfig: $KC >> /result.yaml
-				echo applicationname: $AN >> /result.yaml
-				echo organization: $OG >> /result.yaml
-				echo githubtoken: $GT >> /result.yaml
-				"""#
 		}
-		readFile: dagger.#ReadFile & {
-			input: run.output.rootfs
-			path:  "/result.yaml"
+
+		_git: scm.#Instance & {
+			input: scm.#Input & {
+				provider:            "github"
+				personalAccessToken: client.env.GITHUB_TOKEN
+				organization:        client.env.ORGANIZATION
+				repositorys:         _scaffold.output.image
+				visibility:          "private"
+				kubeconfig:          client.commands.kubeconfig.stdout
+			}
 		}
-		output: readFile.contents
+
+		up: {
+			_cd: cd.#Instance & {
+				input: cd.#Input & {
+					provider:    "argocd"
+					repositorys: _git.output.image
+					kubeconfig:  client.commands.kubeconfig.stdout
+				}
+			}
+
+			_output: output.#Output & {
+				input: _cd.output
+			}
+		}
 	}
 }

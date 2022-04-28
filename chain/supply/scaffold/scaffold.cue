@@ -204,4 +204,10 @@ import (
 			image: doAddonsScaffold["\(len(doAddonsScaffold)-1)"].output.image
 		}
 	}
+
+	if len(doAddonsScaffold) == 0 {
+		output: #Output & {
+			image: _doCIScaffoldImage
+		}
+	}
 }

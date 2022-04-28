@@ -120,6 +120,10 @@ import (
 					done
 
 					# Create infra application for ArgoCD
+					# if not exist infra directory, exit 0
+					if [ ! -d "infra" ]; then
+						exit 0
+					fi
 					cd ./infra
 					for file in */ ;
 					do
