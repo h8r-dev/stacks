@@ -43,11 +43,19 @@ import (
 				mkdir -p /scm/github
 				printf $GITHUB_TOKEN > /scm/github/pat
 				printf $GITHUB_ORGANIZATION > /scm/github/organization
+
+				# put output info
+				mkdir -p /hln
+				touch /hln/output.yaml
+
+
 				for file in ./*
 				do
 					# remove dot of ./xxx-xxx
 					repoName=$(echo $file | tr -d './')
 					cd /scaffold/$file
+
+					yq -i '.scm.repos += [{"secret_suffix": "'$TF_VAR_secret_suffix$repoName'", "namespace": "'$TF_VAR_namespace'", "repo_name": "'$repoName'", "repo_visibility": "'$VISIBILITY'"}]' /hln/output.yaml
 
 					# if .git not exist, init
 					if [ ! -d .git ]; then
