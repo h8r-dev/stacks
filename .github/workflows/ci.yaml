@@ -253,10 +253,12 @@ jobs:
 
 #      FixMe: `make vendor` not work
       - name: Cue vendor
+        env:
+          STACK_DIR: ${{ env.stack_dir }}
         run: |
-          mkdir -p gin-next/cue.mod/pkg/github.com/h8r-dev/stacks/
-          ln -s ../../../../../../stacks/chain gin-next/cue.mod/pkg/github.com/h8r-dev/chain
-          ln -s ../../../../../../cuelib gin-next/cue.mod/pkg/github.com/h8r-dev/stacks/cuelib
+          mkdir -p $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/stacks/
+          ln -s ../../../../../../stacks/chain $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/chain
+          ln -s ../../../../../../cuelib $STACK_DIR/cue.mod/pkg/github.com/h8r-dev/stacks/cuelib
 
 #      TODO: change cli to `hln`
       - name: Dagger test
