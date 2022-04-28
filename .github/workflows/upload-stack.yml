@@ -33,6 +33,7 @@ jobs:
         uses: dagger/dagger-for-github@v2
         with:
           install-only: true
+          version: 0.2.7
 
       # Runs a set of commands using the runners shell
       - name: Upload stacks to S3
