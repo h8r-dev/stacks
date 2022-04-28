@@ -1,4 +1,4 @@
-name: Run stack in Kind
+name: CI
 
 on:
   push:
@@ -263,7 +263,7 @@ jobs:
         id: dagger_test
         env:
           BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
-          STACK_DIR: ${{ env.stack-dir }}
+          STACK_DIR: ${{ env.stack_dir }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
           DAGGER_LOG_LEVEL: "debug"
