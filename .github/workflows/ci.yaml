@@ -382,7 +382,7 @@ jobs:
         run: |
           cd gin-next
           dagger project update
-          export APP_NAME="$APP_NAME-$(date +'%Y-%m-%dT%H-%M-%S' -d '+8 hour')"
+          export APP_NAME="$APP_NAME-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
           dagger do up -p ./plans
 
