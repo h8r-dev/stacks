@@ -245,9 +245,9 @@ jobs:
         run: |
           dagger version
 
-      - name: Cue vendor
-        run: |
-          make vendor
+#      - name: Cue vendor
+#        run: |
+#          make vendor
 
       - name: Dagger test
         env:
@@ -256,6 +256,7 @@ jobs:
           BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
         run: |
           cd cuelib
+          dagger project update
           dagger do test -p ./utils/fs/test
 
 
@@ -346,6 +347,7 @@ jobs:
               exit 1
           fi
 
+#     TODO: use hln init to apply buildkit
       - name: Install Buildkit
         run: |
           kubectl create namespace buildkit
@@ -365,6 +367,7 @@ jobs:
           dagger version
 
 #      Fix Me: `make vendor` not work
+#      TODO: change cli to `hln`
       - name: Cue vendor
         run: |
           mkdir -p gin-next/cue.mod/pkg/github.com/h8r-dev/stacks/

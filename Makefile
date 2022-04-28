@@ -60,6 +60,7 @@ vendor: # Run hof mod vendor cue to each stack
 	 ! -name '.*' ! -name 'tars' \
 	 ! -name 'tmp' ! -name 'scripts' \
 	 ! -name 'cue.mod' ! -name 'chain' \
+	 ! -name 'cuelib' \
 	 -exec ./scripts/vendor.sh {} \;
 
 .PHONY: hof
