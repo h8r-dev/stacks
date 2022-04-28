@@ -3,6 +3,7 @@ package main
 import (
 	"dagger.io/dagger"
 	"github.com/h8r-dev/chain/supply/scaffold"
+	"github.com/h8r-dev/chain/supply/output"
 	"github.com/h8r-dev/chain/supply/scm"
 	"github.com/h8r-dev/chain/supply/cd"
 	//"github.com/h8r-dev/chain/dev/nocalhost"
@@ -103,10 +104,9 @@ dagger.#Plan & {
 			//   appName:            client.env.APP_NAME
 			//  }
 			// }
-			_output: #Output & {
+			_output: output.#Output & {
 				input: _cd.output
 			}
 		}
-
 	}
 }
