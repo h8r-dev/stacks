@@ -67,6 +67,13 @@ import (
 					cd /scaffold/$deployRepoPath
 					ls
 
+					# put output info
+					mkdir -p /hln
+					touch /hln/output.yaml
+					yq -i '.cd.provider = "argocd"' /hln/output.yaml
+					yq -i '.cd.namespace = "argocd"' /hln/output.yaml
+					yq -i '.cd.type = "application"' /hln/output.yaml
+
 					# Helm sets
 					setOps=""
 					if [[ $HELM_SET ]]; then
@@ -92,6 +99,8 @@ import (
 						if [ $APP_NAME == "infra" ]; then
 							continue
 						fi
+						# for output
+						yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
 						while ! argocd app create "$APP_NAME" \
 							--repo "$repoURL" \
 							--path "$file" \
@@ -115,6 +124,7 @@ import (
 					for file in */ ;
 					do
 						APP_NAME=$(echo $file | tr -d '/')
+						yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
 						while ! argocd app create "$APP_NAME" \
 							--repo "$repoURL" \
 							--path "infra/$APP_NAME" \

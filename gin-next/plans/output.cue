@@ -1,10 +1,20 @@
-// package main
+package main
 
-// import (
-//  "universe.dagger.io/bash"
-//  "encoding/yaml"
-//  "github.com/h8r-dev/stacks/cuelib/utils/base"
-// )
+import (
+	"universe.dagger.io/docker"
+	// "encoding/yaml"
+	// "github.com/h8r-dev/stacks/cuelib/utils/base"
+)
+
+#Output: {
+	input: _
+
+	run: docker.#Run & {
+		"input": input.image
+		export: files: "/hln/output.yaml": string
+	}
+	contents: run.export.files."/hln/output.yaml"
+}
 
 // // output cue struct
 // #OutputStruct: {

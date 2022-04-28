@@ -32,6 +32,7 @@ dagger.#Plan & {
 			KUBECONFIG:   string | *""
 			APP_NAME:     string
 		}
+		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
 	actions: {
 		_scaffold: scaffold.#Instance & {
@@ -102,6 +103,9 @@ dagger.#Plan & {
 			//   appName:            client.env.APP_NAME
 			//  }
 			// }
+			_output: #Output & {
+				input: _cd.output
+			}
 		}
 
 	}
