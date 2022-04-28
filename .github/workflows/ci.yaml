@@ -399,7 +399,7 @@ jobs:
           ORGANIZATION: heigliner-robot
           CLOUD_PROVIDER: kind
         run: |
-          go install -mod=mod github.com/onsi/ginkgo/v2/ginkg
+          go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
           ginkgo gin-next/test
 
 
