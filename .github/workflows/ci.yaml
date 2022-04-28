@@ -374,7 +374,7 @@ jobs:
         id: dagger_test
         env:
           BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
-          KUBECONFIG: "~/.kube/config"
+          KUBECONFIG: "$HOME/.kube/config"
           APP_NAME: gin-next
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
@@ -395,7 +395,7 @@ jobs:
 
       - name: Run Ginkgo
         env:
-          KUBECONFIG: "~/.kube/config"
+          KUBECONFIG: "$HOME/.kube/config"
           APP_NAME: ${{ steps.dagger_test.outputs.app_name }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
