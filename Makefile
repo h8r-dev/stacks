@@ -50,6 +50,7 @@ tar: vendor # Package stacks into ./tars dir
 	@find . -maxdepth 1 -mindepth 1 -type d \
 	 ! -name '.*' ! -name 'tars' \
 	 ! -name 'tmp' ! -name 'scripts' \
+	 ! -name 'cue.mod' ! -name 'chain' \
 	 -exec tar -zcvf tars/{}-latest.tar.gz {} \;
 
 .PHONY: vendor
