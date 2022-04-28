@@ -15,7 +15,7 @@ import (
 		}
 		workdir: "/terraform"
 		always:  true
-		"env":   input.env
+		env:     input.env
 		"input": _image.output
 		script: contents: #"""
 				terraform init

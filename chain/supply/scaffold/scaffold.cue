@@ -175,14 +175,14 @@ import (
 	//  conbineAddons: exceptNginxIngressAddonsList + ingressAddons
 	// }
 
-	if len(ingressAddonsList) == 0 {
-		conbineAddons: exceptNginxIngressAddonsList
-	}
+	// if len(ingressAddonsList) == 0 {
+	//  conbineAddons: exceptNginxIngressAddonsList
+	// }
 	// cue list for loop bug
 	// https://github.com/cue-lang/cue/issues/798
 
 	doAddonsScaffold: {
-		for idx, i in conbineAddons {
+		for idx, i in exceptNginxIngressAddonsList {
 			"\(idx)": addons[i.name].#Instance & {
 				_output: docker.#Image
 				if idx == 0 {

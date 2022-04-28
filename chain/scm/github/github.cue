@@ -31,7 +31,7 @@ import (
 			TF_VAR_secret_suffix: input.organization
 		}
 		// for terraform backend
-		mounts: "kubeconfig": {
+		mounts: kubeconfig: {
 			dest:     "/kubeconfig"
 			contents: input.kubeconfig
 		}
