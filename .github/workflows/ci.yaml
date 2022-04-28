@@ -234,11 +234,11 @@ jobs:
 
       - name: Install hln
         env:
-          HLN_VERSION: v0.2.3
+          HLN_VERSION: 0.2.3
         run: |
-          export HLN_TARBALL="heighliner_${HLN_VERSION}_linux_amd64.tar.gz"
+          export HLN_TARBALL="heighliner_v${HLN_VERSION}_linux_amd64.tar.gz"
           echo "Installing hln, version $HLN_VERSION"
-          curl -L https://github.com/h8r-dev/heighliner/releases/download/${HLN_VERSION}/${HLN_TARBALL} | sudo tar zxf - -C /usr/local/bin
+          curl -L https://dl.h8r.io/hln/releases/${HLN_VERSION}/${HLN_TARBALL} | sudo tar zxf - -C /usr/local/bin
           hln version
 
       - name: Hln Init
