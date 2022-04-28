@@ -371,6 +371,7 @@ jobs:
           ln -s ../../../../../../stacks/chain gin-next/cue.mod/pkg/github.com/h8r-dev/chain
           ln -s ../../../../../../cuelib gin-next/cue.mod/pkg/github.com/h8r-dev/stacks/cuelib
       - name: Dagger test
+        id: dagger_test
         env:
           BUILDKIT_HOST: tcp://${{ needs.create-vm.outputs.public_ip }}:${{ steps.create-kind-cluster.outputs.buildkit_port }}
           KUBECONFIG: "~/.kube/config"
@@ -387,12 +388,18 @@ jobs:
           echo "::set-output name=app_name::$APP_NAME"
           dagger do up -p ./plans
 
-      - name: Install Golang
+      - name: Setup Go
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
 
       - name: Run Ginkgo
+        env:
+          KUBECONFIG: "~/.kube/config"
+          APP_NAME: ${{ steps.dagger_test.outputs.app_name }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          ORGANIZATION: heigliner-robot
+          CLOUD_PROVIDER: kind
         run: |
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkg
           ginkgo gin-next/test
