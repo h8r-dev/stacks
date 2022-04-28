@@ -1,0 +1,17 @@
+#! /bin/sh
+
+set -e
+
+# Format all cue files
+make cuefmt
+
+# If there are formatted cue files to be committed, notice the developer.
+cueFiles=$(git status -s . | grep -E "(^ M|^MM)" | grep "\.cue" | tr -d '\n')
+
+if [ ! -z "$cueFiles" ]; then
+  echo "Note: You have formatted cue files to be committed!"
+  exit 1
+fi
+
+make cuelint
+exit $?
