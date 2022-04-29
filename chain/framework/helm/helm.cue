@@ -21,7 +21,7 @@ import (
 		// helm deploy dir path
 		workdir: "/scaffold/\(input.name)"
 		script: contents: """
-				printf '## DO NOT MAKE THIS REPOSITORY PUBLIC' > README.md
+				printf '## :warning: DO NOT MAKE THIS REPOSITORY PUBLIC' > README.md
 				helm create $NAME
 				cd $NAME
 				if [ ! -z "$HELM_SET" ]; then
