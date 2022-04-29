@@ -95,15 +95,6 @@ dagger.#Plan & {
 					kubeconfig:  client.commands.kubeconfig.stdout
 				}
 			}
-			// _initNocalhost: nocalhost.#Instance & {
-			//  input: nocalhost.#Input & {
-			//   image:              _cd.output.image
-			//   githubAccessToken:  client.env.GITHUB_TOKEN
-			//   githubOrganization: client.env.ORGANIZATION
-			//   kubeconfig:         client.commands.kubeconfig.stdout
-			//   appName:            client.env.APP_NAME
-			//  }
-			// }
 			_output: output.#Output & {
 				input: _cd.output
 			}
