@@ -4,6 +4,7 @@ import (
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 	"dagger.io/dagger/core"
+	"strings"
 )
 
 #Instance: {
@@ -28,7 +29,7 @@ import (
 			TF_VAR_github_token:  input.personalAccessToken
 			TF_VAR_organization:  input.organization
 			TF_VAR_namespace:     "default"
-			TF_VAR_secret_suffix: input.organization
+			TF_VAR_secret_suffix: strings.ToLower(input.organization)
 		}
 		// for terraform backend
 		mounts: kubeconfig: {
