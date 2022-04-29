@@ -6,7 +6,7 @@ import (
 
 #Instance: {
 	input: #Input
-	do:   bash.#Run & {
+	do:    bash.#Run & {
 		"input": input.image
 		env: {
 			VERSION:     input.version
