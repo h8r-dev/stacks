@@ -211,6 +211,7 @@ jobs:
         run: |
           mkdir -p ~/.kube
           export KIND_NAME=$KIND_NAME
+          # kind is running on remote machine
           scp kind:~/.kube/config-$KIND_NAME ~/.kube/config
           sed -i 's#server: https.*$#server: https://kubernetes:'$API_SERVER_PORT'#g' ~/.kube/config
           echo "$API_SERVER_HOST kubernetes" | sudo tee -a /etc/hosts
