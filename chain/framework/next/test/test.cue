@@ -23,7 +23,10 @@ dagger.#Plan & {
 				cd /scaffold/docs-frontend
 				ls
 				cat Dockerfile
+				echo "\n-------------------------------------\n"
 				cat next.config.js
+				echo "\n-------------------------------------\n"
+				cat package.json
 				"""
 		}
 	}
