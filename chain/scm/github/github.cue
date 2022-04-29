@@ -50,6 +50,7 @@ import (
 				touch /hln/output.yaml
 				yq -i '.scm.provider = "github"' /hln/output.yaml
 				yq -i '.scm.manager = "terraform"' /hln/output.yaml
+				yq -i '.scm.organization = "'$GITHUB_ORGANIZATION'"' /hln/output.yaml
 				yq -i '.scm.tfProvider = "cue.mod/pkg/github.com/h8r-dev/chain/scm/github/terraform/provider.tf"' /hln/output.yaml
 
 				for file in ./*

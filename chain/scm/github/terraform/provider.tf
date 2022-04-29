@@ -19,3 +19,11 @@ provider "github" {
   owner = var.organization
   token = var.github_token
 }
+
+variable "github_token" {
+  type = string
+}
+
+variable "organization" {
+  type = string
+}
