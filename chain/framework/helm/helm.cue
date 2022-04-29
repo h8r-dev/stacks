@@ -31,7 +31,7 @@ import (
 				# set domain
 				domain=$NAME\(base.#DefaultDomain.application.domain)
 				# TODO RUNNING ROOT USERS IS UNSAFE
-				yq -i '.ingress.enabled = true | .ingress.hosts[0].host="'$domain'" | .securityContext = {"runAsUser": 0}' values.yaml
+				yq -i '.ingress.enabled = true | .ingress.className = "nginx" | .ingress.hosts[0].host="'$domain'" | .securityContext = {"runAsUser": 0}' values.yaml
 				mkdir -p /h8r
 				printf $DIR_NAME > /h8r/application
 			"""
