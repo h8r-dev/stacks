@@ -1,15 +1,18 @@
 package scaffold
 
 import (
+	// Framework
 	"github.com/h8r-dev/chain/framework/gin"
 	"github.com/h8r-dev/chain/framework/helm"
 	"github.com/h8r-dev/chain/framework/next"
+	"github.com/h8r-dev/chain/framework/vue"
+	// Addons
 	"github.com/h8r-dev/chain/addons/loki"
 	"github.com/h8r-dev/chain/addons/nocalhost"
 	"github.com/h8r-dev/chain/addons/prometheus"
 	nginxCloud "github.com/h8r-dev/chain/addons/ingress/nginx/cloud"
 	nginxKind "github.com/h8r-dev/chain/addons/ingress/nginx/kind"
-	// registry
+	// Registry
 	githubRegistry "github.com/h8r-dev/chain/registry/github"
 	"github.com/h8r-dev/chain/ci/github"
 	"github.com/h8r-dev/stacks/cuelib/utils/base"
@@ -23,6 +26,7 @@ import (
 		"gin":  gin
 		"helm": helm
 		"next": next
+		"vue":  vue
 	}
 
 	addons: {

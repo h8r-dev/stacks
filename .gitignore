@@ -2,9 +2,8 @@
 .DS_Store
 .tmp
 .vscode
+
 **/cue.mod/pkg/
-output.yaml
-tmp
-tars
 cue.mod/pkg/*
 .terraform*
+.hln/

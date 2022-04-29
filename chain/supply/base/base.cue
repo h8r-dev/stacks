@@ -8,7 +8,7 @@ package base
 #Repository: {
 	// Repository name
 	// RFC 1123: https://tools.ietf.org/html/rfc1123
-	name: =~"[a-z0-9]([-a-z0-9]*[a-z0-9])?"
+	name: =~"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
 
 	// Repository type
 	type: string | *"frontend" | "backend" | "deploy"
@@ -31,11 +31,11 @@ package base
 
 #DefaultDomain: {
 	application: {
-		domain:              ".h8r.application"
+		domain:              ".h8r.site"
 		productionNamespace: "production"
 	}
 	infra: {
-		domain:       ".h8r.infra"
+		domain:       ".h8r.site"
 		argocd:       "argocd" + domain
 		prometheus:   "prometheus" + domain
 		alertManager: "alert" + domain

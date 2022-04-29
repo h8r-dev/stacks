@@ -7,16 +7,9 @@ import (
 )
 
 dagger.#Plan & {
-	client: {
-		// commands: kubeconfig: {
-		//  name: "cat"
-		//  args: ["\(env.KUBECONFIG)"]
-		//  stdout: dagger.#Secret
-		// }
-		env: {
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
-		}
+	client: env: {
+		ORGANIZATION: string
+		GITHUB_TOKEN: dagger.#Secret
 	}
 	actions: {
 		_input: scaffold.#Input & {

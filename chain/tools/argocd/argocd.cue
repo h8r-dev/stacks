@@ -52,6 +52,7 @@ import (
 		bash.#Run & {
 			env: {
 				ARGO_SERVER:   base.#DefaultInternalDomain.infra.argocd
+				ARGO_URL:      base.#DefaultDomain.infra.argocd
 				ARGO_USERNAME: "admin"
 				if input.set != null {
 					HELM_SET: input.set
@@ -68,12 +69,16 @@ import (
 					cd /scaffold/$deployRepoPath
 					ls
 
-					# put output info
+					# for output
 					mkdir -p /hln
 					touch /hln/output.yaml
 					yq -i '.cd.provider = "argocd"' /hln/output.yaml
 					yq -i '.cd.namespace = "argocd"' /hln/output.yaml
 					yq -i '.cd.type = "application"' /hln/output.yaml
+					yq -i '.cd.dashboardRef.url = "'$ARGO_URL'"' /hln/output.yaml
+					yq -i '.cd.dashboardRef.credential.username = "'$ARGO_USERNAME'"' /hln/output.yaml
+					export ARGO_PASSWORD=$(cat /infra/argocd/secret)
+					yq -i '.cd.dashboardRef.credential.password = "'$ARGO_PASSWORD'"' /hln/output.yaml
 
 					# Helm sets
 					setOps=""

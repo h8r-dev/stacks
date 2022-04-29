@@ -9,14 +9,6 @@ variable "repo_visibility" {
   default = "private"
 }
 
-variable "github_token" {
-  type = string
-}
-
-variable "organization" {
-  type = string
-}
-
 variable "namespace" {
   type = string
 }

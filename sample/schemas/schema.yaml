@@ -15,6 +15,6 @@ parameters:
     type: "secret"
     required: true
   - title: organization
-    description: Which github organization do you want to use?
+    description: Which github organization do you want to use(Can be set as personal github id)?
     key: ORGANIZATION
     required: true
