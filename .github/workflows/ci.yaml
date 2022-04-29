@@ -281,7 +281,6 @@ jobs:
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
           ginkgo $STACK_DIR/test
 
-
   delete-vm:
     runs-on: ubuntu-latest
     # all stack test job should be added to needs
