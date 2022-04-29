@@ -34,6 +34,10 @@ import (
 				yq -i '.prometheus.ingress.enabled = true | .prometheus.ingress.hosts[0] = "'$PROMETHEUS_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
 				# add grafana loki datasource
 				yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+				#cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
+				echo '{"username": "admin", "password": "123456"}' > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
+				#EOF
+				#chmod +x /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 			"""#
 	}
 	output: #Output & {
