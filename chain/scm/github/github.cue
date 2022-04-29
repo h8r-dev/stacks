@@ -81,6 +81,8 @@ import (
 					# Set PAT for checkout helm chart repositry and push helm chart repositry
 					# gh secret set PAT --repos $GITHUB_ORGANIZATION/$repoName < /scm/github/pat
 
+					# wait 5 sec
+					sleep 5
 					# set remote url with PAT for git push
 					git remote set-url origin https://$(echo $GITHUB_TOKEN)@github.com/$GITHUB_ORGANIZATION/$repoName
 					git config --global user.email "heighliner@h8r.dev"
