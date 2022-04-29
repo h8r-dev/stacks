@@ -7,11 +7,9 @@ import (
 )
 
 dagger.#Plan & {
-	client: {
-		env: {
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
-		}
+	client: env: {
+		ORGANIZATION: string
+		GITHUB_TOKEN: dagger.#Secret
 	}
 	actions: {
 		_input: scaffold.#Input & {
