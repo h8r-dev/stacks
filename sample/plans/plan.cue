@@ -6,31 +6,21 @@ import (
 	"github.com/h8r-dev/chain/supply/scm"
 	"github.com/h8r-dev/chain/supply/cd"
 	"github.com/h8r-dev/chain/supply/output"
+	"github.com/h8r-dev/chain/tools/kubeconfig"
 )
 
 dagger.#Plan & {
 	client: {
-		commands: {
-			if env.KUBECONFIG != "" {
-				kubeconfig: {
-					name: "sh"
-					args: ["-c", "cat \(env.KUBECONFIG) | sed -e 's?server: https://.*?server: https://kubernetes.default.svc?'"]
-					stdout: dagger.#Secret
-				}
-			}
-			if env.KUBECONFIG == "" {
-				kubeconfig: {
-					name: "sh"
-					args: ["-c", "kubectl config view --flatten --minify | sed -e 's?server: https://.*?server: https://kubernetes.default.svc?'"]
-					stdout: dagger.#Secret
-				}
-			}
+		commands: kubeconfig: {
+			name: "cat"
+			args: ["\(env.KUBECONFIG)"]
+			stdout: dagger.#Secret
 		}
 
 		env: {
 			ORGANIZATION: string
 			GITHUB_TOKEN: dagger.#Secret
-			KUBECONFIG:   string | *""
+			KUBECONFIG:   string
 			APP_NAME:     string
 		}
 
@@ -38,6 +28,12 @@ dagger.#Plan & {
 	}
 
 	actions: {
+		_kubeconfig: kubeconfig.#TransformToInternal & {
+			input: kubeconfig.#Input & {
+				kubeconfig: client.commands.kubeconfig.stdout
+			}
+		}
+
 		_scaffold: scaffold.#Instance & {
 			input: scaffold.#Input & {
 				scm:                 "github"
@@ -68,7 +64,7 @@ dagger.#Plan & {
 				organization:        client.env.ORGANIZATION
 				repositorys:         _scaffold.output.image
 				visibility:          "private"
-				kubeconfig:          client.commands.kubeconfig.stdout
+				kubeconfig:          _kubeconfig.output.kubeconfig
 			}
 		}
 
@@ -77,7 +73,7 @@ dagger.#Plan & {
 				input: cd.#Input & {
 					provider:    "argocd"
 					repositorys: _git.output.image
-					kubeconfig:  client.commands.kubeconfig.stdout
+					kubeconfig:  _kubeconfig.output.kubeconfig
 				}
 			}
 

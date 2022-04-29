@@ -2,20 +2,15 @@ package kubeconfig
 
 import (
 	"dagger.io/dagger/core"
-	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/cuelib/utils/base"
 )
 
 // TransformToInternal transforms the given kubeconfig to internal cluster address
 #TransformToInternal: {
 	input: #Input
 
-	_baseImage: alpine.#Build & {
-		packages: {
-			bash: {}
-			sed: {}
-		}
-	}
+	_baseImage: base.#Image
 
 	_kubeconfig: input.kubeconfig
 
