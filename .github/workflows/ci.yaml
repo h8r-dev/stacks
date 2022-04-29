@@ -139,7 +139,7 @@ jobs:
               exit 1
           fi
 
-  test-stack:
+  test-stack-gin-next:
     runs-on: ubuntu-latest
     needs:
       - create-vm
@@ -418,7 +418,7 @@ jobs:
     needs:
       - create-vm
       - install-kind
-      - test-stack
+      - test-stack-gin-next
       - test-stack-sample
     if: ${{ always() }}
     steps:
