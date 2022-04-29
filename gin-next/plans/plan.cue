@@ -19,7 +19,7 @@ dagger.#Plan & {
 		env: {
 			ORGANIZATION: string
 			GITHUB_TOKEN: dagger.#Secret
-			KUBECONFIG:   string | *""
+			KUBECONFIG:   string
 			APP_NAME:     string
 		}
 		filesystem: "output.yaml": write: contents: actions.up._output.contents

@@ -17,13 +17,15 @@ import (
 		}
 	}
 
+	_kubeconfig: input.kubeconfig
+
 	transformToInternal: bash.#Run & {
 		always:  true
 		input:   _baseImage.output
 		workdir: "/workspace"
 		mounts: "KubeConfig Data": {
 			dest:     "/kubeconfig"
-			contents: input.kubeconfig
+			contents: _kubeconfig
 		}
 		script: contents: #"""
 			set +ex
