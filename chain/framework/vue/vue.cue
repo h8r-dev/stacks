@@ -12,9 +12,7 @@ import (
 	_build: bash.#Run & {
 		"input": input.image
 		workdir: "/scaffold"
-		env: {
-			APP_NAME: input.name
-		}
+		env: APP_NAME: input.name
 		script: contents: #"""
 			npm config set registry http://mirrors.cloud.tencent.com/npm/
 			echo "Y" | vue create $APP_NAME -d --no-git
