@@ -82,7 +82,6 @@ jobs:
           echo "CVM instance $instance_id public ip is $public_ip"
           echo "::set-output name=public_ip::$public_ip"
 
-
   install-kind:
     runs-on: ubuntu-latest
     needs:
@@ -109,7 +108,7 @@ jobs:
             IdentityFile ~/.ssh/kind.key
             StrictHostKeyChecking no
           END
-          
+
           n=0
           until [ $n -ge 5 ] ; do
             if ssh kind true; then
@@ -140,8 +139,7 @@ jobs:
               exit 1
           fi
 
-
-  test-stack-gin-next:
+  test-stack:
     runs-on: ubuntu-latest
     needs:
       - create-vm
@@ -249,8 +247,8 @@ jobs:
         run: |
           make vendor
 
-      - name: Hln Test
-        id: hln_test
+      - name: hln up
+        id: hln_up
         env:
           STACK_DIR: ${{ env.stack_dir }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
@@ -269,7 +267,7 @@ jobs:
 
       - name: Run Ginkgo Tests
         env:
-          APP_NAME: ${{ steps.hln_test.outputs.app_name }}
+          APP_NAME: ${{ steps.hln_up.outputs.app_name }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
           STACK_DIR: ${{ env.stack_dir }}
@@ -277,14 +275,13 @@ jobs:
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
           ginkgo $STACK_DIR/test
 
-
   delete-vm:
     runs-on: ubuntu-latest
     # all stack test job should be added to needs
     needs:
       - create-vm
       - install-kind
-      - test-stack-gin-next
+      - test-stack
     if: ${{ always() }}
     steps:
       - name: Install Tencent Cloud CLI
