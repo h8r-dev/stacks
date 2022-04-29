@@ -255,8 +255,8 @@ jobs:
           STACK_DIR: ${{ env.stack_dir }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
-          DAGGER_LOG_LEVEL: "debug"
-          DAGGER_LOG_FORMAT: "plain"
+          HLN_LOG_LEVEL: "debug"
+          HLN_LOG_FORMAT: "plain"
         run: |
           export APP_NAME="$STACK_DIR-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
