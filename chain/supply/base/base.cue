@@ -31,11 +31,11 @@ package base
 
 #DefaultDomain: {
 	application: {
-		domain:              ".h8r.application"
+		domain:              ".h8r.site"
 		productionNamespace: "production"
 	}
 	infra: {
-		domain:       ".h8r.infra"
+		domain:       ".h8r.site"
 		argocd:       "argocd" + domain
 		prometheus:   "prometheus" + domain
 		alertManager: "alert" + domain
