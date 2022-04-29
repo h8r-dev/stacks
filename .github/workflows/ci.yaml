@@ -17,9 +17,6 @@ jobs:
           - gin-next
           - sample
     runs-on: ubuntu-latest
-    needs:
-      - create-vm
-      - install-kind
     env:
       stack_dir: ${{ matrix.stack_dir }}
     steps:
