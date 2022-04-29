@@ -18,6 +18,10 @@ import (
 				mkdir -p /scaffold/$OUTPUT_PATH/infra
 				tar -zxvf ./loki-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
 				mv /scaffold/$OUTPUT_PATH/infra/loki-stack /scaffold/$OUTPUT_PATH/infra/loki
+				#touch /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.sh
+				#chmod +x /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.sh
+				#cat <<EOF >> /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.sh
+			#echo '{"username":"admin","password":"123456"}' > /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.txt
 			"""#
 	}
 	output: #Output & {

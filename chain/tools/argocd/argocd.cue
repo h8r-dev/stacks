@@ -63,6 +63,7 @@ import (
 			"input": input.image
 			workdir: "/scaffold"
 			script: contents: #"""
+					echo helloworld
 					cat /infra/argocd/secret
 					deployRepoPath=$(cat /h8r/application)
 					cd /scaffold/$deployRepoPath
@@ -100,12 +101,22 @@ import (
 					# look for directory, ignore files
 					for file in */ ;
 					do
+						if [ ! -d $file ]
+						then
+							continue
+						fi
 						APP_NAME=$(echo $file | tr -d '/')
 						if [ $APP_NAME == "infra" ]; then
 							continue
 						fi
 						# for output
-						yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						if [ -f "$APP_NAME-cd-output-hook.txt" ]; then
+							info=$(cat $APP_NAME-cd-output-hook.txt)
+							echo "info: $info"
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'", "info": "'$info'"}]' /hln/output.yaml
+						else
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						fi
 						while ! argocd app create "$APP_NAME" \
 							--repo "$repoURL" \
 							--path "$file" \
@@ -132,8 +143,27 @@ import (
 					cd ./infra
 					for file in */ ;
 					do
+						if [ ! -d $file ]
+						then
+							continue
+						fi
 						APP_NAME=$(echo $file | tr -d '/')
-						yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						if [ -f "$APP_NAME-cd-output-hook.txt" ]; then
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+							info=$(cat $APP_NAME-cd-output-hook.txt)
+							echo "info: $info"
+							for key in `cat $APP_NAME-cd-output-hook.txt | jq keys | jq '.[]'`
+							do
+								echo $key
+								key=$(echo $key | sed 's/\"//g')
+								val=$(cat $APP_NAME-cd-output-hook.txt | jq .$key)
+								echo "val:$val"
+								val=$(echo $val | sed 's/\"//g')
+								yq -i '.cd.applicationRef.[-1]."'$key'"="'$val'"' /hln/output.yaml
+							done
+						else
+							yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+						fi
 						while ! argocd app create "$APP_NAME" \
 							--repo "$repoURL" \
 							--path "infra/$APP_NAME" \
