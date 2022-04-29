@@ -7,6 +7,7 @@ parameters:
   - title: kubeConfig
     description: Path to your kubeconfig file
     key: KUBECONFIG
+    type: "path"
     default: ~/.kube/config
     required: true
   - title: githubToken
