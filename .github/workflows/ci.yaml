@@ -49,7 +49,7 @@ jobs:
           --LoginSettings.KeyIds skey-ae7fls9d \
           --SecurityGroupIds sg-dj3hvhiz \
           --EnhancedService.SecurityService.Enabled False \
-          --EnhancedService.MonitorService.Enabled False \
+          --EnhancedService.MonitorService.Enabled True \
           --EnhancedService.AutomationService.Enabled False \
           --InstanceName create-by-github-action-kind-$(date +'%Y-%m-%dT%H-%M-%S' -d '+8 hour') | jq -r '.InstanceIdSet[0]' )
 
