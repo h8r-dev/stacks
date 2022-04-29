@@ -6,3 +6,4 @@
 **/cue.mod/pkg/
 cue.mod/pkg/*
 .terraform*
+.hln/
