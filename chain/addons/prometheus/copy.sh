@@ -18,6 +18,9 @@ yq -i '.prometheus.ingress.enabled = true | .prometheus.ingress.hosts[0] = "'$PR
 yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 # shellcheck disable=SC2016
-echo '{"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH"}' > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
-#EOF
+TEST_ENV=test-env
+#echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
+cat <<EOF >  /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
+{"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"}
+EOF
 #chmod +x /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
