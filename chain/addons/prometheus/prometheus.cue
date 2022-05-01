@@ -8,10 +8,10 @@ import (
 
 #Instance: {
 	input: #Input
-	src: core.#Source & {
+	src:   core.#Source & {
 		path: "."
 	}
-	do:    bash.#Run & {
+	do: bash.#Run & {
 		"input": input.image
 		env: {
 			VERSION:             input.version
@@ -23,7 +23,7 @@ import (
 		workdir: "/tmp"
 		script: {
 			directory: src.output
-      filename: "copy.sh"
+			filename:  "copy.sh"
 		}
 	}
 	output: #Output & {

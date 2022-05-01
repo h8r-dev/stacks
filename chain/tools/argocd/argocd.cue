@@ -53,7 +53,7 @@ import (
 		src: core.#Source & {
 			path: "."
 		}
-		createApps : bash.#Run & {
+		createApps: bash.#Run & {
 			env: {
 				ARGO_SERVER:   base.#DefaultInternalDomain.infra.argocd
 				ARGO_URL:      base.#DefaultDomain.infra.argocd
@@ -68,7 +68,7 @@ import (
 			workdir: "/scaffold"
 			script: {
 				directory: src.output
-      	filename: "create-apps.sh"
+				filename:  "create-apps.sh"
 			}
 		}
 	}
