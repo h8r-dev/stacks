@@ -2,10 +2,14 @@ package loki
 
 import (
 	"universe.dagger.io/bash"
+	"dagger.io/dagger/core"
 )
 
 #Instance: {
 	input: #Input
+	src: core.#Source & {
+		path: "."
+	}
 	do:    bash.#Run & {
 		"input": input.image
 		env: {
@@ -13,16 +17,10 @@ import (
 			OUTPUT_PATH: input.helmName
 		}
 		workdir: "/tmp"
-		script: contents: #"""
-				helm pull loki-stack --repo https://grafana.github.io/helm-charts --version $VERSION
-				mkdir -p /scaffold/$OUTPUT_PATH/infra
-				tar -zxvf ./loki-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
-				mv /scaffold/$OUTPUT_PATH/infra/loki-stack /scaffold/$OUTPUT_PATH/infra/loki
-				#touch /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.sh
-				#chmod +x /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.sh
-				#cat <<EOF >> /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.sh
-			#echo '{"username":"admin","password":"123456"}' > /scaffold/$OUTPUT_PATH/infra/loki-cd-output-hook.txt
-			"""#
+		script: {
+			directory: src.output
+      filename: "copy.sh"
+		}
 	}
 	output: #Output & {
 		image:   do.output
