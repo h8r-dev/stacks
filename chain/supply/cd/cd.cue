@@ -31,6 +31,7 @@ import (
 			"input": provider[input.provider].#Input & {
 				kubeconfig: input.kubeconfig
 				image:      _install.output.image
+				domain:     input.domain
 			}
 		}
 	}

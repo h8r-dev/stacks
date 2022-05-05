@@ -31,7 +31,11 @@ curl --retry 300 --retry-delay 2 $ARGO_SERVER --fail --insecure >> /dev/null 2>&
 echo 'y' | argocd login "$ARGO_SERVER" --username "$ARGO_USERNAME" --password "$(cat /infra/argocd/secret)" --insecure --grpc-web
 
 # Add argocd repo
-argocd repo add $repoURL --username $(cat /scm/github/organization) --password $(cat /scm/github/pat)
+while ! argocd repo add $repoURL --username $(cat /scm/github/organization) --password $(cat /scm/github/pat)
+do
+	sleep 5
+	echo 'wait for repository ready'
+done
 
 # Create business application for ArgoCD
 # look for directory, ignore files

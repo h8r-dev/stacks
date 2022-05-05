@@ -40,7 +40,7 @@ do
 	# gh repo create $GITHUB_ORGANIZATION/$repoName --$VISIBILITY -d "Heighliner stack init repo"
 	# use terraform to create repositry and set PAT secret
 	terraform -chdir=/terraform init -reconfigure -backend-config "secret_suffix=$TF_VAR_secret_suffix$repoName" -backend-config "namespace=$TF_VAR_namespace" -backend-config "config_path=/kubeconfig"
-	terraform -chdir=/terraform apply -auto-approve -var "repo_name=$repoName" -var "repo_visibility=$VISIBILITY"
+	terraform -chdir=/terraform apply -auto-approve -var "repo_name=$repoName" -var "repo_visibility=$VISIBILITY" -lock=false
 
 	# Set PAT for checkout helm chart repositry and push helm chart repositry
 	# gh secret set PAT --repos $GITHUB_ORGANIZATION/$repoName < /scm/github/pat

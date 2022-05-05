@@ -18,7 +18,7 @@ import (
 	namespace: string | *"default"
 
 	// Class name.
-	className: string
+	className: string | *"nginx"
 
 	// Host name
 	hostName: string
@@ -51,7 +51,7 @@ import (
 				}
 			}
 			spec: {
-				ingressClassName: "nginx"
+				ingressClassName: className
 				rules: [{
 					host: hostName
 					http: paths: [{
@@ -74,7 +74,7 @@ import (
 				annotations: {
 					h8r:                           "true"
 					host:                          hostName
-					"kubernetes.io/ingress.class": "nginx"
+					"kubernetes.io/ingress.class": className
 				}
 			}
 			spec: rules: [{
