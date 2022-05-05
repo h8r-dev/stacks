@@ -30,6 +30,10 @@ import (
 				fi
 				# set domain
 				domain=$NAME\(base.#DefaultDomain.application.domain)
+				# for output
+				mkdir -p /hln
+				touch /hln/output.yaml
+				yq -i '.services += [{"name": "'$NAME'", "url": "'$domain'"}]' /hln/output.yaml
 				# TODO RUNNING ROOT USERS IS UNSAFE
 				yq -i '.ingress.enabled = true | .ingress.className = "nginx" | .ingress.hosts[0].host="'$domain'" | .securityContext = {"runAsUser": 0}' values.yaml
 				mkdir -p /h8r
