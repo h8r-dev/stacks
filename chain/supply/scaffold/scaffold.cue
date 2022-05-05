@@ -54,7 +54,7 @@ import (
 	frontendAndbackendScaffold: [ for t in input.repository if t.type != "deploy" {t}]
 	helmScaffold: [ for t in input.repository if t.type == "deploy" {t}]
 
-	// Do framework scaffold
+	// Do framework scaffold: copy all
 	do: {
 		for idx, i in frontendAndbackendScaffold {
 			"\(idx)": framework[i.framework].#Instance & {
@@ -63,11 +63,11 @@ import (
 					_output: _baseImage.output
 				}
 				if idx > 0 {
-					_output: do["\(idx-1)"].output.image
+					_output: do["\(idx-1)"].output.image // use pre image
 				}
 				input: framework[i.framework].#Input & {
 					name:  i.name
-					image: _output
+					image: _output // use pre image as input
 				}
 			}
 		}

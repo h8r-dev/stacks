@@ -6,6 +6,7 @@ import (
 	"dagger.io/dagger/core"
 )
 
+// Copy Resource Code to specific path in image
 #Instance: {
 	input: #Input
 
