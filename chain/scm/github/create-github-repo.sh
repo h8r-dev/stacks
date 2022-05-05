@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # //TODO save github PAT and organization may unsafe
 mkdir -p /scm/github

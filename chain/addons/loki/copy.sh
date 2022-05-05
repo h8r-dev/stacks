@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 helm pull loki-stack --repo https://grafana.github.io/helm-charts --version $VERSION
 mkdir -p /scaffold/$OUTPUT_PATH/infra

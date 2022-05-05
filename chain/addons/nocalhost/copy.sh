@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 helm pull nocalhost --repo https://nocalhost.github.io/charts --version $VERSION
 mkdir -p /scaffold/$OUTPUT_PATH/infra
