@@ -6,5 +6,5 @@ import (
 
 #Output: {
 	image:   docker.#Image
-	success: bool
+	success: bool | *true
 }
