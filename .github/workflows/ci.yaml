@@ -12,11 +12,14 @@ jobs:
   test-stack:
     strategy:
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
         stack_dir:
           # add stack directory here if you want to test
           - gin-next
           - sample
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     env:
       stack_dir: ${{ matrix.stack_dir }}
     steps:
