@@ -32,6 +32,9 @@ cuefmt: # Format all cue files
 .PHONY: cuelint
 cuelint: cuefmt # Lint and format all cue files
 	@test -z "$$(git status -s . | grep -e "^ M"  | grep "\.cue" | cut -d ' ' -f3 | tee /dev/stderr)"
+
+.PHONY: eval
+eval: # Run cue eval to check all plans
 	@find . -maxdepth 1 -mindepth 1 -type d \
 	 $(find_ignore_names) \
  	 -print0 | xargs -I {} -n 1 -0 bash -c 'cd {} && cue eval ./plans > /dev/null'
