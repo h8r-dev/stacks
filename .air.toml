@@ -4,7 +4,7 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "make update_dependencies"
+  cmd = "make vendor"
   delay = 1000
   exclude_dir = ["cuelib/cue.mod", "chain/cue.mod/", "code", "vendor", "testdata"]
   exclude_file = []

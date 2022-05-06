@@ -48,7 +48,7 @@ jobs:
 
       - name: Stacks Cue Vendor
         run: |
-          make update_dependencies
+          make vendor
 
       - name: hln up
         id: hln_up

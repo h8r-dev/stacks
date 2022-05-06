@@ -13,7 +13,10 @@ if [ -z "$GOBIN" ]; then
   GOBIN=$(go env GOPATH)/bin
 fi
 
-export PATH=$GOBIN:$PATH
+# hln bin files dir.
+HLN_BIN_DIR=$HOME/.hln/bin
+
+export PATH=$GOBIN:$HLN_BIN_DIR:$PATH
 
 for sub_dir in $ALL_SUB_DIRS_ARR; do
   ABSOLUTE_SUB_DIR="${WORK_DIR}${sub_dir}"
