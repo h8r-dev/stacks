@@ -61,18 +61,8 @@ tar: vendor # Package stacks into ./tars dir
 	 -exec tar -zcvf tars/{}-latest.tar.gz {} \;
 
 .PHONY: vendor
-vendor: # Run hof mod vendor cue to each stack
-	@find . -maxdepth 1 -mindepth 1 -type d \
-	 $(find_ignore_names) \
-	 -exec ./scripts/vendor.sh {} \;
-
-.PHONY: hof
-hof: install-hof
-ifneq ($(shell which hof),)
-HOF=$(shell which hof)
-else
-HOF=${GOBIN}/hof
-endif
+vendor: install-hof # Install or update cue module dependencies.
+	bash ./scripts/update_dependencies.sh
 
 .PHONY: install-hof
 install-hof: 
