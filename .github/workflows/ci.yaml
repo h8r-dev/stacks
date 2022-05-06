@@ -1,10 +1,7 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  pull_request_target:
     branches:
       - main
 
@@ -23,7 +20,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: "refs/pull/${{ github.event.number }}/merge"
 
       - name: Create Kind Cluster
         uses: helm/kind-action@deab45fc8df9de5090a604e8ec11778eea7170bd
@@ -51,7 +48,7 @@ jobs:
 
       - name: Stacks Cue Vendor
         run: |
-          make vendor
+          make update_dependencies
 
       - name: hln up
         id: hln_up

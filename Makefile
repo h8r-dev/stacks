@@ -27,11 +27,17 @@ help: # Show how to get started & what targets are available
 	
 .PHONY: cuefmt
 cuefmt: # Format all cue files
-	find . -name '*.cue' -not -path '*/cue.mod/*' -print | time xargs -n 1 -P 8 cue fmt -s
+	@find . -name '*.cue' -not -path '*/cue.mod/*' -print | xargs -n 1 -P 8 cue fmt -s
 
 .PHONY: cuelint
 cuelint: cuefmt # Lint and format all cue files
 	@test -z "$$(git status -s . | grep -e "^ M"  | grep "\.cue" | cut -d ' ' -f3 | tee /dev/stderr)"
+
+.PHONY: eval
+eval: # Run cue eval to check all plans
+	@find . -maxdepth 1 -mindepth 1 -type d \
+	 $(find_ignore_names) \
+ 	 -print0 | xargs -I {} -n 1 -0 bash -c 'cd {} && cue eval ./plans > /dev/null'
 
 .PHONY: install_air
 install_air:
@@ -44,27 +50,19 @@ install_air:
 watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 	export PATH=${GOBIN}:$(PATH) && ulimit -n 10240 && air
 
+
+find_ignore_names := ! -name '.*' ! -name 'tars' ! -name 'tmp' ! -name 'scripts' ! -name 'cue.mod' ! -name 'chain' ! -name 'cuelib'
+
 .PHONY: tar
 tar: update_dependencies # Package stacks into ./tars dir
 	@rm -r tars; mkdir tars
 	@find . -maxdepth 1 -mindepth 1 -type d \
-	 ! -name '.*' ! -name 'tars' \
-	 ! -name 'tmp' ! -name 'scripts' \
-	 ! -name 'cue.mod' ! -name 'chain' \
-	 ! -name 'cuelib' \
+	 $(find_ignore_names) \
 	 -exec tar -zcvf tars/{}-latest.tar.gz {} \;
 
 .PHONY: update_dependencies
-update_dependencies: # Install or update cue module dependencies.
-	bash -e ./scripts/install_dependencies.sh
-
-.PHONY: hof
-hof: install-hof
-ifneq ($(shell which hof),)
-HOF=$(shell which hof)
-else
-HOF=${GOBIN}/hof
-endif
+update_dependencies: install-hof # Install or update cue module dependencies.
+	bash -e ./scripts/update_dependencies.sh
 
 .PHONY: install-hof
 install-hof: 
