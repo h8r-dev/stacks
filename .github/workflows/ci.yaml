@@ -64,6 +64,10 @@ jobs:
         run: |
           export APP_NAME="$STACK_DIR-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "GITHUB_TOKEN is not set"
+            exit 1
+          fi
           hln up --dir $STACK_DIR
 
       - name: Setup Go
