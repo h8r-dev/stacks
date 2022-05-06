@@ -45,7 +45,7 @@ watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 	export PATH=${GOBIN}:$(PATH) && ulimit -n 10240 && air
 
 .PHONY: tar
-tar: vendor # Package stacks into ./tars dir
+tar: update_dependencies # Package stacks into ./tars dir
 	@rm -r tars; mkdir tars
 	@find . -maxdepth 1 -mindepth 1 -type d \
 	 ! -name '.*' ! -name 'tars' \
@@ -54,14 +54,9 @@ tar: vendor # Package stacks into ./tars dir
 	 ! -name 'cuelib' \
 	 -exec tar -zcvf tars/{}-latest.tar.gz {} \;
 
-.PHONY: vendor
-vendor: # Run hof mod vendor cue to each stack
-	@find . -maxdepth 1 -mindepth 1 -type d \
-	 ! -name '.*' ! -name 'tars' \
-	 ! -name 'tmp' ! -name 'scripts' \
-	 ! -name 'cue.mod' ! -name 'chain' \
-	 ! -name 'cuelib' \
-	 -exec ./scripts/vendor.sh {} \;
+.PHONY: update_dependencies
+update_dependencies: # Install or update cue module dependencies.
+	bash -e ./scripts/install_dependencies.sh
 
 .PHONY: hof
 hof: install-hof
