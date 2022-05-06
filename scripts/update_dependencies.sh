@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-set -e
-
 WORK_DIR=$(pwd)/
 
 # Get all subdirs of current working dir.
@@ -23,6 +21,7 @@ for sub_dir in $ALL_SUB_DIRS_ARR; do
   if [ -f "${ABSOLUTE_SUB_DIR}cue.mods" ]; then
     echo "Update dependencies for: $sub_dir"
     cd $ABSOLUTE_SUB_DIR
-    hof mod vendor cue && dagger project update
+    hof mod vendor cue
+    dagger project update
   fi
 done

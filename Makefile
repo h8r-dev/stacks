@@ -62,7 +62,7 @@ tar: vendor # Package stacks into ./tars dir
 
 .PHONY: vendor
 vendor: install-hof # Install or update cue module dependencies.
-	bash -e ./scripts/update_dependencies.sh
+	bash ./scripts/update_dependencies.sh
 
 .PHONY: install-hof
 install-hof: 
