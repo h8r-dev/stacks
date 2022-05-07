@@ -1,0 +1,5 @@
+.dagger
+.idea
+.DS_Store
+infra/kubeconfig/config.yaml
+/cue.mod/pkg/

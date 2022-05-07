@@ -1,0 +1,9 @@
+name: spring-vue
+version: 1.0.0
+owner:
+  name: Shouzhi Yang
+  contact: shouzhi.yang@h8r.io
+description: This is an spring-vue stack
+icon: https://spring.io/images/spring-logo-9146a4d3298760c2e7e49595184e1975.svg
+url: https://spring.io/projects/spring-boot
+tags: ["spring boot", "vue"]

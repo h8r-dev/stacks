@@ -6,6 +6,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/framework/helm"
 	"github.com/h8r-dev/stacks/chain/components/framework/next"
 	"github.com/h8r-dev/stacks/chain/components/framework/vue"
+	"github.com/h8r-dev/stacks/chain/components/framework/spring"
 	// Addons
 	"github.com/h8r-dev/stacks/chain/components/addons/loki"
 	"github.com/h8r-dev/stacks/chain/components/addons/nocalhost"
@@ -27,6 +28,7 @@ import (
 		"helm": helm
 		"next": next
 		"vue":  vue
+		"spring": spring
 	}
 
 	addons: {
