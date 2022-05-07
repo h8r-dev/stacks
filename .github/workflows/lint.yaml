@@ -34,5 +34,4 @@ jobs:
       - name: "Lint CUE"
         run: |
           make cuelint
-          make vendor
           make eval

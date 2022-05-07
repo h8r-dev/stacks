@@ -19,8 +19,8 @@ jobs:
       matrix:
         stack_dir:
           # Add stack directory here if you want to test it.
-          - gin-next
-          - sample
+          - official-stack/gin-next
+          - official-stack/sample
     runs-on: ubuntu-latest
     env:
       stack_dir: ${{ matrix.stack_dir }}
