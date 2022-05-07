@@ -26,10 +26,16 @@ update_dependencies() {
   dagger project update
 }
 
+# Create tars dir to store all packages.
+if [ "$ACTION" = "pack" ]; then
+	mkdir -p tars
+fi
+
 pack() {
-  if [ $ACTION != "pack" ]; then
+  if [ ! "$ACTION" = "pack" ]; then
     return
   fi
+
   STACK_DIR=$1
   cd $WORK_DIR
   echo "Packing $STACK_DIR..."
@@ -45,12 +51,3 @@ for sub_dir in $ALL_SUB_DIRS_ARR; do
     pack $ABSOLUTE_SUB_DIR
   fi
 done
-
-# if [ $ACTION == "pack" ]; then
-# for sub_dir in $ALL_SUB_DIRS_ARR; do
-#   ABSOLUTE_SUB_DIR="${WORK_DIR}${sub_dir}"
-#   if [ -f "${ABSOLUTE_SUB_DIR}/cue.mods" ]; then
-#     pack $ABSOLUTE_SUB_DIR
-#   fi
-# done
-# fi

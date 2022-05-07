@@ -11,3 +11,4 @@ official-stack/*/cue.mod/pkg/*
 .hln/
 
 tmp/
+tars/

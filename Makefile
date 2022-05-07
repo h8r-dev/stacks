@@ -33,9 +33,10 @@ cuefmt: # Format all cue files
 cuelint: cuefmt # Lint and format all cue files
 	@test -z "$$(git status -s . | grep -e "^ M"  | grep "\.cue" | cut -d ' ' -f3 | tee /dev/stderr)"
 
+find_ignore_names := ! -name '.*' ! -name 'tars' ! -name 'tmp' ! -name 'scripts' ! -name 'cue.mod' ! -name 'chain' ! -name 'cuelib'
 .PHONY: eval
 eval: # Run cue eval to check all plans
-	@find . -maxdepth 1 -mindepth 1 -type d \
+	@cd ./official-stack && find . -maxdepth 1 -mindepth 1 -type d \
 	 $(find_ignore_names) \
  	 -print0 | xargs -I {} -n 1 -0 bash -c 'cd {} && cue eval ./plans > /dev/null'
 
@@ -50,17 +51,13 @@ install_air:
 watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 	export PATH=${GOBIN}:$(PATH) && ulimit -n 10240 && air
 
-
-find_ignore_names := ! -name '.*' ! -name 'tars' ! -name 'tmp' ! -name 'scripts' ! -name 'cue.mod' ! -name 'chain' ! -name 'cuelib'
-
 .PHONY: tar
 tar: vendor # Pack stacks into ./tars dir
-	@mkdir -p tars
 	@bash ./scripts/update_dependencies.sh pack
 
 .PHONY: vendor
 vendor: install-hof # Install or update cue module dependencies.
-	bash ./scripts/update_dependencies.sh vendor
+	@bash ./scripts/update_dependencies.sh
 
 .PHONY: install-hof
 install-hof: 
