@@ -54,15 +54,13 @@ watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 find_ignore_names := ! -name '.*' ! -name 'tars' ! -name 'tmp' ! -name 'scripts' ! -name 'cue.mod' ! -name 'chain' ! -name 'cuelib'
 
 .PHONY: tar
-tar: vendor # Package stacks into ./tars dir
-	@rm -r tars; mkdir tars
-	@find . -maxdepth 1 -mindepth 1 -type d \
-	 $(find_ignore_names) \
-	 -exec tar -zcvf tars/{}-latest.tar.gz {} \;
+tar: vendor # Pack stacks into ./tars dir
+	@mkdir -p tars
+	@bash ./scripts/update_dependencies.sh pack
 
 .PHONY: vendor
 vendor: install-hof # Install or update cue module dependencies.
-	bash ./scripts/update_dependencies.sh
+	bash ./scripts/update_dependencies.sh vendor
 
 .PHONY: install-hof
 install-hof: 
