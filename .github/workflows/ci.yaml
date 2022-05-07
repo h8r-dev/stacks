@@ -17,13 +17,14 @@ jobs:
       ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false )
     strategy:
       matrix:
-        stack_dir:
-          # Add stack directory here if you want to test it.
-          - official-stack/gin-next
-          - official-stack/sample
+        stacks:
+          # Add stack here if you want to test it.
+          - gin-next
+          - sample
     runs-on: ubuntu-latest
     env:
-      stack_dir: ${{ matrix.stack_dir }}
+      stack: ${{ matrix.stacks }}
+      stack_prefix: "official-stack/"
     steps:
       - name: Check out
         uses: actions/checkout@v3
@@ -61,15 +62,16 @@ jobs:
       - name: hln up
         id: hln_up
         env:
-          STACK_DIR: ${{ env.stack_dir }}
+          STACK: ${{ env.stack }}
+          STACK_PREFIX: ${{ env.stack_prefix }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
           HLN_LOG_LEVEL: "debug"
           HLN_LOG_FORMAT: "plain"
         run: |
-          export APP_NAME="$STACK_DIR-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
+          export APP_NAME="$STACK-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
-          hln up --dir $STACK_DIR
+          hln up --dir "${STACK_PREFIX}${STACK}"
 
       - name: Setup Go
         uses: actions/setup-go@v3
@@ -81,7 +83,8 @@ jobs:
           APP_NAME: ${{ steps.hln_up.outputs.app_name }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
-          STACK_DIR: ${{ env.stack_dir }}
+          STACK: ${{ env.stack }}
+          STACK_PREFIX: ${{ env.stack_prefix }}
         run: |
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
-          ginkgo $STACK_DIR/test
+          ginkgo "${STACK_PREFIX}${STACK}/test"
