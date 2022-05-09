@@ -42,43 +42,31 @@ pack() {
 usage() {
   echo "Usage:"
   echo "-i, --install-deps      Install dependencies for stack"
-  echo "-p, --package           Package all stack files into a '.tar.gz' format package"
+  echo "-p, --package           Package every stack into a '.tar.gz' format package"
   echo "-h, --help              Show this usage page"
 }
-
-# POSITIONAL_ARGS=()
-# ARGS_COUNT=$#
 
 for sub_dir in $ALL_SUB_DIRS_ARR; do
   ABSOLUTE_SUB_DIR="${WORK_DIR}${sub_dir}"
   if [ -f "${ABSOLUTE_SUB_DIR}/cue.mods" ]; then
     for option in "$@"; do
-      case $1 in
+      case $option in
         -i|--install-deps)
           install_dependencies $ABSOLUTE_SUB_DIR
-          # shift
           ;;
         -p|--package)
           create_tars_dir
           pack $ABSOLUTE_SUB_DIR
-          # shift
           ;;
         -h|--help)
           usage
           exit 0
           ;;
         -*|--*)
-          echo "Unknow option $1"
+          echo "Unknow option $option"
           exit 1
           ;;
-        # *)
-        #   To Support handle multi command options
-        #   POSITIONAL_ARGS+=("$1")
-        #   shift
-        #   ;;
       esac
     done
-
-    # set -- "${POSITIONAL_ARGS[@]}" # Restore positional arguments
   fi
 done
