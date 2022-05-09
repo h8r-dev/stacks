@@ -65,7 +65,7 @@ import (
 				APP_NAMESPACE: basefactory.#DefaultDomain.application.productionNamespace
 				APP_SERVER:    "https://kubernetes.default.svc"
 			}
-			mounts: "kubeconfig": {
+			mounts: kubeconfig: {
 				dest:     "/etc/kubernetes/config"
 				contents: input.kubeconfig
 			}
