@@ -26,7 +26,7 @@ help: # Show how to get started & what targets are available
 	@echo
 	
 .PHONY: cuefmt
-cuefmt: # Format all cue files
+cuefmt: install-cue # Format all cue files
 	@find . -name '*.cue' -not -path '*/cue.mod/*' -print | xargs -n 1 -P 8 cue fmt -s
 
 .PHONY: cuelint
@@ -71,3 +71,8 @@ endif
 .PHONY: install-hooks
 install-hooks: # Install git hooks
 	git config core.hooksPath ./.git-hooks
+
+.PHONY: install-cue
+install-cue: # Install cue.mod
+	export PATH=${GOBIN}:$(PATH)
+	which cue || go install cuelang.org/go/cmd/cue@latest
