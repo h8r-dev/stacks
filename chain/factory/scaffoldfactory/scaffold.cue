@@ -6,6 +6,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/framework/helm"
 	"github.com/h8r-dev/stacks/chain/components/framework/next"
 	"github.com/h8r-dev/stacks/chain/components/framework/vue"
+	"github.com/h8r-dev/stacks/chain/components/framework/spring"
 	// Addons
 	"github.com/h8r-dev/stacks/chain/components/addons/loki"
 	"github.com/h8r-dev/stacks/chain/components/addons/nocalhost"
@@ -23,10 +24,11 @@ import (
 #Instance: {
 
 	framework: {
-		"gin":  gin
-		"helm": helm
-		"next": next
-		"vue":  vue
+		"gin":    gin
+		"helm":   helm
+		"next":   next
+		"vue":    vue
+		"spring": spring
 	}
 
 	addons: {
@@ -93,6 +95,9 @@ import (
 					name:      helmScaffold[0].name
 					if i.extraArgs.helmSet != _|_ {
 						set: i.extraArgs.helmSet
+					}
+					if i.deployTemplate != _|_ && i.deployTemplate.helmStarter != _|_ {
+						starter: i.deployTemplate.helmStarter
 					}
 				}
 			}

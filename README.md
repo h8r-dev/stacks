@@ -8,6 +8,8 @@ Cloud native stacks for application development.
 # Clone the repo or just do `git pull`
 git clone git@github.com:h8r-dev/stacks.git
 
+# Install git-hooks
+make install-hooks
 # Watch files and develop
 make watch
 ```

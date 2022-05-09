@@ -27,7 +27,12 @@ package basefactory
 
 	// extraArgs use for helm set now
 	extraArgs?: {...}
+
+	// deployTemplate deploy repo template
+	deployTemplate?: #DeployTemplate
 }
+
+#DeployTemplate: helmStarter?: string | *""
 
 #DefaultDomain: {
 	application: {
