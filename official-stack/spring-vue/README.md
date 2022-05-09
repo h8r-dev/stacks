@@ -5,4 +5,4 @@
 - Vue
 
 ## Documentation
-- [Stack documentation](https://heighliner.dev/docs/core_features/stacks/overview)
+- [Stack documentation](https://heighliner.dev/docs/tutorials/spring_vue)
