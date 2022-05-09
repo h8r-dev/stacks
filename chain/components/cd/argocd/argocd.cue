@@ -55,6 +55,7 @@ import (
 		}
 		createApps: bash.#Run & {
 			env: {
+				KUBECONFIG:    "/etc/kubernetes/config"
 				ARGO_SERVER:   basefactory.#DefaultInternalDomain.infra.argocd
 				ARGO_URL:      basefactory.#DefaultDomain.infra.argocd
 				ARGO_USERNAME: "admin"
@@ -63,6 +64,10 @@ import (
 				}
 				APP_NAMESPACE: basefactory.#DefaultDomain.application.productionNamespace
 				APP_SERVER:    "https://kubernetes.default.svc"
+			}
+			mounts: "kubeconfig": {
+				dest:     "/etc/kubernetes/config"
+				contents: input.kubeconfig
 			}
 			"input": input.image
 			workdir: "/scaffold"
