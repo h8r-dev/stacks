@@ -53,11 +53,11 @@ watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 
 .PHONY: tar
 tar: vendor # Pack stacks into ./tars dir
-	@bash ./scripts/update_dependencies.sh pack
+	@bash ./scripts/process_stacks.sh -p
 
 .PHONY: vendor
 vendor: install-hof # Install or update cue module dependencies.
-	@bash ./scripts/update_dependencies.sh
+	@bash ./scripts/process_stacks.sh -i
 
 .PHONY: install-hof
 install-hof: 
