@@ -8,12 +8,10 @@ import (
 )
 
 #Instance: {
-	starters: {
-		"spring-boot": {
-			"url": "https://github.com/h8r-dev/helm-starter-spring.git",
-			"starterName": "helm-starter-spring",
-			"name": "spring-boot"
-		}
+	starters: "spring-boot": {
+		url:         "https://github.com/h8r-dev/helm-starter-spring.git"
+		starterName: "helm-starter-spring"
+		name:        "spring-boot"
 	}
 	input: #Input
 	do:    bash.#Run & {
@@ -24,8 +22,8 @@ import (
 			}
 			DIR_NAME: input.name
 			if input.starter != _|_ && starters[input.starter] != _|_ {
-				STARTER: starters[input.starter].name
-				STARTER_URL: starters[input.starter].url
+				STARTER:      starters[input.starter].name
+				STARTER_URL:  starters[input.starter].url
 				STARTER_NAME: starters[input.starter].starterName
 			}
 		}

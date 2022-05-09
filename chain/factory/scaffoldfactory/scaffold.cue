@@ -24,10 +24,10 @@ import (
 #Instance: {
 
 	framework: {
-		"gin":  gin
-		"helm": helm
-		"next": next
-		"vue":  vue
+		"gin":    gin
+		"helm":   helm
+		"next":   next
+		"vue":    vue
 		"spring": spring
 	}
 

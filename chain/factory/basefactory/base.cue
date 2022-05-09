@@ -32,9 +32,7 @@ package basefactory
 	deployTemplate?: #DeployTemplate
 }
 
-#DeployTemplate: {
-	helmStarter?: string | *""
-}
+#DeployTemplate: helmStarter?: string | *""
 
 #DefaultDomain: {
 	application: {

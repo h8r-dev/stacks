@@ -10,7 +10,7 @@ import (
 dagger.#Plan & {
 	actions: {
 		_baseImage: base.#Image & {}
-		build: spring.#Instance & {
+		build:      spring.#Instance & {
 			input: spring.#Input & {
 				name:  "docs"
 				image: _baseImage.output

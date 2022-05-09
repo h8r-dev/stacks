@@ -53,9 +53,7 @@ dagger.#Plan & {
 						framework: "spring"
 						ci:        "github"
 						registry:  "github"
-						deployTemplate: {
-							helmStarter: "spring-boot"
-						}
+						deployTemplate: helmStarter: "spring-boot"
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"
