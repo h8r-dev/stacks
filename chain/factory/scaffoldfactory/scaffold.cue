@@ -96,8 +96,8 @@ import (
 					if i.extraArgs.helmSet != _|_ {
 						set: i.extraArgs.helmSet
 					}
-					if i.helmStarter != _|_ {
-						starter: i.helmStarter
+					if i.deployTemplate != _|_ && i.deployTemplate.helmStarter != _|_ {
+						starter: i.deployTemplate.helmStarter
 					}
 				}
 			}
