@@ -8,8 +8,9 @@ Cloud native stacks for application development.
 # Clone the repo or just do `git pull`
 git clone git@github.com:h8r-dev/stacks.git
 
-# Install git-hooks
+# Install git hooks
 make install-hooks
+
 # Watch files and develop
 make watch
 ```
@@ -17,7 +18,7 @@ make watch
 ## Run test
 
 Each stack has its own test suite.
-See [gin-vue test](./gin-vue/test/README.md) for example.
+See [gin-vue test](./official-stack/gin-vue/test/README.md) for example.
 
 ## Documentation
 
@@ -34,6 +35,6 @@ This repo provides the following CUE modules:
 
 This repo contains the following stacks:
 
-- [sample](./sample/)
-- [gin-vue](./gin-vue/)
-- [gin-next](./gin-next/)
+- [sample](./official-stack/sample/)
+- [gin-vue](./official-stack/gin-vue/)
+- [gin-next](./official-stack/gin-next/)
