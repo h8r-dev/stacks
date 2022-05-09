@@ -4,8 +4,10 @@
 .vscode
 
 **/cue.mod/pkg/
-cue.mod/pkg/*
+**/cue.mod/pkg/*
+
 .terraform*
 .hln/
 
 tmp/
+tars/
