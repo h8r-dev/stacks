@@ -16,6 +16,10 @@ yq -i '.alertmanager.ingress.enabled = true | .alertmanager.ingress.hosts[0] = "
 yq -i '.prometheus.ingress.enabled = true | .prometheus.ingress.hosts[0] = "'$PROMETHEUS_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
 # add grafana loki datasource
 yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+# prometheus sd config
+yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs += {"job_name": "'service'"}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_configs[0].role = "service"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+cat /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml | yq '.prometheus.prometheusSpec.additionalScrapeConfigs'
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 # shellcheck disable=SC2016
 TEST_ENV=test-env

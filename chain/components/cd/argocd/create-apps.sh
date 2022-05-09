@@ -121,3 +121,6 @@ do
 		echo 'wait for argocd project: '$APP_NAME
 	done
 done
+
+# Apply k8s manifests (create grafana dashboard ConfigMaps)
+find /manifests -type f -exec kubectl apply -f {} \;

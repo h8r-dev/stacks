@@ -10,12 +10,20 @@ import (
 	_file: core.#Source & {
 		path: "template"
 	}
+	_manifests: core.#Source & {
+		path: "manifests"
+	}
 	do: docker.#Copy & {
 		"input":  input.image
 		contents: _file.output
 		dest:     "/scaffold/\(input.name)"
 	}
+	createDashboardManifest: docker.#Copy & {
+		"input":  do.output
+		contents: _manifests.output
+		dest:     "/manifests/\(input.name)"
+	}
 	output: #Output & {
-		image: do.output
+		image: createDashboardManifest.output
 	}
 }

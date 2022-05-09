@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 
 	_ "go-gin/docs"
 
@@ -11,8 +12,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"go-gin/middleware/jwt"
-
-	"github.com/Depado/ginprom"
 
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
@@ -26,21 +25,16 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	p := newPromGauges(r)
-
-	r.GET("/inc", func(c *gin.Context) {
-		p.IncrementGaugeValue("counter", []string{"demo"})
-		p.IncrementGaugeValue("gauge", []string{"demo"})
-		c.String(http.StatusOK, "Gauge incremented")
-	})
-	r.GET("/dec", func(c *gin.Context) {
-		p.IncrementGaugeValue("counter", []string{"demo"})
-		p.DecrementGaugeValue("gauge", []string{"demo"})
-		c.String(http.StatusOK, "Gauge decremented")
-	})
+	newPromGauges(r)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "heighlienr gin framework"})
+	})
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "pong"})
+	})
+	r.GET("/foo", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "bar"})
 	})
 
 	//r.POST("/auth", api.GetAuth)
@@ -57,22 +51,18 @@ func InitRouter() *gin.Engine {
 	return r
 }
 
-func newPromGauges(r *gin.Engine) *ginprom.Prometheus {
-	p := ginprom.New(
-		ginprom.Engine(r),
-		ginprom.Subsystem("http"),
-		ginprom.Path("/metrics"),
-	)
-	p.AddCustomGauge(
-		"gauge",
-		"Gauge both increments and decrements",
-		[]string{"part"})
-	p.SetGaugeValue("gauge", []string{"demo"}, 0)
-	p.AddCustomGauge(
-		"counter",
-		"Counter increments only",
-		[]string{"part"})
-	p.SetGaugeValue("counter", []string{"demo"}, 0)
-	r.Use(p.Instrument())
-	return p
+func newPromGauges(r *gin.Engine) {
+	// get global Monitor object
+	m := ginmetrics.GetMonitor()
+
+	// +optional set metric path, default /debug/metrics
+	m.SetMetricPath("/metrics")
+	// +optional set slow time, default 5s
+	m.SetSlowTime(10)
+	// +optional set request duration, default {0.1, 0.3, 1.2, 5, 10}
+	// used to p95, p99
+	m.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
+
+	// set middleware for gin
+	m.Use(r)
 }
