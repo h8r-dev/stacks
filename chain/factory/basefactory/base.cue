@@ -27,6 +27,8 @@ package basefactory
 
 	// extraArgs use for helm set now
 	extraArgs?: {...}
+
+	helmStarter?: string | *""
 }
 
 #DefaultDomain: {

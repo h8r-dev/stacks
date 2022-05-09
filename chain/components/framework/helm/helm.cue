@@ -8,6 +8,13 @@ import (
 )
 
 #Instance: {
+	starters: {
+		"spring-boot": {
+			"url": "https://github.com/h8r-dev/helm-starter-spring.git",
+			"starterName": "helm-starter-spring",
+			"name": "spring-boot"
+		}
+	}
 	input: #Input
 	do:    bash.#Run & {
 		env: {
@@ -16,13 +23,23 @@ import (
 				HELM_SET: input.set
 			}
 			DIR_NAME: input.name
+			if input.starter != _|_ && starters[input.starter] != _|_ {
+				STARTER: starters[input.starter].name
+				STARTER_URL: starters[input.starter].url
+				STARTER_NAME: starters[input.starter].starterName
+			}
 		}
 		"input": input.image
 		// helm deploy dir path
 		workdir: "/scaffold/\(input.name)"
 		script: contents: """
 				printf '## :warning: DO NOT MAKE THIS REPOSITORY PUBLIC' > README.md
-				helm create $NAME
+				if [ ! -z "$STARTER" ]; then
+					git clone "$STARTER_URL" $HOME/.local/share/helm/starters/${STARTER_NAME}
+					helm create $NAME -p $STARTER_NAME/$STARTER
+				else
+					helm create $NAME
+				fi
 				cd $NAME
 				if [ ! -z "$HELM_SET" ]; then
 					set="yq -i $HELM_SET values.yaml"

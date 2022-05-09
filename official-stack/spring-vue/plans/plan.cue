@@ -2,11 +2,11 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/chain/supply/scaffold"
-	"github.com/h8r-dev/chain/supply/scm"
-	"github.com/h8r-dev/chain/supply/cd"
-	"github.com/h8r-dev/chain/supply/output"
-	"github.com/h8r-dev/chain/tools/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/factory/scaffoldfactory"
+	"github.com/h8r-dev/stacks/chain/factory/scmfactory"
+	"github.com/h8r-dev/stacks/chain/factory/cdfactory"
+	"github.com/h8r-dev/stacks/chain/components/utils/statewriter"
+	"github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
 )
 
 dagger.#Plan & {
@@ -34,8 +34,8 @@ dagger.#Plan & {
 			}
 		}
 
-		_scaffold: scaffold.#Instance & {
-			input: scaffold.#Input & {
+		_scaffold: scaffoldfactory.#Instance & {
+			input: scaffoldfactory.#Input & {
 				scm:                 "github"
 				organization:        client.env.ORGANIZATION
 				personalAccessToken: client.env.GITHUB_TOKEN
@@ -53,6 +53,7 @@ dagger.#Plan & {
 						framework: "spring"
 						ci:        "github"
 						registry:  "github"
+						helmStarter: "spring-boot"
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"
@@ -74,8 +75,8 @@ dagger.#Plan & {
 			}
 		}
 
-		_git: scm.#Instance & {
-			input: scm.#Input & {
+		_git: scmfactory.#Instance & {
+			input: scmfactory.#Input & {
 				provider:            "github"
 				personalAccessToken: client.env.GITHUB_TOKEN
 				organization:        client.env.ORGANIZATION
@@ -86,15 +87,15 @@ dagger.#Plan & {
 		}
 
 		up: {
-			_cd: cd.#Instance & {
-				input: cd.#Input & {
+			_cd: cdfactory.#Instance & {
+				input: cdfactory.#Input & {
 					provider:    "argocd"
 					repositorys: _git.output.image
 					kubeconfig:  _kubeconfig.output.kubeconfig
 				}
 			}
 
-			_output: output.#Output & {
+			_output: statewriter.#Output & {
 				input: _cd.output
 			}
 		}

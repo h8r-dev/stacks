@@ -11,4 +11,6 @@ import (
 	// Helm values set
 	// Format: '.image.repository = "rep" | .image.tag = "tag"'
 	set?: string | *""
+	// Helm starter scaffold
+	starter?: string | *""
 }
