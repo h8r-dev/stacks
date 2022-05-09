@@ -5,7 +5,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/factory/scaffoldfactory"
 	"github.com/h8r-dev/stacks/chain/factory/scmfactory"
 	"github.com/h8r-dev/stacks/chain/factory/cdfactory"
-	"github.com/h8r-dev/stacks/chain/factory/outputfactory"
+	"github.com/h8r-dev/stacks/chain/components/utils/statewriter"
 	"github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
 	//"github.com/h8r-dev/stacks/chain/dev/nocalhost"
 )
@@ -99,7 +99,7 @@ dagger.#Plan & {
 			//   appName:            client.env.APP_NAME
 			//  }
 			// }
-			_output: outputfactory.#Output & {
+			_output: statewriter.#Output & {
 				input: _cd.output
 			}
 		}

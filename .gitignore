@@ -4,8 +4,7 @@
 .vscode
 
 **/cue.mod/pkg/
-cue.mod/pkg/*
-official-stack/*/cue.mod/pkg/*
+**/cue.mod/pkg/*
 
 .terraform*
 .hln/

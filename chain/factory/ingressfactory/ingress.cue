@@ -1,15 +1,13 @@
-package toolsfactory
+package ingressfactory
 
 import (
 	nginxKind "github.com/h8r-dev/stacks/chain/components/ingress/nginx/kind"
 	nginxCloud "github.com/h8r-dev/stacks/chain/components/ingress/nginx/cloud"
-	"github.com/h8r-dev/stacks/chain/components/cd/argocd"
 	"universe.dagger.io/docker"
 )
 
 #Instance: {
 	tools: {
-		"argocd":      argocd
 		"nginx.kind":  nginxKind
 		"nginx.cloud": nginxCloud
 	}

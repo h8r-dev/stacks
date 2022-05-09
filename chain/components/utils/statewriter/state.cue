@@ -1,4 +1,4 @@
-package outputfactory
+package statewriter
 
 import (
 	"universe.dagger.io/docker"

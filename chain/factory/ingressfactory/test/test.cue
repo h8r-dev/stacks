@@ -2,7 +2,7 @@ package test
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/factory/toolsfactory"
+	"github.com/h8r-dev/stacks/chain/factory/ingressfactory"
 )
 
 dagger.#Plan & {
