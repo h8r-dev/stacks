@@ -1,7 +1,6 @@
 # Sample
 
-This is a sample stack to demonstrate the stack format.
+This is a sample stack that creates a simple Nextjs app.
 
 ## Documentation
-
-- [Stack documentation](https://heighliner.dev/docs/core_features/stacks/overview)
+- [Spring-Vue Tutorial](https://heighliner.dev/docs/getting_started/first_app)

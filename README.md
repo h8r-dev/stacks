@@ -1,6 +1,6 @@
 # Stacks
 
-Cloud native stacks for application development.
+Heighliner stacks to speedup app dev.
 
 ## Local Development
 
@@ -10,20 +10,27 @@ git clone git@github.com:h8r-dev/stacks.git
 
 # Install git hooks
 make install-hooks
+```
 
+If you want to live reload the chain modules, you need to [install go](https://go.dev/doc/install) and [setup GOPATH and GOBIN env](https://go.dev/doc/code) first.
+Then run:
+
+```shell
 # Watch files and develop
 make watch
 ```
 
-## Run test
+## Layout
 
-Each stack has its own test suite.
-See [gin-vue test](./official-stack/gin-vue/test/README.md) for example.
+- **chain/**:
+		This contains the chain (CUE) modules.
+- **official-stack**:
+		This contains the official stacks.
 
 ## Documentation
 
 - [Stack documentation](https://heighliner.dev/docs/core_features/stacks/overview)
-- Use [remote buildkit](https://heighliner.dev/docs/development/buildkit)
+- [Getting started](https://heighliner.dev/docs/getting_started/installation)
 
 ## Repo Structure
 
