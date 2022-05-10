@@ -132,7 +132,3 @@ do
 
 	create_argocd_app $APP_NAME "$INFRA_DIR/$APP_NAME" $APP_NAME
 done
-
-# Apply k8s manifests (create grafana dashboard ConfigMaps)
-kubectl create ns prometheus
-find /manifests -type f -exec kubectl apply -f {} \;

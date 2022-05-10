@@ -1,12 +1,24 @@
+{{- /*
+Generated from 'etcd' from https://raw.githubusercontent.com/etcd-io/website/master/content/en/docs/v3.5/op-guide/grafana.json
+Do not change in-place! In order to change this file first read following link:
+https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/hack
+*/ -}}
+{{- $kubeTargetVersion := default .Capabilities.KubeVersion.GitVersion .Values.kubeTargetVersionOverride }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gin-dashboard                           # ConfigMap name
-  namespace: prometheus                            # ConfigMap namespace (can be any namespace)
+  namespace: {{ template "kube-prometheus-stack-grafana.namespace" . }}
+  name: {{ printf "%s-%s" (include "kube-prometheus-stack.fullname" $) "gin" | trunc 63 | trimSuffix "-" }}
+  annotations:
+{{ toYaml .Values.grafana.sidecar.dashboards.annotations | indent 4 }}
   labels:
-    grafana_dashboard: "1"                    # Required label key 'grafana_dashboard', label value can be anything
+    {{- if $.Values.grafana.sidecar.dashboards.label }}
+    {{ $.Values.grafana.sidecar.dashboards.label }}: {{ ternary $.Values.grafana.sidecar.dashboards.labelValue "1" (not (empty $.Values.grafana.sidecar.dashboards.labelValue)) | quote }}
+    {{- end }}
+    app: {{ template "kube-prometheus-stack.name" $ }}-grafana
+{{ include "kube-prometheus-stack.labels" $ | indent 4 }}
 data:
-  argocd.json: |                                   # Json of the grafana dashboard
+  gin.json: |-
     {
       "annotations": {
         "list": [
@@ -17,22 +29,26 @@ data:
             "hide": true,
             "iconColor": "rgba(0, 211, 255, 1)",
             "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
             "type": "dashboard"
           }
         ]
       },
       "editable": true,
-      "gnetId": null,
+      "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 1,
       "links": [],
+      "liveNow": false,
       "panels": [
         {
-          "datasource": null,
           "description": "Application request rate every 5 minutes.",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -58,6 +74,7 @@ data:
           },
           "id": 4,
           "options": {
+            "orientation": "auto",
             "reduceOptions": {
               "calcs": [
                 "mean"
@@ -68,7 +85,7 @@ data:
             "showThresholdLabels": false,
             "showThresholdMarkers": true
           },
-          "pluginVersion": "7.2.0",
+          "pluginVersion": "8.4.5",
           "targets": [
             {
               "expr": "rate(gin_request_total[5m])",
@@ -77,8 +94,6 @@ data:
               "refId": "A"
             }
           ],
-          "timeFrom": null,
-          "timeShift": null,
           "title": "PV Rate",
           "type": "gauge"
         },
@@ -87,14 +102,11 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "Prometheus",
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
           },
+          "description": "",
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -121,7 +133,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0",
+          "pluginVersion": "8.4.5",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -135,14 +147,12 @@ data:
               "format": "time_series",
               "instant": false,
               "interval": "",
-              "legendFormat": "{{instance}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}",
               "refId": "A"
             }
           ],
           "thresholds": [],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "PV",
           "tooltip": {
             "shared": true,
@@ -151,33 +161,24 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
@@ -185,13 +186,6 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -218,7 +212,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0",
+          "pluginVersion": "8.4.5",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -230,14 +224,12 @@ data:
             {
               "expr": "gin_request_uv_total",
               "interval": "",
-              "legendFormat": "{{instance}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}",
               "refId": "A"
             }
           ],
           "thresholds": [],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "UV",
           "tooltip": {
             "shared": true,
@@ -246,33 +238,24 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
@@ -280,10 +263,8 @@ data:
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "unit": "Bps"
             },
             "overrides": []
@@ -314,7 +295,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0",
+          "pluginVersion": "8.4.5",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -326,20 +307,18 @@ data:
             {
               "expr": "rate(gin_request_body_total[5m])",
               "interval": "",
-              "legendFormat": "{{instance}}-in",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-in",
               "refId": "A"
             },
             {
               "expr": "rate(gin_response_body_total[5m])",
               "interval": "",
-              "legendFormat": "{{instance}}-out",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-out",
               "refId": "B"
             }
           ],
           "thresholds": [],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "Traffic In-Out",
           "tooltip": {
             "shared": true,
@@ -348,44 +327,29 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "Bps",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "bytes",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
-          "cacheTimeout": null,
-          "datasource": null,
           "fieldConfig": {
             "defaults": {
-              "custom": {
-                "align": null,
-                "filterable": false
-              },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -411,7 +375,6 @@ data:
             "y": 6
           },
           "id": 10,
-          "interval": null,
           "links": [],
           "options": {
             "displayMode": "basic",
@@ -425,7 +388,7 @@ data:
             },
             "showUnfilled": true
           },
-          "pluginVersion": "7.2.0",
+          "pluginVersion": "8.4.5",
           "targets": [
             {
               "expr": "sum by(uri, instance) (gin_uri_request_total)",
@@ -433,51 +396,30 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{uri}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}uri{{`}}`}}",
               "refId": "A"
             }
           ],
-          "timeFrom": null,
-          "timeShift": null,
           "title": "URI Request",
           "type": "bargauge"
         },
         {
-          "aliasColors": {},
-          "breakPoint": "50%",
-          "cacheTimeout": null,
-          "combine": {
-            "label": "Others",
-            "threshold": 0
-          },
-          "datasource": null,
-          "decimals": null,
           "fieldConfig": {
             "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
               "custom": {
-                "align": null,
-                "filterable": false
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
               },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "blue",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
+              "mappings": []
             },
             "overrides": []
           },
-          "fontSize": "80%",
-          "format": "none",
           "gridPos": {
             "h": 7,
             "w": 7,
@@ -485,17 +427,26 @@ data:
             "y": 14
           },
           "id": 13,
-          "interval": null,
-          "legend": {
-            "show": true,
-            "values": true
-          },
-          "legendType": "Right side",
           "links": [],
-          "nullPointMode": "connected",
-          "pieType": "pie",
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
           "pluginVersion": "7.2.0",
-          "strokeWidth": 1,
           "targets": [
             {
               "expr": "sum by(method, instance) (gin_uri_request_total)",
@@ -503,25 +454,20 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{method}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}method{{`}}`}}",
               "refId": "A"
             }
           ],
-          "timeFrom": null,
-          "timeShift": null,
           "title": "Method",
-          "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "type": "piechart"
         },
         {
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": null,
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "unit": "s"
             },
             "overrides": []
@@ -552,7 +498,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0",
+          "pluginVersion": "8.4.5",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -581,9 +527,7 @@ data:
             }
           ],
           "thresholds": [],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "Request Duration",
           "tooltip": {
             "shared": true,
@@ -592,72 +536,44 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "s",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "bytes",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
-          "aliasColors": {},
-          "breakPoint": "50%",
-          "cacheTimeout": null,
-          "combine": {
-            "label": "Others",
-            "threshold": 0
-          },
-          "datasource": null,
-          "decimals": null,
           "description": "",
           "fieldConfig": {
             "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
               "custom": {
-                "align": null,
-                "filterable": false
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
               },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "blue",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
+              "mappings": []
             },
             "overrides": []
           },
-          "fontSize": "80%",
-          "format": "none",
           "gridPos": {
             "h": 5,
             "w": 7,
@@ -665,17 +581,26 @@ data:
             "y": 21
           },
           "id": 14,
-          "interval": null,
-          "legend": {
-            "show": true,
-            "values": true
-          },
-          "legendType": "Right side",
           "links": [],
-          "nullPointMode": "connected",
-          "pieType": "pie",
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
           "pluginVersion": "7.2.0",
-          "strokeWidth": 1,
           "targets": [
             {
               "expr": "sum by(code, instance) (gin_uri_request_total)",
@@ -683,25 +608,16 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{code}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}code{{`}}`}}",
               "refId": "A"
             }
           ],
-          "timeFrom": null,
-          "timeShift": null,
           "title": "Code",
-          "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "type": "piechart"
         },
         {
-          "cacheTimeout": null,
-          "datasource": null,
           "fieldConfig": {
             "defaults": {
-              "custom": {
-                "align": null,
-                "filterable": false
-              },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -727,7 +643,6 @@ data:
             "y": 21
           },
           "id": 19,
-          "interval": null,
           "links": [],
           "options": {
             "displayMode": "basic",
@@ -741,7 +656,7 @@ data:
             },
             "showUnfilled": true
           },
-          "pluginVersion": "7.2.0",
+          "pluginVersion": "8.4.5",
           "targets": [
             {
               "expr": "sum by(uri, instance) (gin_slow_request_total)",
@@ -749,18 +664,16 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{uri}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}uri{{`}}`}}",
               "refId": "A"
             }
           ],
-          "timeFrom": null,
-          "timeShift": null,
           "title": "Slow Request(default 5s)",
           "type": "bargauge"
         }
       ],
       "refresh": "5s",
-      "schemaVersion": 26,
+      "schemaVersion": 35,
       "style": "dark",
       "tags": [],
       "templating": {
@@ -774,5 +687,6 @@ data:
       "timezone": "",
       "title": "Gin Application Metrics",
       "uid": "FDB061FMz",
-      "version": 11
+      "version": 1,
+      "weekStart": ""
     }
