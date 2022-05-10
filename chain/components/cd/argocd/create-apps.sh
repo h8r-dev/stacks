@@ -25,43 +25,38 @@ if [[ $HELM_SET ]]; then
 		setOps="$setOps --helm-set "$i""
 	done
 fi
+
 repoURL=$(git config --get remote.origin.url | tr -d '\n')
 # wait until argocd is ready
 curl --retry 300 --retry-delay 2 $ARGO_SERVER --fail --insecure >> /dev/null 2>&1
 echo 'y' | argocd login "$ARGO_SERVER" --username "$ARGO_USERNAME" --password "$(cat /infra/argocd/secret)" --insecure --grpc-web
 
 # Add argocd repo
+retry_count=0
 while ! argocd repo add $repoURL --username $(cat /scm/github/organization) --password $(cat /scm/github/pat)
 do
+	if [ $retry_count -ge 10 ]; then
+		echo "Add git repo to argocd failed."
+		exit 1
+	fi
 	sleep 5
-	echo 'wait for repository ready'
+	((retry_count++))
+	echo 'Waiting for repository to be ready'
 done
 
-# Create business application for ArgoCD
-# look for directory, ignore files
-for file in */ ;
-do
-	if [ ! -d $file ]
-	then
-		continue
-	fi
-	APP_NAME=$(echo $file | tr -d '/')
-	if [ $APP_NAME == "infra" ]; then
-		continue
-	fi
-	# for output
-	if [ -f "$APP_NAME-cd-output-hook.txt" ]; then
-		info=$(cat $APP_NAME-cd-output-hook.txt)
-		echo "info: $info"
-		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'", "info": "'$info'"}]' /hln/output.yaml
-	else
-		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
-	fi
-	while ! argocd app create "$APP_NAME" \
-		--repo "$repoURL" \
-		--path "$file" \
-		--dest-server "$APP_SERVER" \
-		--dest-namespace "$deployRepoPath-$APP_NAMESPACE" \
+# Create argocd application
+create_argocd_app() {
+	NAME=$1
+	APP_DIR=$2
+	DEST_NAMESPACE=$3
+
+	retry_count=0
+
+	while ! argocd app create $NAME \
+		--repo $repoURL \
+		--path $APP_DIR \
+		--dest-server $APP_SERVER \
+		--dest-namespace $DEST_NAMESPACE \
 		--sync-option CreateNamespace=true \
 		--sync-policy automated \
 		--grpc-web \
@@ -70,24 +65,54 @@ do
 		--upsert \
 		$setOps;
 	do
+		if [ $retry_count -ge 10 ]; then
+			echo "Create argocd app: $NAME failed."
+			exit 1
+		fi
 		sleep 5
-		echo 'wait for argocd project: '$APP_NAME
+		((retry_count++))
+		echo "Waiting for creating argocd app: $NAME"
 	done
-done
+}
 
-# Create infra application for ArgoCD
-# if not exist infra directory, exit 0
-if [ ! -d "infra" ]; then
-	exit 0
-fi
-cd ./infra
+# Create business applications for ArgoCD
+# look for directory, ignore files
 for file in */ ;
 do
-	if [ ! -d $file ]
-	then
+	APP_NAME=$(echo $file | tr -d '/')
+
+	if [ ! -d $file ] || [ $APP_NAME == "infra" ]; then
 		continue
 	fi
+
+	# For output
+	if [ -f "$APP_NAME-cd-output-hook.txt" ]; then
+		info=$(cat $APP_NAME-cd-output-hook.txt)
+		echo "info: $info"
+		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'", "info": "'$info'"}]' /hln/output.yaml
+	else
+		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
+	fi
+
+	create_argocd_app $APP_NAME $file "$deployRepoPath-$APP_NAMESPACE"
+done
+
+# Create infra applications for ArgoCD, if infra directory don't existed, exit now.
+INFRA_DIR="infra"
+if [ ! -d $INFRA_DIR ]; then
+	exit 0
+fi
+
+cd $INFRA_DIR
+for file in */ ;
+do
+	if [ ! -d $file ]; then
+		continue
+	fi
+
 	APP_NAME=$(echo $file | tr -d '/')
+
+	# For output
 	if [ -f "$APP_NAME-cd-output-hook.txt" ]; then
 		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
 		info=$(cat $APP_NAME-cd-output-hook.txt)
@@ -104,22 +129,8 @@ do
 	else
 		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
 	fi
-	while ! argocd app create "$APP_NAME" \
-		--repo "$repoURL" \
-		--path "infra/$APP_NAME" \
-		--dest-server "$APP_SERVER" \
-		--dest-namespace "$APP_NAME" \
-		--sync-option CreateNamespace=true \
-		--sync-policy automated \
-		--grpc-web \
-		--insecure \
-		--plaintext \
-		--upsert \
-		$setOps;
-	do
-		sleep 5
-		echo 'wait for argocd project: '$APP_NAME
-	done
+
+	create_argocd_app $APP_NAME "$INFRA_DIR/$APP_NAME" $APP_NAME
 done
 
 # Apply k8s manifests (create grafana dashboard ConfigMaps)
