@@ -36,16 +36,16 @@ package basefactory
 
 #DefaultDomain: {
 	application: {
-		domain:              ".h8r.site"
+		domain:              string | *"h8r.site"
 		productionNamespace: "production"
 	}
 	infra: {
-		domain:       ".h8r.site"
-		argocd:       "argocd" + domain
-		prometheus:   "prometheus" + domain
-		alertManager: "alert" + domain
-		grafana:      "grafana" + domain
-		nocalhost:    "nocalhost" + domain
+		domain:       string | *"h8r.site"
+		argocd:       "argocd." + domain
+		prometheus:   "prometheus." + domain
+		alertManager: "alert." + domain
+		grafana:      "grafana." + domain
+		nocalhost:    "nocalhost." + domain
 	}
 }
 

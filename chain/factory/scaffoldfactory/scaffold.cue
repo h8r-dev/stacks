@@ -18,7 +18,6 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/ci/github"
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"universe.dagger.io/docker"
-	//"list"
 )
 
 #Instance: {
@@ -89,7 +88,7 @@ import (
 				if idx > 0 {
 					_output: doHelmScaffold["\(idx-1)"].output.image
 				}
-				input: helm.#Input & {
+				"input": helm.#Input & {
 					chartName: i.name
 					image:     _output
 					name:      helmScaffold[0].name
@@ -99,6 +98,7 @@ import (
 					if i.deployTemplate != _|_ && i.deployTemplate.helmStarter != _|_ {
 						starter: i.deployTemplate.helmStarter
 					}
+					domain: input.domain
 				}
 			}
 		}
@@ -200,9 +200,10 @@ import (
 				if idx > 0 {
 					_output: doAddonsScaffold["\(idx-1)"].output.image
 				}
-				input: addons[i.name].#Input & {
+				"input": addons[i.name].#Input & {
 					helmName: helmScaffold[0].name
 					image:    _output
+					domain:   input.domain
 				}
 			}
 		}

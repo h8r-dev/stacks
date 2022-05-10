@@ -2,6 +2,7 @@ package helm
 
 import (
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Input: {
@@ -13,4 +14,5 @@ import (
 	set?: string | *""
 	// Helm starter scaffold
 	starter?: string | *""
+	domain:   basefactory.#DefaultDomain
 }

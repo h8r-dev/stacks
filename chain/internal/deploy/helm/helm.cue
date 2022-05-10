@@ -5,6 +5,7 @@ import (
 	"universe.dagger.io/docker"
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
+	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 )
 
 // Install a Helm chart
@@ -60,9 +61,7 @@ import (
 	// Wait for all pods to be ready before marking the release as successful
 	waitFor: bool | *true
 
-	base: docker.#Pull & {
-		source: "index.docker.io/alpine/k8s:1.22.6"
-	}
+	_baseImage: base.#Image
 
 	_writeYaml: output: core.#FS
 
@@ -77,7 +76,7 @@ import (
 	_writeYamlOutput: _writeYaml.output
 
 	run: docker.#Run & {
-		input:  base.output
+		input:  _baseImage.output
 		always: true
 		command: {
 			name: "sh"

@@ -10,5 +10,5 @@ import (
 	provider:    string | *"argocd"
 	kubeconfig:  dagger.#Secret
 	repositorys: docker.#Image
-	domain:      string | *basefactory.#DefaultDomain.infra.argocd
+	domain:      basefactory.#DefaultDomain
 }

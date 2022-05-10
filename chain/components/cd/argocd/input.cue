@@ -3,6 +3,7 @@ package argocd
 import (
 	"dagger.io/dagger"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Input: {
@@ -12,7 +13,7 @@ import (
 	kubeconfig: dagger.#Secret
 	image:      docker.#Image
 	waitFor:    bool | *true
-	domain:     string
+	domain:     basefactory.#DefaultDomain
 	// Helm set values, such as "key1=value1,key2=value2"
 	set: string | *null
 }
