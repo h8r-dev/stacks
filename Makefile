@@ -42,14 +42,13 @@ eval: # Run cue eval to check all plans
 
 .PHONY: install_air
 install_air:
-	export PATH=${GOBIN}:$(PATH)
 	which air || go install github.com/cosmtrek/air@latest
 
 # Watch cuelib files change, and install new codes into stack cude.mod folder automatically.
 # Firstly: Execute `go install github.com/cosmtrek/air@latest` to install `air`.
 .PHONY: watch
 watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
-	export PATH=${GOBIN}:$(PATH) && ulimit -n 10240 && air
+	ulimit -n 10240 && air
 
 .PHONY: tar
 tar: vendor # Pack stacks into ./tars dir
@@ -74,5 +73,4 @@ install-hooks: # Install git hooks
 
 .PHONY: install-cue
 install-cue: # Install cue.mod
-	export PATH=${GOBIN}:$(PATH)
 	which cue || go install cuelang.org/go/cmd/cue@latest
