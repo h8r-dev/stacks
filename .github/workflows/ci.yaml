@@ -72,7 +72,7 @@ jobs:
         run: |
           export APP_NAME="$STACK-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
-          hln up --dir "${STACK_PREFIX}${STACK}"
+          hln up $APP_NAME --dir "${STACK_PREFIX}${STACK}"
 
       - name: Setup Go
         uses: actions/setup-go@v3
