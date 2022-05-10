@@ -66,6 +66,7 @@ jobs:
           STACK_PREFIX: ${{ env.stack_prefix }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
+          APP_DOMAIN: h8r.site
           HLN_LOG_LEVEL: "debug"
           HLN_LOG_FORMAT: "plain"
         run: |
@@ -83,6 +84,7 @@ jobs:
           APP_NAME: ${{ steps.hln_up.outputs.app_name }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
+          APP_DOMAIN: h8r.site
           STACK: ${{ env.stack }}
           STACK_PREFIX: ${{ env.stack_prefix }}
         run: |
