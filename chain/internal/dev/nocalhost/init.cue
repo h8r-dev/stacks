@@ -12,7 +12,7 @@ import (
 	kubeconfig:         string | dagger.#Secret
 	appName:            string
 	appGitURL:          string
-	waitFor:            bool
+	waitFor?:           bool
 
 	getToken: #GetToken & {
 		"url":     url

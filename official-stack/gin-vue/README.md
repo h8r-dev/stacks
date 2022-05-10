@@ -7,4 +7,4 @@ This stack creates a app that contains:
 
 ## Documentation
 
-- [Gin-Next Tutorial](https://heighliner.dev/docs/tutorials/gin_vue)
+- [Gin-Vue Tutorial](https://heighliner.dev/docs/tutorials/gin_vue)
