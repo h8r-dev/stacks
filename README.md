@@ -1,6 +1,6 @@
 # Stacks
 
-Heighliner stacks to speedup app dev.
+Heighliner stacks to speed up app dev.
 
 ## Local Development
 
@@ -8,7 +8,7 @@ Heighliner stacks to speedup app dev.
 # Clone the repo or just do `git pull`
 git clone git@github.com:h8r-dev/stacks.git
 
-# Install git-hooks
+# Install git hooks
 make install-hooks
 ```
 
@@ -42,6 +42,7 @@ This repo provides the following CUE modules:
 
 This repo contains the following stacks:
 
-- [sample](./sample/)
-- [gin-vue](./gin-vue/)
-- [gin-next](./gin-next/)
+- [sample](./official-stack/sample/)
+- [gin-vue](./official-stack/gin-vue/)
+- [gin-next](./official-stack/gin-next/)
+- [spring-vue](./official-stack/spring-vue/)
