@@ -1,6 +1,6 @@
 # Stacks
 
-Heighliner stacks to speedup app dev.
+Heighliner stacks to speed up app dev.
 
 ## Local Development
 
@@ -45,3 +45,4 @@ This repo contains the following stacks:
 - [sample](./official-stack/sample/)
 - [gin-vue](./official-stack/gin-vue/)
 - [gin-next](./official-stack/gin-next/)
+- [spring-vue](./official-stack/spring-vue/)
