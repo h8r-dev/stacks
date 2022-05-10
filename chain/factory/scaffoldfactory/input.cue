@@ -12,4 +12,5 @@ import (
 	addons?: [...basefactory.#Addons]
 	//cloudProvider:        string | *"kind" | "minikube" | "aws" | "gcp" | "azure" | "alicloud" | "tencent" | "huawei"
 	personalAccessToken?: dagger.#Secret
+	domain:               basefactory.#DefaultDomain
 }

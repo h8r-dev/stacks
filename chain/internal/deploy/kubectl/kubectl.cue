@@ -6,6 +6,7 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 )
 
 #CreateImagePullSecret: {
@@ -39,9 +40,7 @@ import (
 		done
 		"""#
 
-	_kubectl: docker.#Pull & {
-		source: "index.docker.io/alpine/k8s:1.22.6"
-	}
+	_kubectl: base.#Image
 
 	run: bash.#Run & {
 		input: _kubectl.output
@@ -78,9 +77,7 @@ import (
 	// Kube config file
 	kubeconfig: string | dagger.#Secret
 
-	_kubectlImage: docker.#Pull & {
-		source: "index.docker.io/alpine/k8s:1.22.6"
-	}
+	_kubectlImage: base.#Image
 
 	waitFor: bool | *true
 
@@ -129,9 +126,7 @@ import (
 
 	waitFor: bool | *true
 
-	_kubectlImage: docker.#Pull & {
-		source: "index.docker.io/alpine/k8s:1.22.6"
-	}
+	_kubectlImage: base.#Image
 
 	run: bash.#Run & {
 		input: _kubectlImage.output

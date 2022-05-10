@@ -31,7 +31,7 @@ import (
 	ingressYaml: ingress.#Ingress & {
 		name:               "argocd"
 		namespace:          input.namespace
-		hostName:           input.domain
+		hostName:           input.domain.infra.argocd
 		path:               "/"
 		backendServiceName: "argocd-server"
 		"ingressVersion":   ingressVersion.content
@@ -57,12 +57,12 @@ import (
 			env: {
 				KUBECONFIG:    "/etc/kubernetes/config"
 				ARGO_SERVER:   basefactory.#DefaultInternalDomain.infra.argocd
-				ARGO_URL:      basefactory.#DefaultDomain.infra.argocd
+				ARGO_URL:      input.domain.infra.argocd
 				ARGO_USERNAME: "admin"
 				if input.set != null {
 					HELM_SET: input.set
 				}
-				APP_NAMESPACE: basefactory.#DefaultDomain.application.productionNamespace
+				APP_NAMESPACE: input.domain.application.productionNamespace
 				APP_SERVER:    "https://kubernetes.default.svc"
 			}
 			mounts: kubeconfig: {
