@@ -3,7 +3,6 @@ package nocalhost
 import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Instance: {
@@ -16,7 +15,7 @@ import (
 		env: {
 			VERSION:          input.version
 			OUTPUT_PATH:      input.helmName
-			NOCALHOST_DOMAIN: basefactory.#DefaultDomain.infra.nocalhost
+			NOCALHOST_DOMAIN: input.domain.infra.nocalhost
 		}
 		workdir: "/tmp"
 		script: {
