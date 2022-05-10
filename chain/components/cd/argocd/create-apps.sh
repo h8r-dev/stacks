@@ -123,4 +123,6 @@ do
 done
 
 # Apply k8s manifests (create grafana dashboard ConfigMaps)
-find /manifests -type f -exec kubectl apply -f {} \;
+if [ -d "/manifests" ]; then
+	find /manifests -type f -exec kubectl apply -f {} \;
+fi
