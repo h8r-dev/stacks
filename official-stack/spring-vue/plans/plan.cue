@@ -23,7 +23,7 @@ dagger.#Plan & {
 			GITHUB_TOKEN: dagger.#Secret
 			KUBECONFIG:   string
 			APP_NAME:     string
-			APP_DOMAIN:   string
+			APP_DOMAIN:   string | *"h8r.site"
 		}
 
 		filesystem: "output.yaml": write: contents: actions.up._output.contents

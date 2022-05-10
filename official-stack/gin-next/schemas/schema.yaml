@@ -22,5 +22,5 @@ parameters:
   - title: application domain
     description: Which domain do you want to use?
     key: APP_DOMAIN
-    required: true
+    required: false
     default: "h8r.site"
