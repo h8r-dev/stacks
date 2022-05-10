@@ -1,19 +1,24 @@
-kind: Namespace
+{{- /*
+Generated from 'etcd' from https://raw.githubusercontent.com/etcd-io/website/master/content/en/docs/v3.5/op-guide/grafana.json
+Do not change in-place! In order to change this file first read following link:
+https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/hack
+*/ -}}
+{{- $kubeTargetVersion := default .Capabilities.KubeVersion.GitVersion .Values.kubeTargetVersionOverride }}
 apiVersion: v1
-metadata:
-  name: prometheus
-  labels:
-    name: prometheus
----
 kind: ConfigMap
-apiVersion: v1
 metadata:
-  name: gin-dashboard                           # ConfigMap name
-  namespace: prometheus                            # ConfigMap namespace (can be any namespace)
+  namespace: {{ template "kube-prometheus-stack-grafana.namespace" . }}
+  name: {{ printf "%s-%s" (include "kube-prometheus-stack.fullname" $) "gin" | trunc 63 | trimSuffix "-" }}
+  annotations:
+{{ toYaml .Values.grafana.sidecar.dashboards.annotations | indent 4 }}
   labels:
-    grafana_dashboard: "1"                    # Required label key 'grafana_dashboard', label value can be anything
+    {{- if $.Values.grafana.sidecar.dashboards.label }}
+    {{ $.Values.grafana.sidecar.dashboards.label }}: {{ ternary $.Values.grafana.sidecar.dashboards.labelValue "1" (not (empty $.Values.grafana.sidecar.dashboards.labelValue)) | quote }}
+    {{- end }}
+    app: {{ template "kube-prometheus-stack.name" $ }}-grafana
+{{ include "kube-prometheus-stack.labels" $ | indent 4 }}
 data:
-  gin.json: |                                   # Json of the grafana dashboard
+  gin.json: |-
     {
       "annotations": {
         "list": [
@@ -142,7 +147,7 @@ data:
               "format": "time_series",
               "instant": false,
               "interval": "",
-              "legendFormat": "{{instance}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}",
               "refId": "A"
             }
           ],
@@ -219,7 +224,7 @@ data:
             {
               "expr": "gin_request_uv_total",
               "interval": "",
-              "legendFormat": "{{instance}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}",
               "refId": "A"
             }
           ],
@@ -302,13 +307,13 @@ data:
             {
               "expr": "rate(gin_request_body_total[5m])",
               "interval": "",
-              "legendFormat": "{{instance}}-in",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-in",
               "refId": "A"
             },
             {
               "expr": "rate(gin_response_body_total[5m])",
               "interval": "",
-              "legendFormat": "{{instance}}-out",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-out",
               "refId": "B"
             }
           ],
@@ -391,7 +396,7 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{uri}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}uri{{`}}`}}",
               "refId": "A"
             }
           ],
@@ -449,7 +454,7 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{method}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}method{{`}}`}}",
               "refId": "A"
             }
           ],
@@ -603,7 +608,7 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{code}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}code{{`}}`}}",
               "refId": "A"
             }
           ],
@@ -659,7 +664,7 @@ data:
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{instance}}-{{uri}}",
+              "legendFormat": "{{`{{`}}instance{{`}}`}}-{{`{{`}}uri{{`}}`}}",
               "refId": "A"
             }
           ],

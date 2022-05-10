@@ -19,7 +19,10 @@ yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url
 # prometheus sd config
 yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs += {"job_name": "'service'"}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
 yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_configs[0].role = "service"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
-cat /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml | yq '.prometheus.prometheusSpec.additionalScrapeConfigs'
+# Add application dashboards
+if [ -d "/dashboards" ]; then
+    cp /dashboards/* /scaffold/$OUTPUT_PATH/infra/prometheus/templates/grafana/dashboards-1.14/
+fi
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 # shellcheck disable=SC2016
 TEST_ENV=test-env
