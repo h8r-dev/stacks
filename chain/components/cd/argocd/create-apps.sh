@@ -33,7 +33,7 @@ echo 'y' | argocd login "$ARGO_SERVER" --username "$ARGO_USERNAME" --password "$
 
 # Add argocd repo
 retry_count=0
-while ! argocd rep add $repoURL --username $(cat /scm/github/organization) --password $(cat /scm/github/pat)
+while ! argocd repo add $repoURL --username $(cat /scm/github/organization) --password $(cat /scm/github/pat)
 do
 	if [ $retry_count -ge 10 ]; then
 		echo "Add git repo to argocd failed."
@@ -52,7 +52,7 @@ create_argocd_app() {
 
 	retry_count=0
 
-	while ! argocd ap create $NAME \
+	while ! argocd app create $NAME \
 		--repo $repoURL \
 		--path $APP_DIR \
 		--dest-server $APP_SERVER \
