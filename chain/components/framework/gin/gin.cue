@@ -19,7 +19,7 @@ import (
 		dest:     "/scaffold/\(input.name)"
 	}
 	createDashboardManifest: docker.#Copy & {
-		"input":  do.output
+		input:    do.output
 		contents: _manifests.output
 		dest:     "/dashboards"
 	}
