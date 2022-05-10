@@ -17,7 +17,7 @@ import (
 	domain:         string
 	name:           string
 
-	waitFor:      bool
+	waitFor?:     bool
 	chartVersion: string
 
 	helmInstall: helm.#Chart & {

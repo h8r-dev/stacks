@@ -7,6 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/factory/cdfactory"
 	"github.com/h8r-dev/stacks/chain/components/utils/statewriter"
 	"github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/components/dev/nocalhost"
 )
 
 dagger.#Plan & {
@@ -87,6 +88,15 @@ dagger.#Plan & {
 					provider:    "argocd"
 					repositorys: _git.output.image
 					kubeconfig:  _kubeconfig.output.kubeconfig
+				}
+			}
+			_initNocalhost: nocalhost.#Instance & {
+				input: nocalhost.#Input & {
+					image:              _cd.output.image
+					githubAccessToken:  client.env.GITHUB_TOKEN
+					githubOrganization: client.env.ORGANIZATION
+					kubeconfig:         _kubeconfig.output.kubeconfig
+					appName:            client.env.APP_NAME
 				}
 			}
 			_output: statewriter.#Output & {
