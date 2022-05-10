@@ -2,9 +2,6 @@ package helm
 
 import (
 	"universe.dagger.io/bash"
-	//"universe.dagger.io/docker"
-	//"dagger.io/dagger/core"
-	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Instance: {
@@ -44,7 +41,7 @@ import (
 					eval $set
 				fi
 				# set domain
-				domain=$NAME\(basefactory.#DefaultDomain.application.domain)
+				domain=$NAME.\(input.domain.application.domain)
 				# for output
 				mkdir -p /hln
 				touch /hln/output.yaml

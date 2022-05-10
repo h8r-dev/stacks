@@ -7,6 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/factory/cdfactory"
 	"github.com/h8r-dev/stacks/chain/components/utils/statewriter"
 	"github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 dagger.#Plan & {
@@ -22,12 +23,18 @@ dagger.#Plan & {
 			GITHUB_TOKEN: dagger.#Secret
 			KUBECONFIG:   string
 			APP_NAME:     string
+			APP_DOMAIN:   string
 		}
 
 		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
 
 	actions: {
+		_domain: basefactory.#DefaultDomain & {
+			application: domain: client.env.APP_DOMAIN
+			infra: domain:       client.env.APP_DOMAIN
+		}
+
 		_kubeconfig: kubeconfig.#TransformToInternal & {
 			input: kubeconfig.#Input & {
 				kubeconfig: client.commands.kubeconfig.stdout
@@ -36,7 +43,7 @@ dagger.#Plan & {
 
 		_scaffold: scaffoldfactory.#Instance & {
 			input: scaffoldfactory.#Input & {
-				scm:                 "github"
+				domain:              _domain
 				organization:        client.env.ORGANIZATION
 				personalAccessToken: client.env.GITHUB_TOKEN
 				repository: [
@@ -92,6 +99,7 @@ dagger.#Plan & {
 					provider:    "argocd"
 					repositorys: _git.output.image
 					kubeconfig:  _kubeconfig.output.kubeconfig
+					domain:      _domain
 				}
 			}
 
