@@ -1,9 +1,4 @@
 parameters:
-  - title: application name
-    description: Name of your application
-    key: APP_NAME
-    default: gin-vue
-    required: true
   - title: kubeconfig
     description: Path to your kubeconfig file
     key: KUBECONFIG
