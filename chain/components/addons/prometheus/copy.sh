@@ -23,20 +23,19 @@ yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_conf
 if [ -d "/dashboards" ]; then
     cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus/templates/grafana/dashboards-1.14/
 fi
+# Add dashboardRefs output hook
+if [ -d "/dashboards" ]; then
+    for file in /dashboards/*annotations.json
+    do
+        # TODO: Combine files
+        TMP_CONTENTS=$(base64 $file | tr -d '\n')
+        #yq -iP '.='"$(cat $file)"'' /.tmp.json -o json
+    done
+fi
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
 cat <<EOF >  /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
-{"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator", "type": "monitoring"}
+{"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator", "type": "monitoring", "annotations": "$TMP_CONTENTS"}
 EOF
 #chmod +x /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
-# Add dashboardRefs output hook
-if [ -d "/dashboards" ]; then
-    for file in /dashboards/*output-hook.json
-    do
-        for key in `cat $file | jq keys | jq '.[]'`
-        do
-            val=$(cat $file | jq .$key)
-            yq -iP '.'$key'='"$val"'' /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt -o json
-        done
-    done
-fi
+
