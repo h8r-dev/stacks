@@ -21,39 +21,63 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth": {
+        "/health": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get Auth",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "userName",
-                        "name": "username",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "password",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
-                    }
+                "tags": [
+                    "common"
                 ],
+                "summary": "Health check",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/app.Response"
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/app.Response"
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/name": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "Returns the name of the server",
+                "responses": {
+                    "200": {
+                        "description": "The name of the server",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
                         }
                     }
                 }
@@ -61,13 +85,12 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "app.Response": {
+        "domain.ErrResponse": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer"
+                "err_msg": {
+                    "type": "string"
                 },
-                "data": {},
                 "msg": {
                     "type": "string"
                 }
@@ -82,8 +105,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Golang Gin API",
-	Description:      "An example of gin",
+	Title:            "gin-sample API",
+	Description:      "This is a gin-sample API",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

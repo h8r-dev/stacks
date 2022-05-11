@@ -7,42 +7,49 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go-gin/pkg/setting"
-	"go-gin/pkg/util"
-	"go-gin/routers"
+	"gin-sample/middleware"
+	"gin-sample/routers"
+	"gin-sample/setup"
+	"gin-sample/vars"
 )
 
-func init() {
-	setting.Setup()
-	//models.Setup()
-	//gredis.Setup()
-	util.Setup()
-}
-
-// @title Golang Gin API
+// @title gin-sample API
 // @version 1.0
-// @description An example of gin
+// @description This is a gin-sample API
 // @termsOfService https://h8r.io
 // @license.name MIT
 // @license.url https://go-gin/blob/master/LICENSE
 func main() {
-	gin.SetMode(setting.ServerSetting.RunMode)
+	if err := setup.Setup(); err != nil {
+		log.Fatalf("setup.Setup() error: %v", err)
+	}
 
-	routersInit := routers.InitRouter()
-	readTimeout := setting.ServerSetting.ReadTimeout
-	writeTimeout := setting.ServerSetting.WriteTimeout
-	endPoint := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
+	if err := setup.AutoMigrateDB(); err != nil {
+		log.Fatalf("setup.AutoMigrateDB() error: %v", err)
+	}
+
+	gin.SetMode(vars.ServerSetting.RunMode)
+	r := gin.Default()
+	vars.Prometheus.Use(r)
+	// init global middleware
+	middleware.InitMiddleware(r)
+	// init routers
+	routers.InitRouter(r)
+
+	endPoint := fmt.Sprintf(":%d", vars.ServerSetting.HttpPort)
 	maxHeaderBytes := 1 << 20
 
 	server := &http.Server{
 		Addr:           endPoint,
-		Handler:        routersInit,
-		ReadTimeout:    readTimeout,
-		WriteTimeout:   writeTimeout,
+		Handler:        r,
+		ReadTimeout:    vars.ServerSetting.ReadTimeout,
+		WriteTimeout:   vars.ServerSetting.WriteTimeout,
 		MaxHeaderBytes: maxHeaderBytes,
 	}
 
-	log.Printf("[info] start http server listening %s", endPoint)
+	log.Printf("start http server listening %s\n", endPoint)
 
-	server.ListenAndServe()
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("ListenAndServe failed. error: %v", err)
+	}
 }

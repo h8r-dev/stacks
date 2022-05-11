@@ -2,46 +2,15 @@ package gredis
 
 import (
 	"encoding/json"
-	"time"
 
 	"github.com/gomodule/redigo/redis"
 
-	"go-gin/pkg/setting"
+	"gin-sample/vars"
 )
-
-var RedisConn *redis.Pool
-
-// Setup Initialize the Redis instance
-func Setup() error {
-	RedisConn = &redis.Pool{
-		MaxIdle:     setting.RedisSetting.MaxIdle,
-		MaxActive:   setting.RedisSetting.MaxActive,
-		IdleTimeout: setting.RedisSetting.IdleTimeout,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", setting.RedisSetting.Host)
-			if err != nil {
-				return nil, err
-			}
-			if setting.RedisSetting.Password != "" {
-				if _, err := c.Do("AUTH", setting.RedisSetting.Password); err != nil {
-					c.Close()
-					return nil, err
-				}
-			}
-			return c, err
-		},
-		TestOnBorrow: func(c redis.Conn, t time.Time) error {
-			_, err := c.Do("PING")
-			return err
-		},
-	}
-
-	return nil
-}
 
 // Set a key/value
 func Set(key string, data interface{}, time int) error {
-	conn := RedisConn.Get()
+	conn := vars.RedisConn.Get()
 	defer conn.Close()
 
 	value, err := json.Marshal(data)
@@ -64,7 +33,7 @@ func Set(key string, data interface{}, time int) error {
 
 // Exists check a key
 func Exists(key string) bool {
-	conn := RedisConn.Get()
+	conn := vars.RedisConn.Get()
 	defer conn.Close()
 
 	exists, err := redis.Bool(conn.Do("EXISTS", key))
@@ -77,7 +46,7 @@ func Exists(key string) bool {
 
 // Get get a key
 func Get(key string) ([]byte, error) {
-	conn := RedisConn.Get()
+	conn := vars.RedisConn.Get()
 	defer conn.Close()
 
 	reply, err := redis.Bytes(conn.Do("GET", key))
@@ -90,7 +59,7 @@ func Get(key string) ([]byte, error) {
 
 // Delete delete a kye
 func Delete(key string) (bool, error) {
-	conn := RedisConn.Get()
+	conn := vars.RedisConn.Get()
 	defer conn.Close()
 
 	return redis.Bool(conn.Do("DEL", key))
@@ -98,7 +67,7 @@ func Delete(key string) (bool, error) {
 
 // LikeDeletes batch delete
 func LikeDeletes(key string) error {
-	conn := RedisConn.Get()
+	conn := vars.RedisConn.Get()
 	defer conn.Close()
 
 	keys, err := redis.Strings(conn.Do("KEYS", "*"+key+"*"))
