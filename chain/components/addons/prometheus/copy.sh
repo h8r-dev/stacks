@@ -21,12 +21,21 @@ yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs += {"job_name": "'serv
 yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_configs[0].role = "service"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
 # Add application dashboards
 if [ -d "/dashboards" ]; then
-    cp /dashboards/* /scaffold/$OUTPUT_PATH/infra/prometheus/templates/grafana/dashboards-1.14/
+    cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus/templates/grafana/dashboards-1.14/
+fi
+# Add dashboardRefs output hook
+if [ -d "/dashboards" ]; then
+    for file in /dashboards/*annotations.json
+    do
+        # TODO: Combine files
+        TMP_CONTENTS=$(base64 $file | tr -d '\n')
+        #yq -iP '.='"$(cat $file)"'' /.tmp.json -o json
+    done
 fi
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
-# shellcheck disable=SC2016
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
 cat <<EOF >  /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
-{"username": "admin", "password": "prom-operator","url":"$GRAFANA_DOMAIN"}
+{"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator", "type": "monitoring", "annotations": "$TMP_CONTENTS"}
 EOF
 #chmod +x /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
+
