@@ -124,7 +124,7 @@ do
 			val=$(cat $APP_NAME-cd-output-hook.txt | jq .$key)
 			echo "val:$val"
 			val=$(echo $val | sed 's/\"//g')
-			yq -i '.cd.applicationRef.[-1]."'$key'"="'$val'"' /hln/output.yaml
+			yq -i '.cd.applicationRef.[-1]."'$key'"="'"$val"'"' /hln/output.yaml
 		done
 	else
 		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml

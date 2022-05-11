@@ -1,8 +1,3 @@
-{{- /*
-Generated from 'etcd' from https://raw.githubusercontent.com/etcd-io/website/master/content/en/docs/v3.5/op-guide/grafana.json
-Do not change in-place! In order to change this file first read following link:
-https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/hack
-*/ -}}
 {{- $kubeTargetVersion := default .Capabilities.KubeVersion.GitVersion .Values.kubeTargetVersionOverride }}
 apiVersion: v1
 kind: ConfigMap
