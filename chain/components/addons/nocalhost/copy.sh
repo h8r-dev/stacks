@@ -10,4 +10,8 @@ cp /ingress/ingress.yaml "/scaffold/${OUTPUT_PATH}/infra/nocalhost/templates/ing
 yq -i '.ingress.enabled = true | .ingress.hosts[0] = "'"$NOCALHOST_DOMAIN"'"' "/scaffold/${OUTPUT_PATH}/infra/nocalhost/values.yaml"
 yq -i '.service.type = "ClusterIP"' "/scaffold/${OUTPUT_PATH}/infra/nocalhost/values.yaml"
 
-echo '{"username": "admin", "password": "123456"}' > "/scaffold/${OUTPUT_PATH}/infra/nocalhost-cd-output-hook.txt"
+# echo '{"username": "admin", "password": "123456", "url":"$NOCALHOST_DOMAIN"}' > "/scaffold/${OUTPUT_PATH}/infra/nocalhost-cd-output-hook.txt"
+
+cat <<EOF > /scaffold/${OUTPUT_PATH}/infra/nocalhost-cd-output-hook.txt
+{"username": "admin", "password": "123456", "url":"$NOCALHOST_DOMAIN"}
+EOF
