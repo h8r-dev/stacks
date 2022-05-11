@@ -1,9 +1,4 @@
 parameters:
-  - title: applicationName
-    description: Name of your application
-    key: APP_NAME
-    default: sample
-    required: true
   - title: kubeConfig
     description: Path to your kubeconfig file
     key: KUBECONFIG
