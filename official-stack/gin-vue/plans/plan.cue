@@ -57,6 +57,7 @@ dagger.#Plan & {
 						framework: "gin"
 						ci:        "github"
 						registry:  "github"
+						deployTemplate: helmStarter: "helm-starter/go/gin"
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"
