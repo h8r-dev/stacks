@@ -98,7 +98,8 @@ import (
 					if i.deployTemplate != _|_ && i.deployTemplate.helmStarter != _|_ {
 						starter: i.deployTemplate.helmStarter
 					}
-					domain: input.domain
+					domain:          input.domain
+					gitOrganization: input.organization
 				}
 			}
 		}

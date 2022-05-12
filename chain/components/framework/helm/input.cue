@@ -13,6 +13,7 @@ import (
 	// Format: '.image.repository = "rep" | .image.tag = "tag"'
 	set?: string | *""
 	// Helm starter scaffold
-	starter?: string | *""
-	domain:   basefactory.#DefaultDomain
+	starter?:         string | *""
+	domain:           basefactory.#DefaultDomain
+	gitOrganization?: string
 }
