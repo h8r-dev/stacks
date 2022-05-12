@@ -14,7 +14,7 @@ clone_from_git_repo() {
   clone_url=$1
   git clone $clone_url
   mv $TEMPLATE_NAME $APP_NAME
-  rm -rf .git # Clear history commits
+  rm -rf "$APP_NAME/.git" # Clear history commits
 }
 
 download_package() {
