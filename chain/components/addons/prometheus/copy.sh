@@ -35,7 +35,8 @@ fi
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
 cat <<EOF >  /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
-{"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator", "type": "monitoring", "annotations": "$TMP_CONTENTS"}
+{"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator", "type": "monitoring", "annotations": "$TMP_CONTENTS", \
+"prompt":"Prometheus's url is $PROMETHEUS_DOMAIN ; AlertManager's url is $ALERTMANAGER_DOMAIN"}
 EOF
 #chmod +x /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 
