@@ -1,0 +1,9 @@
+name: remix
+version: 1.0.0
+owner:
+  name: Chen Yuan
+  contact: chenyuan@h8r.io
+description: This is an Remix stack
+icon: https://raw.githubusercontent.com/gin-gonic/logo/master/color.png
+url: https://github.com/h8r-dev/remix-stack-template
+tags: ["remix", "nodejs", "full-stack", "react"]

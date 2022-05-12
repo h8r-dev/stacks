@@ -23,6 +23,7 @@ jobs:
           - gin-vue
           - spring-vue
           - sample
+          - remix
     runs-on: ubuntu-latest
     env:
       stack: ${{ matrix.stacks }}
