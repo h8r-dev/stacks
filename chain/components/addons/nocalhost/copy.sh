@@ -13,5 +13,5 @@ yq -i '.service.type = "ClusterIP"' "/scaffold/${OUTPUT_PATH}/infra/nocalhost/va
 # echo '{"username": "admin", "password": "123456", "url":"$NOCALHOST_DOMAIN"}' > "/scaffold/${OUTPUT_PATH}/infra/nocalhost-cd-output-hook.txt"
 
 cat <<EOF > /scaffold/${OUTPUT_PATH}/infra/nocalhost-cd-output-hook.txt
-{"username": "admin", "password": "123456", "url":"$NOCALHOST_DOMAIN"}
+{"username": "admin", "password": "123456", "url":"$NOCALHOST_DOMAIN", "infra": "true"}
 EOF
