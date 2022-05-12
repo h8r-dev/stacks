@@ -1,3 +1,6 @@
+spring:
+  application:
+    name: @project.name@
 management:
   endpoints:
     web:
@@ -6,3 +9,6 @@ management:
   endpoint:
     prometheus:
       enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
