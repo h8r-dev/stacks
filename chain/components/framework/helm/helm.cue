@@ -5,10 +5,9 @@ import (
 )
 
 #Instance: {
-	starters: "spring-boot": {
-		url:         "https://github.com/h8r-dev/helm-starter-spring.git"
-		starterName: "helm-starter-spring"
-		name:        "spring-boot"
+	defaultStarter: {
+		url:      "https://github.com/h8r-dev/helm-starter.git"
+		repoName: "helm-starter"
 	}
 	input: #Input
 	do:    bash.#Run & {
@@ -17,11 +16,11 @@ import (
 			if input.set != _|_ {
 				HELM_SET: input.set
 			}
-			DIR_NAME: input.name
-			if input.starter != _|_ && starters[input.starter] != _|_ {
-				STARTER:      starters[input.starter].name
-				STARTER_URL:  starters[input.starter].url
-				STARTER_NAME: starters[input.starter].starterName
+			DIR_NAME:          input.name
+			STARTER_REPO_URL:  defaultStarter.url
+			STARTER_REPO_NAME: defaultStarter.repoName
+			if input.starter != _|_ {
+				STARTER: input.starter
 			}
 		}
 		"input": input.image
@@ -30,8 +29,8 @@ import (
 		script: contents: """
 				printf '## :warning: DO NOT MAKE THIS REPOSITORY PUBLIC' > README.md
 				if [ ! -z "$STARTER" ]; then
-					git clone "$STARTER_URL" $HOME/.local/share/helm/starters/${STARTER_NAME}
-					helm create $NAME -p $STARTER_NAME/$STARTER
+					git clone "$STARTER_REPO_URL" $HOME/.local/share/helm/starters/${STARTER_REPO_NAME}
+					helm create $NAME -p $STARTER
 				else
 					helm create $NAME
 				fi
