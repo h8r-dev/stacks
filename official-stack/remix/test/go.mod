@@ -1,4 +1,4 @@
-module github.com/h8r-dev/stacks/gin_vue_stack_test/test
+module github.com/h8r-dev/stacks/official-stack/remix/test
 
 go 1.18
 

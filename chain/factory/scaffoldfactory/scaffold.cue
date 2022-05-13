@@ -7,6 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/framework/next"
 	"github.com/h8r-dev/stacks/chain/components/framework/vue"
 	"github.com/h8r-dev/stacks/chain/components/framework/spring"
+	"github.com/h8r-dev/stacks/chain/components/framework/remix"
 	// Addons
 	"github.com/h8r-dev/stacks/chain/components/addons/loki"
 	"github.com/h8r-dev/stacks/chain/components/addons/nocalhost"
@@ -28,6 +29,7 @@ import (
 		"next":   next
 		"vue":    vue
 		"spring": spring
+		"remix":  remix
 	}
 
 	addons: {
@@ -98,7 +100,8 @@ import (
 					if i.deployTemplate != _|_ && i.deployTemplate.helmStarter != _|_ {
 						starter: i.deployTemplate.helmStarter
 					}
-					domain: input.domain
+					domain:          input.domain
+					gitOrganization: input.organization
 				}
 			}
 		}

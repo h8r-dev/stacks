@@ -20,7 +20,10 @@ jobs:
         stacks:
           # Add stack here if you want to test it.
           - gin-next
+          - gin-vue
+          - spring-vue
           - sample
+          - remix
     runs-on: ubuntu-latest
     env:
       stack: ${{ matrix.stacks }}

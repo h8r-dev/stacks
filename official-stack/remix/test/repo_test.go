@@ -1,4 +1,4 @@
-package gin_vue_stack_test
+package remix_stack_test
 
 import (
 	"context"
@@ -14,10 +14,10 @@ import (
 
 var _ = Describe("Repos", func() {
 	BeforeEach(func() {
+		print("Running test...")
 	})
 
-	It("should create backend, frontend, deploy repos", func() {
-
+	It("should create remix-fullstack and deploy repos", func() {
 		githubOrg := os.Getenv("ORGANIZATION")
 		appName := os.Getenv("APP_NAME")
 		githubToken := os.Getenv("GITHUB_TOKEN")
@@ -51,26 +51,23 @@ var _ = Describe("Repos", func() {
 		Expect(err).To(BeNil())
 
 		// find repo with app name prefix
-		foundBackend := false
-		foundFrontend := false
-		foundDeploy := false
+		remixRepo := false
+		deployRepo := false
+
 		for _, repo := range repos {
-			rn := *repo.Name
-			if !strings.HasPrefix(rn, appName) {
+			repoName := *repo.Name
+			if !strings.HasPrefix(repoName, appName) {
 				continue
 			}
-			switch rn {
-			case appName + "-backend":
-				foundBackend = true
-			case appName + "-frontend":
-				foundFrontend = true
+			switch repoName {
+			case appName:
+				remixRepo = true
 			case appName + "-deploy":
-				foundDeploy = true
+				deployRepo = true
 			}
 		}
 
-		Expect(foundBackend).To(BeTrue())
-		Expect(foundFrontend).To(BeTrue())
-		Expect(foundDeploy).To(BeTrue())
+		Expect(remixRepo).To(BeTrue())
+		Expect(deployRepo).To(BeTrue())
 	})
 })
