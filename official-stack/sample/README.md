@@ -1,6 +1,6 @@
 # Sample
 
-This is a sample stack that creates a simple Nextjs app.
+This is a sample stack that creates a simple Remix app.
 
 ## Documentation
 

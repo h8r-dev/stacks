@@ -19,7 +19,7 @@ dagger.#Plan & {
 		}
 
 		env: {
-			ORGANIZATION: string
+			ORGANIZATION: string | *""
 			GITHUB_TOKEN: dagger.#Secret
 			KUBECONFIG:   string
 			APP_NAME:     string
@@ -48,9 +48,9 @@ dagger.#Plan & {
 				personalAccessToken: client.env.GITHUB_TOKEN
 				repository: [
 					{
-						name:      client.env.APP_NAME + "-frontend"
+						name:      client.env.APP_NAME
 						type:      "frontend"
-						framework: "next"
+						framework: "remix"
 						ci:        "github"
 						registry:  "github"
 					},
