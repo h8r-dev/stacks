@@ -8,6 +8,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 	"github.com/h8r-dev/stacks/chain/components/utils/statewriter"
 	"github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/components/utils/organization"
 )
 
 dagger.#Plan & {
@@ -41,10 +42,15 @@ dagger.#Plan & {
 			}
 		}
 
+		_organization: organization.#Github & {
+			github_token:        client.env.GITHUB_TOKEN
+			github_organization: client.env.ORGANIZATION
+		}
+
 		_scaffold: scaffoldfactory.#Instance & {
 			input: scaffoldfactory.#Input & {
 				domain:              _domain
-				organization:        client.env.ORGANIZATION
+				organization:        _organization.value.contents
 				personalAccessToken: client.env.GITHUB_TOKEN
 				repository: [
 					{
@@ -68,7 +74,7 @@ dagger.#Plan & {
 			input: scmfactory.#Input & {
 				provider:            "github"
 				personalAccessToken: client.env.GITHUB_TOKEN
-				organization:        client.env.ORGANIZATION
+				organization:        _organization.value.contents
 				repositorys:         _scaffold.output.image
 				visibility:          "private"
 				kubeconfig:          _kubeconfig.output.kubeconfig
