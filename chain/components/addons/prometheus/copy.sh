@@ -25,12 +25,13 @@ if [ -d "/dashboards" ]; then
 fi
 # Add dashboardRefs output hook
 if [ -d "/dashboards" ]; then
-    for file in /dashboards/*annotations.json
-    do
-        # TODO: Combine files
-        TMP_CONTENTS=$(base64 $file | tr -d '\n')
-        #yq -iP '.='"$(cat $file)"'' /.tmp.json -o json
-    done
+    if [ -f *annotations.json ]; then
+        for file in /dashboards/*annotations.json
+        do
+            # TODO: Combine files
+            TMP_CONTENTS=$(base64 $file | tr -d '\n')
+        done
+    fi
 fi
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
