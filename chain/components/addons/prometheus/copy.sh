@@ -24,12 +24,11 @@ if [ -d "/dashboards" ]; then
     cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus/templates/grafana/dashboards-1.14/
 fi
 # Add dashboardRefs output hook
-if [ -d "/dashboards" ]; then
+if [ -f /dashboards/*annotations.json ]; then
     for file in /dashboards/*annotations.json
     do
         # TODO: Combine files
         TMP_CONTENTS=$(base64 $file | tr -d '\n')
-        #yq -iP '.='"$(cat $file)"'' /.tmp.json -o json
     done
 fi
 # add spring boot serviceMonitor
