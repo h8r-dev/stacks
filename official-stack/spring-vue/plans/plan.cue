@@ -61,6 +61,9 @@ dagger.#Plan & {
 						ci:        "github"
 						registry:  "github"
 						deployTemplate: helmStarter: "helm-starter/java/spring-boot"
+						extraArgs: helmSet: """
+						'.service.labels = {"h8r.io/framework": "spring"}'
+						"""
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"
