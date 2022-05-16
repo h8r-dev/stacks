@@ -1,6 +1,7 @@
 package helm
 
 import (
+	"strconv"
 	"universe.dagger.io/bash"
 )
 
@@ -27,6 +28,10 @@ import (
 			if input.gitOrganization != _|_ {
 				GIT_ORGANIZATION: input.gitOrganization
 			}
+			APP_NAME:                  input.appName
+			APPLICATION_DOMAIN:        input.domain.application.domain
+			INGRESS_HOST_PATH:         input.ingressHostPath
+			REWRITE_INGRESS_HOST_PATH: strconv.FormatBool(input.rewriteIngressHostPath)
 		}
 		"input": input.image
 		// helm deploy dir path
@@ -63,9 +68,9 @@ import (
 				eval $set
 			fi
 			# set domain
-			domain=\(input.appName).\(input.domain.application.domain)
-			path=\(input.ingressHostPath)
-			if [ \(input.rewriteIngressHostPath) == true ]; then
+			domain=$APP_NAME.$APPLICATION_DOMAIN
+			path=$INGRESS_HOST_PATH
+			if $REWRITE_INGRESS_HOST_PATH; then
 				echo "set domain"
 				path=$path"(/|$)(.*)"
 				yq -i '.ingress.annotations += {"nginx.ingress.kubernetes.io/rewrite-target": "/$2"}' values.yaml
@@ -77,8 +82,8 @@ import (
 			mkdir -p /hln
 			touch /hln/output.yaml
 			url=$domain
-			if [ \(input.ingressHostPath) != "/" ]; then
-				url=$domain\(input.ingressHostPath)
+			if [ $INGRESS_HOST_PATH != "/" ]; then
+				url=$domain$INGRESS_HOST_PATH
 			fi
 			yq -i '.services += [{"name": "'$NAME'", "url": "'$url'"}]' /hln/output.yaml
 			mkdir -p /h8r
