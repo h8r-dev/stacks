@@ -24,14 +24,12 @@ if [ -d "/dashboards" ]; then
     cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus/templates/grafana/dashboards-1.14/
 fi
 # Add dashboardRefs output hook
-if [ -d "/dashboards" ]; then
-    if [ -f *annotations.json ]; then
-        for file in /dashboards/*annotations.json
-        do
-            # TODO: Combine files
-            TMP_CONTENTS=$(base64 $file | tr -d '\n')
-        done
-    fi
+if [ -f /dashboards/*annotations.json ]; then
+    for file in /dashboards/*annotations.json
+    do
+        # TODO: Combine files
+        TMP_CONTENTS=$(base64 $file | tr -d '\n')
+    done
 fi
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
