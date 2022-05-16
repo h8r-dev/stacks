@@ -66,7 +66,17 @@ dagger.#Plan & {
 						framework: "helm"
 					},
 				]
-				addons: []
+				addons: [
+					{
+						name: "prometheus"
+					},
+					{
+						name: "loki"
+					},
+					{
+						name: "nocalhost"
+					},
+				]
 			}
 		}
 
