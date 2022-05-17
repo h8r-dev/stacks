@@ -3,6 +3,7 @@ package loki
 import (
 	"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
+	"github.com/h8r-dev/stacks/chain/components/origin"
 )
 
 #Instance: {
@@ -13,8 +14,11 @@ import (
 	do: bash.#Run & {
 		"input": input.image
 		env: {
-			VERSION:     input.version
-			OUTPUT_PATH: input.helmName
+			VERSION:            input.version
+			OUTPUT_PATH:        input.helmName
+			NETWORK_TYPE:       input.networkType
+			CHART_URL_INTERNAL: origin.#Origin.loki.internal.url
+			CHART_URL_GLOBAL:   origin.#Origin.loki.global.url
 		}
 		workdir: "/tmp"
 		script: {

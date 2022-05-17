@@ -209,9 +209,10 @@ import (
 					_output: doAddonsScaffold["\(idx-1)"].output.image
 				}
 				"input": addons[i.name].#Input & {
-					helmName: helmScaffold[0].name
-					image:    _output
-					domain:   input.domain
+					helmName:    helmScaffold[0].name
+					image:       _output
+					domain:      input.domain
+					networkType: input.networkType
 				}
 			}
 		}

@@ -3,6 +3,7 @@ package prometheus
 import (
 	"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
+	"github.com/h8r-dev/stacks/chain/components/origin"
 )
 
 #Instance: {
@@ -18,6 +19,9 @@ import (
 			GRAFANA_DOMAIN:      input.domain.infra.grafana
 			ALERTMANAGER_DOMAIN: input.domain.infra.alertManager
 			PROMETHEUS_DOMAIN:   input.domain.infra.prometheus
+			NETWORK_TYPE:        input.networkType
+			CHART_URL_INTERNAL:  origin.#Origin.prometheus.internal.url
+			CHART_URL_GLOBAL:    origin.#Origin.prometheus.global.url
 		}
 		workdir: "/tmp"
 		script: {
