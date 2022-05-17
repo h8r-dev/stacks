@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-helm pull nocalhost --repo https://nocalhost.github.io/charts --version "${VERSION}"
+#helm pull nocalhost --repo https://nocalhost.github.io/charts --version "${VERSION}"
+NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"
+helm pull nocalhost --repo `eval echo '$'"CHART_URL_$NETWORK_TYPE"` --version $VERSION
+
 mkdir -p "/scaffold/${OUTPUT_PATH}/infra"
 tar -zxf "./nocalhost-${VERSION}.tgz" -C "/scaffold/${OUTPUT_PATH}/infra"
 sed -i '/^metadata/a\  annotations:\n    helm.sh/hook: pre-install\n    helm.sh/hook-weight: "-10"' "/scaffold/${OUTPUT_PATH}/infra/nocalhost/templates/db-init-configmap.yaml"

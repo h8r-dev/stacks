@@ -20,7 +20,7 @@ package origin
 		internal: {
 			chart:   "kube-prometheus-stack"
 			version: "34.9.0"
-			url:     "https://prometheus-community.github.io/helm-charts"
+			url:     "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
 	loki: {
@@ -32,7 +32,7 @@ package origin
 		internal: {
 			chart:   "loki-stack"
 			version: "2.6.2"
-			url:     "https://prometheus-community.github.io/helm-charts"
+			url:     "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
 	nocalhost: {
@@ -44,7 +44,7 @@ package origin
 		internal: {
 			chart:   "nocalhost"
 			version: "0.6.16"
-			url:     "https://nocalhost.github.io/charts"
+			url:     "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
 }
