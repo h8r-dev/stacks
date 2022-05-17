@@ -102,6 +102,11 @@ import (
 					}
 					domain:          input.domain
 					gitOrganization: input.organization
+					appName:         input.appName
+					if i.type == "backend" {
+						ingressHostPath:        "/api"
+						rewriteIngressHostPath: true
+					}
 				}
 			}
 		}

@@ -43,6 +43,7 @@ dagger.#Plan & {
 
 		_scaffold: scaffoldfactory.#Instance & {
 			input: scaffoldfactory.#Input & {
+				appName:             client.env.APP_NAME
 				domain:              _domain
 				organization:        client.env.ORGANIZATION
 				personalAccessToken: client.env.GITHUB_TOKEN
