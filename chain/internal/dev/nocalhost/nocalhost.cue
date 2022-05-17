@@ -117,6 +117,7 @@ import (
 	token:      string
 	waitFor?:   bool
 	kubeconfig: string | dagger.#Secret
+	apiServer:  string
 
 	_baseImage: base.#Image
 
@@ -127,14 +128,15 @@ import (
 			if waitFor != _|_ {
 				WAIT_FOR: "\(waitFor)"
 			}
-			NH_HOST: url
-			TOKEN:   token
+			NH_HOST:    url
+			TOKEN:      token
+			API_SERVER: apiServer
 		}
 		script: contents: #"""
 			sh_c='sh -c'
 			kubeconfig="$(base64 -w0 /etc/kubernetes/config)"
 			URL="$NH_HOST/v1/cluster"
-			DATA_RAW='{"name":"initCluster","kubeconfig":"'"$kubeconfig"'"}'
+			DATA_RAW='{"name":"initCluster","kubeconfig":"'"$kubeconfig"'","extra_api_server":"'"$API_SERVER"'"}'
 			HEADER="--header 'Authorization: Bearer "$TOKEN"' --header 'Content-Type: application/json'"
 			do_create="curl -s --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 			messages="$($sh_c "$do_create")"

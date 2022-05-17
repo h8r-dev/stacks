@@ -12,6 +12,5 @@ import (
 	githubOrganization: string
 	kubeconfig:         string | dagger.#Secret
 	appName:            string
-	// appGitURL:          string
-	// waitFor: bool
+	apiServer:          string
 }

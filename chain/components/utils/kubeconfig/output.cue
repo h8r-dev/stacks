@@ -4,4 +4,7 @@ import (
 	"dagger.io/dagger"
 )
 
-#Output: kubeconfig: dagger.#Secret
+#Output: {
+	kubeconfig: dagger.#Secret
+	apiServer:  string
+}

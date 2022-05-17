@@ -24,8 +24,11 @@ import (
 		}
 		script: contents: #"""
 			set +ex
+			server=$(kubectl config view --minify --kubeconfig /kubeconfig | awk '/server: /{print $2}')
+			printf '%s' "$server" > /api_server
 			cat /kubeconfig | sed -e 's?server: https://.*?server: https://kubernetes.default.svc?' > /result
 			"""#
+		export: files: "/api_server": string
 	}
 
 	_getSecret: core.#NewSecret & {
@@ -35,5 +38,6 @@ import (
 
 	output: #Output & {
 		kubeconfig: _getSecret.output
+		apiServer:  transformToInternal.export.files."/api_server"
 	}
 }
