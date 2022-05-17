@@ -43,6 +43,7 @@ dagger.#Plan & {
 
 		_scaffold: scaffoldfactory.#Instance & {
 			input: scaffoldfactory.#Input & {
+				appName:             client.env.APP_NAME
 				domain:              _domain
 				organization:        client.env.ORGANIZATION
 				personalAccessToken: client.env.GITHUB_TOKEN
@@ -61,6 +62,9 @@ dagger.#Plan & {
 						ci:        "github"
 						registry:  "github"
 						deployTemplate: helmStarter: "helm-starter/java/spring-boot"
+						extraArgs: helmSet: """
+						'.service.labels = {"h8r.io/framework": "spring"}'
+						"""
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"
@@ -74,9 +78,6 @@ dagger.#Plan & {
 					},
 					{
 						name: "loki"
-					},
-					{
-						name: "nocalhost"
 					},
 				]
 			}

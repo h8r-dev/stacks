@@ -3,7 +3,7 @@ package test
 import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/chain/framework/spring"
+	"github.com/h8r-dev/stacks/chain/components/framework/spring"
 	"github.com/h8r-dev/stacks/cuelib/utils/base"
 )
 
