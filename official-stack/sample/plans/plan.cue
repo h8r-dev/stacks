@@ -74,9 +74,6 @@ dagger.#Plan & {
 					{
 						name: "loki"
 					},
-					{
-						name: "nocalhost"
-					},
 				]
 			}
 		}
