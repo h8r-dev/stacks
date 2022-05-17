@@ -60,6 +60,7 @@ dagger.#Plan & {
 						framework: "remix"
 						ci:        "github"
 						registry:  "github"
+						deployTemplate: helmStarter: "helm-starter/nodejs/remix-sqlite"
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"

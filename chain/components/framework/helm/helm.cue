@@ -9,7 +9,7 @@ import (
 	defaultStarter: {
 		url:      "https://github.com/h8r-dev/helm-starter.git"
 		repoName: "helm-starter"
-		version:  "v0.0.1"
+		version:  "v0.0.2"
 	}
 	input: #Input
 	do:    bash.#Run & {
