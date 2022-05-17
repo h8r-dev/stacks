@@ -13,6 +13,7 @@ import (
 	appName:            string
 	appGitURL:          string
 	waitFor?:           bool
+	apiServer:          string
 
 	getToken: #GetToken & {
 		"url":     url
@@ -34,6 +35,7 @@ import (
 		token:        getToken.output
 		"url":        url
 		"kubeconfig": kubeconfig
+		"apiServer":  apiServer
 	}
 
 	createApplication: #CreateApplication & {

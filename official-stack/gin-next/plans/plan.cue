@@ -107,6 +107,7 @@ dagger.#Plan & {
 					githubOrganization: client.env.ORGANIZATION
 					kubeconfig:         _kubeconfig.output.kubeconfig
 					appName:            client.env.APP_NAME
+					apiServer:          _kubeconfig.output.apiServer
 				}
 			}
 			_output: statewriter.#Output & {
