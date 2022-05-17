@@ -28,6 +28,7 @@ import (
 			appName:            input.appName
 			appGitURL:          _getGitURL.export.files."/result"
 			waitFor:            _getGitURL.success
+			apiServer:          input.apiServer
 		}
 		createImagePullSecretForDevNs: kubectl.#CreateImagePullSecret & {
 			kubeconfig: input.kubeconfig
