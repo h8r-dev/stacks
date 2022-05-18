@@ -3,7 +3,7 @@ version: 1.0.0
 owner:
   name: Hongchao Deng
   contact: hongchao.deng@h8r.io
-description: This is an example stack
+description: This is an sample stack
 icon: https://raw.githubusercontent.com/gin-gonic/logo/master/color.png
 url: https://gin-gonic.com/
-tags: ["go", "gin", "microservice"]
+tags: ["node.js", "remix", "fullstack"]

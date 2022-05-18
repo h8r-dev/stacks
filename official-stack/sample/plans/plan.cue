@@ -8,6 +8,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 	"github.com/h8r-dev/stacks/chain/components/utils/statewriter"
 	"github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/components/utils/organization"
 )
 
 dagger.#Plan & {
@@ -19,7 +20,7 @@ dagger.#Plan & {
 		}
 
 		env: {
-			ORGANIZATION: string
+			ORGANIZATION: string | *""
 			GITHUB_TOKEN: dagger.#Secret
 			KUBECONFIG:   string
 			APP_NAME:     string
@@ -42,20 +43,26 @@ dagger.#Plan & {
 			}
 		}
 
+		_organization: organization.#Github & {
+			github_token:        client.env.GITHUB_TOKEN
+			github_organization: client.env.ORGANIZATION
+		}
+
 		_scaffold: scaffoldfactory.#Instance & {
 			input: scaffoldfactory.#Input & {
 				networkType:         client.env.NETWORK_TYPE
 				appName:             client.env.APP_NAME
 				domain:              _domain
-				organization:        client.env.ORGANIZATION
+				organization:        _organization.value.contents
 				personalAccessToken: client.env.GITHUB_TOKEN
 				repository: [
 					{
-						name:      client.env.APP_NAME + "-frontend"
+						name:      client.env.APP_NAME
 						type:      "frontend"
-						framework: "next"
+						framework: "remix"
 						ci:        "github"
 						registry:  "github"
+						deployTemplate: helmStarter: "helm-starter/nodejs/remix-sqlite"
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"
@@ -63,7 +70,14 @@ dagger.#Plan & {
 						framework: "helm"
 					},
 				]
-				addons: []
+				addons: [
+					{
+						name: "prometheus"
+					},
+					{
+						name: "loki"
+					},
+				]
 			}
 		}
 
@@ -71,7 +85,7 @@ dagger.#Plan & {
 			input: scmfactory.#Input & {
 				provider:            "github"
 				personalAccessToken: client.env.GITHUB_TOKEN
-				organization:        client.env.ORGANIZATION
+				organization:        _organization.value.contents
 				repositorys:         _scaffold.output.image
 				visibility:          "private"
 				kubeconfig:          _kubeconfig.output.kubeconfig

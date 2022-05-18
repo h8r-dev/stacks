@@ -3,6 +3,7 @@ package remix
 import (
 	"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
+	"universe.dagger.io/docker"
 )
 
 // Create a new remix app
@@ -11,6 +12,10 @@ import (
 
 	scriptFiles: core.#Source & {
 		path: "."
+	}
+
+	_manifests: core.#Source & {
+		path: "dashboards"
 	}
 
 	do: bash.#Run & {
@@ -29,7 +34,13 @@ import (
 		}
 	}
 
+	createDashboardManifest: docker.#Copy & {
+		input:    do.output
+		contents: _manifests.output
+		dest:     "/dashboards"
+	}
+
 	output: #Output & {
-		image: do.output
+		image: createDashboardManifest.output
 	}
 }
