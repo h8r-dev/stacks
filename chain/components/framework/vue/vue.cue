@@ -9,7 +9,7 @@ import (
 #Instance: {
 	input: #Input
 
-	src:   core.#Source & {
+	src: core.#Source & {
 		path: "."
 	}
 

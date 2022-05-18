@@ -14,7 +14,7 @@ import (
 		path: "template"
 	}
 
-	src:   core.#Source & {
+	src: core.#Source & {
 		path: "."
 	}
 
