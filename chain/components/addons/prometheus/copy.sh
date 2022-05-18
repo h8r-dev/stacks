@@ -9,6 +9,11 @@ mkdir -p /scaffold/$OUTPUT_PATH/infra
 tar -zxvf ./kube-prometheus-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
 mv /scaffold/$OUTPUT_PATH/infra/kube-prometheus-stack /scaffold/$OUTPUT_PATH/infra/prometheus-stack
 
+# write basic auth username and password to file
+# default password is heighliner123!
+# gernerate by htpasswd -c auth admin
+printf 'admin:$apr1$rviPk66W$HepYtRwZBa.Uvmi/pqK2N1' > auth
+
 # Hardcode ingressClassName to be nginx
 DEFAULT_INGRESS_CLASSNAME=nginx
 
@@ -23,10 +28,15 @@ yq -i '.grafana.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaf
 # enable alertManager ingress
 yq -i '.alertmanager.ingress.enabled = true | .alertmanager.ingress.hosts[0] = "'$ALERTMANAGER_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 yq -i '.alertmanager.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.alertmanager.ingress.annotations += {"nginx.ingress.kubernetes.io/auth-realm": "Authentication Required","nginx.ingress.kubernetes.io/auth-secret":"prometheus-stack/basic-auth","nginx.ingress.kubernetes.io/auth-type":"basic"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+# create basic-auth secret file for alertManager and prometheus basic auth
+mkdir /scaffold/$OUTPUT_PATH/infra/prometheus-stack/templates/basic-auth
+kubectl create secret generic basic-auth --from-file auth --dry-run=client -o yaml > /scaffold/$OUTPUT_PATH/infra/prometheus-stack/templates/basic-auth/basic-auth.yaml
 
 # enable prometheus ingress
 yq -i '.prometheus.ingress.enabled = true | .prometheus.ingress.hosts[0] = "'$PROMETHEUS_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 yq -i '.prometheus.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.prometheus.ingress.annotations += {"nginx.ingress.kubernetes.io/auth-realm": "Authentication Required","nginx.ingress.kubernetes.io/auth-secret":"prometheus-stack/basic-auth","nginx.ingress.kubernetes.io/auth-type":"basic"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # add grafana loki datasource
 yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
