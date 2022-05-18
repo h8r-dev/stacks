@@ -26,7 +26,7 @@ if [ ! -z "$HELM_SET" ]; then
   eval $set
 fi
 # set domain
-domain=$APP_NAME.$APPLICATION_DOMAIN
+domain=http://$APP_NAME.$APPLICATION_DOMAIN
 path=$INGRESS_HOST_PATH
 if $REWRITE_INGRESS_HOST_PATH; then
   echo "set domain"

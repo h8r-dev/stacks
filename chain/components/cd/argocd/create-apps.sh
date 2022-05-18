@@ -11,7 +11,7 @@ touch /hln/output.yaml
 yq -i '.cd.provider = "argocd"' /hln/output.yaml
 yq -i '.cd.namespace = "argocd"' /hln/output.yaml
 yq -i '.cd.type = "application"' /hln/output.yaml
-yq -i '.cd.dashboardRef.url = "'$ARGO_URL'"' /hln/output.yaml
+yq -i '.cd.dashboardRef.url = "http://'$ARGO_URL'"' /hln/output.yaml
 yq -i '.cd.dashboardRef.credential.username = "'$ARGO_USERNAME'"' /hln/output.yaml
 export ARGO_PASSWORD=$(cat /infra/argocd/secret)
 yq -i '.cd.dashboardRef.credential.password = "'$ARGO_PASSWORD'"' /hln/output.yaml
