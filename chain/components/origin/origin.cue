@@ -13,38 +13,32 @@ package origin
 	}
 	prometheus: {
 		global: {
-			chart:   "kube-prometheus-stack"
-			version: "34.9.0"
-			url:     "https://prometheus-community.github.io/helm-charts"
+			chart: "kube-prometheus-stack"
+			url:   "https://prometheus-community.github.io/helm-charts"
 		}
 		internal: {
-			chart:   "kube-prometheus-stack"
-			version: "34.9.0"
-			url:     "https://prometheus-community.github.io/helm-charts"
+			chart: "kube-prometheus-stack"
+			url:   "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
 	loki: {
 		global: {
-			chart:   "loki-stack"
-			version: "2.6.2"
-			url:     "https://grafana.github.io/helm-charts"
+			chart: "loki-stack"
+			url:   "https://grafana.github.io/helm-charts"
 		}
 		internal: {
-			chart:   "loki-stack"
-			version: "2.6.2"
-			url:     "https://prometheus-community.github.io/helm-charts"
+			chart: "loki-stack"
+			url:   "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
 	nocalhost: {
 		global: {
-			chart:   "nocalhost"
-			version: "0.6.16"
-			url:     "https://nocalhost.github.io/charts"
+			chart: "nocalhost"
+			url:   "https://nocalhost.github.io/charts"
 		}
 		internal: {
-			chart:   "nocalhost"
-			version: "0.6.16"
-			url:     "https://nocalhost.github.io/charts"
+			chart: "nocalhost"
+			url:   "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
 }

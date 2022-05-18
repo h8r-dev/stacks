@@ -51,22 +51,11 @@ dagger.#Plan & {
 				personalAccessToken: client.env.GITHUB_TOKEN
 				repository: [
 					{
-						name:      client.env.APP_NAME + "-frontend"
+						name:      client.env.APP_NAME
 						type:      "frontend"
-						framework: "vue"
+						framework: "remix"
 						ci:        "github"
 						registry:  "github"
-					},
-					{
-						name:      client.env.APP_NAME + "-backend"
-						type:      "backend"
-						framework: "spring"
-						ci:        "github"
-						registry:  "github"
-						deployTemplate: helmStarter: "helm-starter/java/spring-boot"
-						extraArgs: helmSet: """
-						'.service.labels = {"h8r.io/framework": "spring"}'
-						"""
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"
@@ -80,6 +69,9 @@ dagger.#Plan & {
 					},
 					{
 						name: "loki"
+					},
+					{
+						name: "nocalhost"
 					},
 				]
 			}
@@ -105,7 +97,6 @@ dagger.#Plan & {
 					domain:      _domain
 				}
 			}
-
 			_output: statewriter.#Output & {
 				input: _cd.output
 			}

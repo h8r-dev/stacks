@@ -7,6 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/framework/next"
 	"github.com/h8r-dev/stacks/chain/components/framework/vue"
 	"github.com/h8r-dev/stacks/chain/components/framework/spring"
+	"github.com/h8r-dev/stacks/chain/components/framework/remix"
 	// Addons
 	"github.com/h8r-dev/stacks/chain/components/addons/loki"
 	"github.com/h8r-dev/stacks/chain/components/addons/nocalhost"
@@ -28,6 +29,7 @@ import (
 		"next":   next
 		"vue":    vue
 		"spring": spring
+		"remix":  remix
 	}
 
 	addons: {
@@ -98,7 +100,13 @@ import (
 					if i.deployTemplate != _|_ && i.deployTemplate.helmStarter != _|_ {
 						starter: i.deployTemplate.helmStarter
 					}
-					domain: input.domain
+					domain:          input.domain
+					gitOrganization: input.organization
+					appName:         input.appName
+					if i.type == "backend" {
+						ingressHostPath:        "/api"
+						rewriteIngressHostPath: true
+					}
 				}
 			}
 		}
@@ -201,9 +209,10 @@ import (
 					_output: doAddonsScaffold["\(idx-1)"].output.image
 				}
 				"input": addons[i.name].#Input & {
-					helmName: helmScaffold[0].name
-					image:    _output
-					domain:   input.domain
+					helmName:    helmScaffold[0].name
+					image:       _output
+					domain:      input.domain
+					networkType: input.networkType
 				}
 			}
 		}

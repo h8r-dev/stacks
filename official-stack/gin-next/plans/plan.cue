@@ -24,6 +24,7 @@ dagger.#Plan & {
 			KUBECONFIG:   string
 			APP_NAME:     string
 			APP_DOMAIN:   string | *"h8r.site"
+			NETWORK_TYPE: string | *"global"
 		}
 		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
@@ -38,8 +39,11 @@ dagger.#Plan & {
 				kubeconfig: client.commands.kubeconfig.stdout
 			}
 		}
+
 		_scaffold: scaffoldfactory.#Instance & {
 			input: scaffoldfactory.#Input & {
+				networkType:         client.env.NETWORK_TYPE
+				appName:             client.env.APP_NAME
 				domain:              _domain
 				organization:        client.env.ORGANIZATION
 				personalAccessToken: client.env.GITHUB_TOKEN
@@ -106,6 +110,7 @@ dagger.#Plan & {
 					githubOrganization: client.env.ORGANIZATION
 					kubeconfig:         _kubeconfig.output.kubeconfig
 					appName:            client.env.APP_NAME
+					apiServer:          _kubeconfig.output.apiServer
 				}
 			}
 			_output: statewriter.#Output & {
