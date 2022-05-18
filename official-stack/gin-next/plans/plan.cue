@@ -54,6 +54,7 @@ dagger.#Plan & {
 						framework: "next"
 						ci:        "github"
 						registry:  "github"
+						deployTemplate: helmStarter: "helm-starter/nodejs/node"
 					},
 					{
 						name:      client.env.APP_NAME + "-backend"
