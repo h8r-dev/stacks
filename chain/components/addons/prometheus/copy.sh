@@ -66,7 +66,7 @@ yq -i '.prometheus.additionalServiceMonitors += {"name": "spring-service-monitor
 
 cat <<EOF >  /scaffold/$OUTPUT_PATH/infra/prometheus-stack-cd-output-hook.txt
 {"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator","infra": true, "type": "monitoring", "annotations": "$TMP_CONTENTS", \
-"prompt":"Prometheus's url is $PROMETHEUS_DOMAIN ; AlertManager's url is $ALERTMANAGER_DOMAIN"}
+"prompt":"prometheus URL: $PROMETHEUS_DOMAIN [Username: admin Password: heighliner123!], alertManager URL: $ALERTMANAGER_DOMAIN [Username: admin Password: heighliner123!]"}
 EOF
 
 #chmod +x /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
