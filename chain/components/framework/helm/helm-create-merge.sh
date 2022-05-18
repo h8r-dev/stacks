@@ -42,21 +42,26 @@ yq -i '.ingress.enabled = true | .ingress.className = "nginx" | .ingress.hosts[0
 
 # merge all charts
 if $MERGE_ALL_CHARTS; then
-  helm create "$APP_NAME"
+  mkdir tmp
+  helm create tmp/"$APP_NAME"
   # remove default template
-  rm -rf "$APP_NAME"/templates/*
+  rm -rf tmp/"$APP_NAME"/templates/*
   # clean values.yaml
-  :> "$APP_NAME"/values.yaml
+  :> tmp/"$APP_NAME"/values.yaml
 
   # move all charts to charts folder
-  for chart in */; do
-    chartName=$(echo "$chart" | tr -d '/')
-    if [ "$chartName" == "$APP_NAME" ]; then
+  for file in */; do
+    chartName=$(echo "$file" | tr -d '/')
+    if [[ "$chartName" == "$APP_NAME" && "$NAME" != "$APP_NAME" ]] || [ "$chartName" == "tmp" ]; then
       continue
     fi
     echo "move $chartName"
-    mv "$chartName" "$APP_NAME"/charts
+    mv "$chartName" tmp/"$APP_NAME"/charts
   done
+  echo "mv tmp file"
+  mkdir "$APP_NAME"
+  mv tmp/"$APP_NAME" .
+  rm -rf tmp
   echo "$APP_NAME charts have:"
   ls "$APP_NAME"/charts
 fi

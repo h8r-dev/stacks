@@ -107,7 +107,7 @@ import (
 						ingressHostPath:        "/api"
 						rewriteIngressHostPath: true
 					}
-					if len(frontendAndbackendScaffold) > 1 && idx == len(frontendAndbackendScaffold)-1 {
+					if idx == len(frontendAndbackendScaffold)-1 {
 						mergeAllCharts: true
 					}
 					repositoryType: i.type
