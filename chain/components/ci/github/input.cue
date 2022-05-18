@@ -9,6 +9,7 @@ import (
 	image:        docker.#Image
 	organization: string | *""
 	deployRepo:   string | *""
+	appName:      string
 	action:       """
 		name: Create and publish a Docker image
 		on:
@@ -19,6 +20,7 @@ import (
 		env:
 		  REGISTRY: ghcr.io
 		  IMAGE_NAME: ${{ github.repository }}
+		  APP_NAME: \(appName)
 		  ORG: \(organization)
 		  HELM_REPO: \(deployRepo)
 		jobs:
@@ -65,7 +67,7 @@ import (
 		        uses: mikefarah/yq@master
 		        if: startsWith(github.ref, 'refs/tags/v')
 		        with:
-		          cmd: yq -i '.image.tag = "${{ steps.vars.outputs.tag }}"' ./${{ github.event.repository.name }}/values.yaml
+		          cmd: yq -i '.image.tag = "${{ steps.vars.outputs.tag }}"' ./${{ env.APP_NAME }}/charts/${{ github.event.repository.name }}/values.yaml
 		      - name: Update helm repo
 		        if: startsWith(github.ref, 'refs/tags/v')
 		        run: |

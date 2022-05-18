@@ -19,4 +19,6 @@ import (
 	appName:                string
 	ingressHostPath:        string | *"/"
 	rewriteIngressHostPath: bool | *false
+	mergeAllCharts:         bool | *false
+	repositoryType:         string | *"frontend" | "backend" | "deploy"
 }

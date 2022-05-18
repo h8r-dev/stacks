@@ -14,6 +14,7 @@ import (
 	username:  string
 	password:  dagger.#Secret
 	tag:       string | *"main"
+	appName:   string
 	// set:       string | *#"""
 	//  '.image.repository = "ghcr.io/\#(username)/\#(name)" | .image.tag = "\#(tag)" | .imagePullSecrets[0].name="regcred"'
 	//  """#

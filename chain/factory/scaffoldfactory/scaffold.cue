@@ -107,6 +107,10 @@ import (
 						ingressHostPath:        "/api"
 						rewriteIngressHostPath: true
 					}
+					if idx == len(frontendAndbackendScaffold)-1 {
+						mergeAllCharts: true
+					}
+					repositoryType: i.type
 				}
 			}
 		}
@@ -133,6 +137,7 @@ import (
 					chartName: helmScaffold[0].name
 					username:  input.organization
 					password:  input.personalAccessToken
+					appName:   input.appName
 				}
 			}
 		}
@@ -158,6 +163,7 @@ import (
 					image:        _output
 					organization: input.organization
 					deployRepo:   helmScaffold[0].name
+					appName:      input.appName
 				}
 			}
 		}
