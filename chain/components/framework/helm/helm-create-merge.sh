@@ -10,17 +10,12 @@ fi
 
 # nocalhost dev config
 if [ -f "${NAME}/conf/nocalhost.yaml" ]; then
-echo "set nocalhost dev config"
-mkdir .nocalhost
-cat << EOF > .nocalhost/config.yaml
-configProperties:
-  version: v2
-application:
-  helmValues:
-    - key: nocalhost.enabled
-      value: true
-EOF
-# FixMe: hardcoded
+  echo "set nocalhost dev config for ${NAME}"
+  mkdir .nocalhost
+  touch .nocalhost/nocalhost.yaml
+  yq -i '.configProperties.version = "v2"' .nocalhost/nocalhost.yaml
+  yq -i '.application.helmValues += [{"key": "'${NAME}.nocalhost.enabled'","value": true}]' .nocalhost/nocalhost.yaml
+  # FixMe: hardcode
   git_url="https://github.com/${GIT_ORGANIZATION}/${NAME}"
   yq -i '.nocalhost.gitUrl = "'${git_url}'"' "${NAME}/values.yaml"
 fi
