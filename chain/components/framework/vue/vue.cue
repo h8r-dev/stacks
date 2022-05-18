@@ -9,14 +9,18 @@ import (
 #Instance: {
 	input: #Input
 
+	src: core.#Source & {
+		path: "."
+	}
+
 	_build: bash.#Run & {
 		"input": input.image
 		workdir: "/scaffold"
 		env: APP_NAME: input.name
-		script: contents: #"""
-			npm config set registry http://mirrors.cloud.tencent.com/npm/
-			echo "Y" | vue create $APP_NAME -d --no-git
-			"""#
+		script: {
+			directory: src.output
+			filename:  "copy.sh"
+		}
 	}
 	_file: core.#Source & {
 		path: "template"
