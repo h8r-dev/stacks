@@ -12,5 +12,5 @@ tar -zxvf ./loki-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
 mv /scaffold/$OUTPUT_PATH/infra/loki-stack /scaffold/$OUTPUT_PATH/infra/loki
 
 cat <<EOF > /scaffold/${OUTPUT_PATH}/infra/loki-cd-output-hook.txt
-{"infra": "true"}
+{"infra": true}
 EOF
