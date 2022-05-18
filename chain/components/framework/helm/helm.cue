@@ -10,7 +10,7 @@ import (
 	defaultStarter: {
 		url:      "https://github.com/h8r-dev/helm-starter.git"
 		repoName: "helm-starter"
-		version:  "master"
+		version:  "main"
 	}
 	input: #Input
 	src:   core.#Source & {
