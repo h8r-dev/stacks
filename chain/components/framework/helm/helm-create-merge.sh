@@ -26,7 +26,7 @@ if [ ! -z "$HELM_SET" ]; then
   eval $set
 fi
 # set domain
-domain=http://$APP_NAME.$APPLICATION_DOMAIN
+domain=$APP_NAME.$APPLICATION_DOMAIN
 path=$INGRESS_HOST_PATH
 if $REWRITE_INGRESS_HOST_PATH; then
   echo "set domain"
@@ -69,6 +69,6 @@ url=$domain
 if [ $INGRESS_HOST_PATH != "/" ]; then
   url=$domain$INGRESS_HOST_PATH
 fi
-yq -i '.services += [{"name": "'$NAME'", "url": "'$url'", "type": "'$REPOSITORY_TYPE'"}]' /hln/output.yaml
+yq -i '.services += [{"name": "'$NAME'", "url": "http://'$url'", "type": "'$REPOSITORY_TYPE'"}]' /hln/output.yaml
 mkdir -p /h8r
 printf $DIR_NAME > /h8r/application
