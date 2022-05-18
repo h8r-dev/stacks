@@ -178,9 +178,8 @@ import (
 		script: contents: #"""
 			sh_c='sh -c'
 			URL="$NH_HOST/v1/application"
-			# FixMe: hardcode
-			RESOURCE_DIR="$APP_NAME-backend"
-			DATA_RAW='{"context":"{\"application_url\":\"'"$APP_GIT_URL"'\",\"application_name\":\"'"$RESOURCE_DIR"'\",\"source\":\"'"$SOURCE"'\",\"install_type\":\"'"$INSTALL_TYPE"'\",\"resource_dir\":[\"'"$RESOURCE_DIR"'\"]}","status":1}'
+			RESOURCE_DIR="$APP_NAME"
+			DATA_RAW='{"context":"{\"application_url\":\"'"$APP_GIT_URL"'\",\"application_name\":\"'"$APP_NAME"'\",\"source\":\"'"$SOURCE"'\",\"install_type\":\"'"$INSTALL_TYPE"'\",\"resource_dir\":[\"'"$RESOURCE_DIR"'\"]}","status":1}'
 			HEADER="--header 'Authorization: Bearer "$TOKEN"' --header 'Content-Type: application/json'"
 			do_create="curl -s --retry 20 --retry-delay 2 $HEADER --location --request POST $URL --data-raw '$DATA_RAW'"
 			messages="$($sh_c "$do_create")"

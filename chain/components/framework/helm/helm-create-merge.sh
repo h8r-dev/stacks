@@ -2,6 +2,7 @@
 
 printf '## :warning: DO NOT MAKE THIS REPOSITORY PUBLIC' > README.md
 if [ ! -z "$STARTER" ]; then
+  rm -rf $HOME/.local/share/helm/starters/${STARTER_REPO_NAME}
   git clone -b $STARTER_REPO_VER "$STARTER_REPO_URL" $HOME/.local/share/helm/starters/${STARTER_REPO_NAME}
   helm create $NAME -p $STARTER
 else
@@ -10,17 +11,12 @@ fi
 
 # nocalhost dev config
 if [ -f "${NAME}/conf/nocalhost.yaml" ]; then
-echo "set nocalhost dev config"
-mkdir .nocalhost
-cat << EOF > .nocalhost/config.yaml
-configProperties:
-  version: v2
-application:
-  helmValues:
-    - key: nocalhost.enabled
-      value: true
-EOF
-# FixMe: hardcoded
+  echo "set nocalhost dev config for ${NAME}"
+  mkdir -p .nocalhost
+  touch .nocalhost/config.yaml
+  yq -i '.configProperties.version = "v2"' .nocalhost/config.yaml
+  yq -i '.application.helmValues += [{"key": "'${NAME}.nocalhost.enabled'","value": true}]' .nocalhost/config.yaml
+  # FixMe: hardcode
   git_url="https://github.com/${GIT_ORGANIZATION}/${NAME}"
   yq -i '.nocalhost.gitUrl = "'${git_url}'"' "${NAME}/values.yaml"
 fi
