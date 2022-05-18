@@ -14,6 +14,10 @@ import (
 		path: "template"
 	}
 
+	src: core.#Source & {
+		path: "."
+	}
+
 	_sourceCode: docker.#Copy & {
 		"input":  input.image
 		contents: _file.output
@@ -23,9 +27,10 @@ import (
 	do: bash.#Run & {
 		"input": _sourceCode.output
 		env: APP_NAME: input.name
-		script: contents: """
-				sed -i "s/appname/$APP_NAME/" /scaffold/$APP_NAME/package.json
-			"""
+		script: {
+			directory: src.output
+			filename:  "copy.sh"
+		}
 	}
 
 	output: #Output & {

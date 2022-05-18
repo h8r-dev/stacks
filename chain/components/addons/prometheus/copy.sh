@@ -7,37 +7,37 @@ helm pull kube-prometheus-stack --repo `eval echo '$'"CHART_URL_$NETWORK_TYPE"` 
 
 mkdir -p /scaffold/$OUTPUT_PATH/infra
 tar -zxvf ./kube-prometheus-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra
-mv /scaffold/$OUTPUT_PATH/infra/kube-prometheus-stack /scaffold/$OUTPUT_PATH/infra/prometheus
+mv /scaffold/$OUTPUT_PATH/infra/kube-prometheus-stack /scaffold/$OUTPUT_PATH/infra/prometheus-stack
 
 # Hardcode ingressClassName to be nginx
 DEFAULT_INGRESS_CLASSNAME=nginx
 
 # set customResource replace mode for argocd: https://github.com/argoproj/argo-cd/issues/8128
 # add annotation for ./prometheus/crds/crd-prometheuses.yaml: argocd.argoproj.io/sync-options: Replace=true
-yq -i '.metadata.annotations += {"argocd.argoproj.io/sync-options": "Replace=true"}' /scaffold/$OUTPUT_PATH/infra/prometheus/crds/crd-prometheuses.yaml
+yq -i '.metadata.annotations += {"argocd.argoproj.io/sync-options": "Replace=true"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/crds/crd-prometheuses.yaml
 
 # enable grafana ingress
-yq -i '.grafana.ingress.enabled = true | .grafana.ingress.hosts[0] = "'$GRAFANA_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
-yq -i '.grafana.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+yq -i '.grafana.ingress.enabled = true | .grafana.ingress.hosts[0] = "'$GRAFANA_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.grafana.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # enable alertManager ingress
-yq -i '.alertmanager.ingress.enabled = true | .alertmanager.ingress.hosts[0] = "'$ALERTMANAGER_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
-yq -i '.alertmanager.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+yq -i '.alertmanager.ingress.enabled = true | .alertmanager.ingress.hosts[0] = "'$ALERTMANAGER_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.alertmanager.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # enable prometheus ingress
-yq -i '.prometheus.ingress.enabled = true | .prometheus.ingress.hosts[0] = "'$PROMETHEUS_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
-yq -i '.prometheus.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+yq -i '.prometheus.ingress.enabled = true | .prometheus.ingress.hosts[0] = "'$PROMETHEUS_DOMAIN'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.prometheus.ingress.ingressClassName = "'$DEFAULT_INGRESS_CLASSNAME'"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # add grafana loki datasource
-yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # prometheus sd config
-yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs += {"job_name": "'service'"}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
-yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_configs[0].role = "service"' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs += {"job_name": "'service'"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_configs[0].role = "service"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # Add application dashboards
 if [ -d "/dashboards" ]; then
-    cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus/templates/grafana/dashboards-1.14/
+    cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus-stack/templates/grafana/dashboards-1.14/
 fi
 
 # Add dashboardRefs output hook
@@ -50,12 +50,12 @@ if [ -f /dashboards/*annotations.json ]; then
 fi
 
 # add spring boot serviceMonitor
-yq -i '.prometheus.additionalServiceMonitors += {"name": "spring-service-monitor", "namespaceSelector": {"any": true}, "selector": {"matchLabels": {"h8r.io/framework": "spring"}}, "endpoints": [{"path": "/actuator/prometheus", "targetPort": "http"}]}' /scaffold/$OUTPUT_PATH/infra/prometheus/values.yaml
+yq -i '.prometheus.additionalServiceMonitors += {"name": "spring-service-monitor", "namespaceSelector": {"any": true}, "selector": {"matchLabels": {"h8r.io/framework": "spring"}}, "endpoints": [{"path": "/actuator/prometheus", "targetPort": "http"}]}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
 
-cat <<EOF >  /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
-{"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator", "type": "monitoring", "annotations": "$TMP_CONTENTS", \
+cat <<EOF >  /scaffold/$OUTPUT_PATH/infra/prometheus-stack-cd-output-hook.txt
+{"url": "$GRAFANA_DOMAIN", "username": "admin", "password": "prom-operator","infra": "true", "type": "monitoring", "annotations": "$TMP_CONTENTS", \
 "prompt":"Prometheus's url is $PROMETHEUS_DOMAIN ; AlertManager's url is $ALERTMANAGER_DOMAIN"}
 EOF
 
