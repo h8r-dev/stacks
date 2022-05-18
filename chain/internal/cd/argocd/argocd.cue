@@ -258,9 +258,9 @@ import (
 			kubectl wait --for=condition=Available deployment argocd-server -n $NAMESPACE --timeout 600s
 			kubectl rollout status --watch --timeout=600s statefulset/argocd-application-controller -n $NAMESPACE
 			kubectl rollout status --watch --timeout=600s deployment/argocd-server -n $NAMESPACE
-			secret=$(kubectl -n $NAMESPACE get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo)
+			secret="$(kubectl -n $NAMESPACE get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo)"
 			mkdir -p /infra/argocd
-			printf $secret > /infra/argocd/secret
+			printf -- $secret > /infra/argocd/secret
 			"""#
 		export: files: "/infra/argocd/secret": string
 	}
