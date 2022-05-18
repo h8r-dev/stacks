@@ -45,6 +45,10 @@ yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url
 yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs += {"job_name": "'service'"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_configs[0].role = "service"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
+# hln alert rules
+yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0] = {"name": "hln-alerts"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0].rules[0] = {"alert": "remix-app-alert", "expr": "remix_error_500_count_total > 10"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+
 # Add application dashboards
 if [ -d "/dashboards" ]; then
     cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus-stack/templates/grafana/dashboards-1.14/
