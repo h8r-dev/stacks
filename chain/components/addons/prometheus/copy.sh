@@ -2,8 +2,12 @@
 
 # Fetch kube-prometheus-stack helm chart
 #helm pull kube-prometheus-stack --repo https://prometheus-community.github.io/helm-charts --version $VERSION
-NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"
-helm pull kube-prometheus-stack --repo `eval echo '$'"CHART_URL_$NETWORK_TYPE"` --version $VERSION
+#NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"
+KEY="GLOBAL"
+if [ "$NETWORK_TYPE" == "china_network" ]; then
+    KEY="INTERNAL"
+fi
+helm pull kube-prometheus-stack --repo `eval echo '$'"CHART_URL_$KEY"` --version $VERSION
 
 mkdir -p /scaffold/$OUTPUT_PATH/infra
 tar -zxvf ./kube-prometheus-stack-$VERSION.tgz -C /scaffold/$OUTPUT_PATH/infra

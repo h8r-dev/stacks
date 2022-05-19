@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"
-helm pull loki-stack --repo `eval echo '$'"CHART_URL_$NETWORK_TYPE"` --version $VERSION
+KEY="GLOBAL"
+if [ "$NETWORK_TYPE" == "china_network" ]; then
+    KEY="INTERNAL"
+fi
+#NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"
+helm pull loki-stack --repo `eval echo '$'"CHART_URL_$KEY"` --version $VERSION
 #if [ "$NETWORK_TYPE" == "internal" ]; then
 #    helm pull loki-stack --repo $CHART_URL_INTERNAL --version $VERSION
 #else

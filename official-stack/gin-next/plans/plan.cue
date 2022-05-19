@@ -24,7 +24,7 @@ dagger.#Plan & {
 			KUBECONFIG:   string
 			APP_NAME:     string
 			APP_DOMAIN:   string | *"h8r.site"
-			NETWORK_TYPE: string | *"global"
+			NETWORK_TYPE: string | *"default"
 		}
 		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
