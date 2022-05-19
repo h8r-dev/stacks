@@ -47,7 +47,7 @@ yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_conf
 
 # hln alert rules
 yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0] = {"name": "hln-alerts"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
-yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0].rules[0] = {"alert": "remix-app-alert", "expr": "remix_error_500_count_total > 1"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0].rules[0] = {"alert": "remix-app-alert", "expr": "remix_error_500_count_total > 0"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # Add application dashboards
 if [ -d "/dashboards" ]; then
