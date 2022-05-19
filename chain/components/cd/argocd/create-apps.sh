@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-cat /infra/argocd/secret
 deployRepoPath=$(cat /h8r/application)
 cd /scaffold/$deployRepoPath
-ls
 
 # for output
 mkdir -p /hln
@@ -88,7 +86,6 @@ do
 	# For output
 	if [ -f "$APP_NAME-cd-output-hook.txt" ]; then
 		info=$(cat $APP_NAME-cd-output-hook.txt)
-		echo "info: $info"
 		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'", "info": "'$info'"}]' /hln/output.yaml
 	else
 		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
@@ -116,13 +113,10 @@ do
 	if [ -f "$APP_NAME-cd-output-hook.txt" ]; then
 		yq -i '.cd.applicationRef += [{"name": "'$APP_NAME'"}]' /hln/output.yaml
 		info=$(cat $APP_NAME-cd-output-hook.txt)
-		echo "info: $info"
 		for key in `cat $APP_NAME-cd-output-hook.txt | jq keys | jq '.[]'`
 		do
-			echo $key
 			key=$(echo $key | sed 's/\"//g')
 			val=$(cat $APP_NAME-cd-output-hook.txt | jq .$key)
-			echo "val:$val"
 			val=$(echo $val | sed 's/\"//g')
 			yq -i '.cd.applicationRef.[-1]."'$key'"="'"$val"'"' /hln/output.yaml
 		done
