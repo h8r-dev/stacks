@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
 #helm pull nocalhost --repo https://nocalhost.github.io/charts --version "${VERSION}"
-NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"
-helm pull nocalhost --repo `eval echo '$'"CHART_URL_$NETWORK_TYPE"` --version $VERSION
+KEY="GLOBAL"
+if [ "$NETWORK_TYPE" == "china_network" ]; then
+    KEY="INTERNAL"
+fi
+#NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"
+helm pull nocalhost --repo `eval echo '$'"CHART_URL_$KEY"` --version $VERSION
 
 mkdir -p "/scaffold/${OUTPUT_PATH}/infra"
 tar -zxf "./nocalhost-${VERSION}.tgz" -C "/scaffold/${OUTPUT_PATH}/infra"

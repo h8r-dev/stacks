@@ -14,5 +14,5 @@ import (
 	personalAccessToken?: dagger.#Secret
 	domain:               basefactory.#DefaultDomain
 	appName:              string
-	networkType:          string | *"global" | "internal"
+	networkType:          string | *"default" | "china_network"
 }
