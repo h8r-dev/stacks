@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-cat /infra/argocd/secret
 deployRepoPath=$(cat /h8r/application)
 cd /scaffold/$deployRepoPath
 
