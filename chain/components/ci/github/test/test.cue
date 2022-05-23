@@ -11,13 +11,15 @@ dagger.#Plan & {
 	actions: {
 		_baseImage: base.#Image & {}
 
-		_repoName: "hello-app"
+		_repoName: "hello"
 
 		add_ci_files: github.#Instance & {
 			input: github.#Input & {
 				image:        _baseImage.output
 				name:         _repoName
 				organization: "hello-org"
+				appName:      "hello-app"
+				deployRepo:   "github@fawef.com/fawef/fawef-deploy"
 			}
 		}
 

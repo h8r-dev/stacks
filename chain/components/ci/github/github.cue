@@ -31,6 +31,9 @@ import (
 		"input": copy_templates.output
 		env: {
 			REPO_NAME:    input.name
+			ORGANIZATION: input.organization
+			APP_NAME:     input.appName
+			HELM_REPO:    input.deployRepo
 			TEMPLATE_DIR: templateDir
 		}
 		script: {
