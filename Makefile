@@ -77,8 +77,8 @@ install-cue: # Install cue
 
 .PHONY: gen-index
 gen-index: # List all official stacks
-	@bash ./scripts/index.sh -g ./index.yaml
+	@bash ./scripts/process_stacks.sh -g ./index.yaml
 
 .PHONY: check-index
 check-index:
-	@bash ./scripts/index.sh -c ./index.yaml
+	@bash ./scripts/process_stacks.sh -c ./index.yaml
