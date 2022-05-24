@@ -8,7 +8,7 @@ yq -i '
   .image.repository = "ghcr.io/'$USERNAME'/'$DIR_NAME'" |
   .image.tag = "'$TAG'" |
   .imagePullSecrets[0].name = "'$SECRET_NAME'" |
-  .image.pullPolicy = "Always"
+  .image.pullPolicy = "IfNotPresent"
 ' $APP_NAME/charts/$DIR_NAME/values.yaml
 
 # Add image pull secret file into helm templates
