@@ -71,6 +71,7 @@ addIndexEntry() {
 
   BASE_URL=https://stack.h8r.io
   META_FILE=$STACK_DIR/$META_SUFFIX
+  
   NAME=$(yq '.name' $META_FILE)
   DESC=$(yq '.description' $META_FILE)
   VERSION=$(yq '.version' $META_FILE)
