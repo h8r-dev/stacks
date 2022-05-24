@@ -41,4 +41,14 @@ package origin
 			url:   "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
+	dapr: {
+		global: {
+			chart: "dapr"
+			url:   "https://dapr.github.io/helm-charts"
+		}
+		internal: {
+			chart: "dapr"
+			url:   "https://h8r-helm.pkg.coding.net/release/helm"
+		}
+	}
 }
