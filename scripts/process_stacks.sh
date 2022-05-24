@@ -1,115 +1,121 @@
 #! /usr/bin/env bash
 
-WORK_DIR=$(pwd)/
+PACK_TARGET=$PWD/tars
+INDEX_DIR=$PWD/tars
+INDEX_SUFFIX=index.yaml
+INDEX_FILE=$INDEX_DIR/$INDEX_SUFFIX
+META_SUFFIX=metadata.yaml
 
-# Get all subdirs of current working dir.
-ALL_SUB_DIRS_ARR=$(find ./official-stack ! -name 'cue.mod' -maxdepth 1 -mindepth 1 -type d | cut -d ' ' -f 1)
-
-# Get currently used Golang bin files install path (in GOPATH/bin, unless GOBIN is set)
 GOBIN=$(go env GOBIN | tr -d '\n')
 if [ -z "$GOBIN" ]; then
   GOBIN=$(go env GOPATH)/bin
 fi
-
-# hln bin files dir.
 HLN_BIN_DIR=$HOME/.hln/bin
-
-# index path
-INDEX=idx/index
-
 export PATH=$GOBIN:$HLN_BIN_DIR:$PATH
 
-install_dependencies() {
+walkStacks() {
+  VISIT_FUNC=$1
+  SUB_DIRS=$(find $PWD -maxdepth 2 -type d)
+  for SUB_DIR in $SUB_DIRS; do
+    if [ -d "$SUB_DIR/plans" ]; then
+      $VISIT_FUNC $SUB_DIR
+    fi
+  done
+}
+
+installDependencies() {
   STACK_DIR=$1
-  echo "Install dependencies for: $STACK_DIR"
+
+  WORK_DIR=$PWD
+  echo "Installing dependencies for: $STACK_DIR..."
   cd $STACK_DIR
   hof mod vendor cue
   dagger project update
+  cd $WORK_DIR
 }
 
-create_tars_dir() {
-  # Create tars dir to store all packages.
-  [ ! -d './tars'  ] && mkdir -p tars
+installAllDeps() {
+  walkStacks installDependencies
 }
 
-pack() {
+packStack() {
   STACK_DIR=$1
 
-  cd $WORK_DIR
   echo "Packing $STACK_DIR..."
-  stackName=$(basename $STACK_DIR)
-  dirName=$(dirname $STACK_DIR)
-  tar -zcvf tars/$stackName-latest.tar.gz -C $dirName $stackName
+  mkdir -p $PACK_TARGET
+
+  PARENT_DIR=$(dirname $STACK_DIR)
+  STACK_NAME=$(basename $STACK_DIR)
+
+  META_FILE=$STACK_DIR/$META_SUFFIX
+  VERSION=$(yq '.version' $META_FILE) # require yq installed
+  
+  TAR_NAME_VERSIONED=$STACK_NAME-$VERSION.tar.gz
+  TAR_NAME_LATEST=$STACK_NAME-latest.tar.gz
+  
+  # for particular version
+  tar -zcvf $PACK_TARGET/$TAR_NAME_VERSIONED -C $PARENT_DIR $STACK_NAME
+  # for latest version
+  cp $PACK_TARGET/$TAR_NAME_VERSIONED $PACK_TARGET/$TAR_NAME_LATEST
 }
 
-add_index_item() {
-    metadata=$2/metadata.yaml
-
-    NAME=$(yq '.name' $metadata)
-    DESC=$(yq '.description' $metadata)
-    VER=$(yq '.version' $metadata)
-    echo add $NAME
-    yq -i '.stacks += {"name": "'"$NAME"'", "description": "'"$DESC"'", "version": "'"$VER"'", "url": "'"https://stack.h8r.io/$NAME-$VER.tar.gz"'"}' $1
+packAllStacks() {
+  mkdir -p $PACK_TARGET
+  walkStacks packStack
 }
 
-check() {
-    # This function is not ready
-    TEMP=.tmp
-    generate $TEMP
-    yaml-diff $1 $TEMP
-    rm $TEMP
+addIndexEntry() {
+  STACK_DIR=$1
+
+  mkdir -p $INDEX_DIR
+
+  BASE_URL=https://stack.h8r.io
+  META_FILE=$STACK_DIR/$META_SUFFIX
+  
+  NAME=$(yq '.name' $META_FILE)
+  DESC=$(yq '.description' $META_FILE)
+  VERSION=$(yq '.version' $META_FILE)
+  URL=$BASE_URL/$NAME-$VERSION.tar.gz
+
+  yq -i '.stacks += {"name": "'"$NAME"'", "description": "'"$DESC"'", "version": "'"$VERSION"'", "url": "'"$URL"'"}' $INDEX_FILE
 }
 
-initialize() {
-  for option in "$@"; do
-    case $option in
-      -g|--generate)
-        mkdir -p idx
-        echo > $INDEX
-        yq -i '.stacks[] += {}' $INDEX
-        ;;
-    esac
-  done
+updateIndex() {
+  mkdir -p $INDEX_DIR
+  echo 'stacks: []' > $INDEX_FILE
+  walkStacks addIndexEntry
 }
 
 usage() {
   echo "Usage:"
-  echo "-i, --install-deps      Install dependencies for stack"
-  echo "-p, --package           Package every stack into a '.tar.gz' format package"
-  echo "-g, --generate          Generate index file"
+  echo "-i, --install-deps      Install dependencies for stacks"
+  echo "-p, --pack              Compress all stacks"
+  echo "-u, --update-index      Update index file"
   echo "-c, --check             Check if the index is latest"
   echo "-h, --help              Show this usage page"
 }
 
-initialize $1
-
-for sub_dir in $ALL_SUB_DIRS_ARR; do
-  ABSOLUTE_SUB_DIR="${WORK_DIR}${sub_dir}"
-  if [ -f "${ABSOLUTE_SUB_DIR}/cue.mods" ]; then
-    for option in "$@"; do
-      case $option in
-        -i|--install-deps)
-          install_dependencies $ABSOLUTE_SUB_DIR
-          ;;
-        -p|--package)
-          create_tars_dir
-          pack $ABSOLUTE_SUB_DIR
-          ;;
-        -g|--generate)
-          add_index_item $INDEX $ABSOLUTE_SUB_DIR
-          ;;
-        -c|--check)
-          check $INDEX $ABSOLUTE_SUB_DIR
-          ;;
-        -h|--help)
-          usage
-          exit 0
-          ;;
-        -*|--*)
-          echo "Unknown option $option"
-          exit 1
-          ;;
-      esac
-    done
-  fi
+# Execute target function according to args
+for option in "$@"; do
+  case $option in
+    -i|--install-deps)
+      installAllDeps
+      ;;
+    -p|--pack)
+      packAllStacks
+      ;;
+    -u|--update-index)
+      updateIndex
+      ;;
+    -c|--check-index)
+      echo unimplemented
+      ;;
+    -h|--help)
+      usage
+      ;;
+    -*|--*)
+      echo "Unknown option $option"
+      exit 1
+      ;;
+  esac
 done
