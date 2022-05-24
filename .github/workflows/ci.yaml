@@ -104,4 +104,4 @@ jobs:
           go install github.com/yuyicai/gh-cleaner@latest
           export REPOS="${APP_NAME}-backend,${APP_NAME}-frontend,${APP_NAME}-deploy"
           export PKGS="${APP_NAME}-backend,${APP_NAME}-frontend"
-          gh-cleaner -r ${REPOS} -p ${PKGS} -u ${ORGANIZATION}
+          gh-cleaner delete -r ${REPOS} -p ${PKGS} -u ${ORGANIZATION}
