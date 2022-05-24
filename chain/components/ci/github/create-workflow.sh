@@ -10,7 +10,7 @@ mv $TEMPLATE_DIR/docker-publish.yaml $TARGET_DIR/
 
 ACTION_FILE=$TARGET_DIR/docker-publish.yaml
 
-# Render docker-publish file with data provided
+# Render docker-publish.yaml file with data provided
 yq -i '
   .env.ORG = "'$ORGANIZATION'" |
   .env.HELM_REPO = "'$HELM_REPO'" |

@@ -38,7 +38,7 @@ import (
 		}
 		script: {
 			directory: _loadScripts.output
-			filename:  "create.sh"
+			filename:  "create-workflow.sh"
 		}
 	}
 
