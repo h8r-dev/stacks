@@ -30,19 +30,15 @@ cuefmt: install-cue # Format all cue files
 	@find . -name '*.cue' -not -path '*/cue.mod/*' -print | xargs -n 1 -P 8 cue fmt -s
 
 .PHONY: cuelint
-cuelint: cuefmt # Lint and format all cue files
+cuelint: cuefmt eval # Lint and format all cue files
 	@test -z "$$(git status -s . | grep -e "^ M"  | grep "\.cue" | cut -d ' ' -f3 | tee /dev/stderr)"
 
 find_ignore_names := ! -name '.*' ! -name 'tars' ! -name 'tmp' ! -name 'scripts' ! -name 'cue.mod' ! -name 'chain' ! -name 'cuelib'
 .PHONY: eval
-eval: # Run cue eval to check all plans
+eval: vendor # Run cue eval to check all plans
 	@cd ./official-stack && find . -maxdepth 1 -mindepth 1 -type d \
 	 $(find_ignore_names) \
  	 -print0 | xargs -I {} -n 1 -0 bash -c 'cd {} && cue eval ./plans > /dev/null'
-
-.PHONY: install_air
-install_air:
-	which air || go install github.com/cosmtrek/air@latest
 
 # Watch cuelib files change, and install new codes into stack cude.mod folder automatically.
 # Firstly: Execute `go install github.com/cosmtrek/air@latest` to install `air`.
@@ -51,12 +47,28 @@ watch: install_air # Watch the cuelib dir and rerender when cuelib changes.
 	ulimit -n 10240 && air
 
 .PHONY: tar
-tar: vendor # Pack stacks into ./tars dir
-	@bash ./scripts/process_stacks.sh -p
+tar: vendor install_yq # Pack stacks into ./tars dir
+	@bash ./scripts/process_stacks.sh --pack
 
 .PHONY: vendor
-vendor: install-hof # Install or update cue module dependencies.
+vendor: install-hof install-dagger # Install or update cue module dependencies.
 	@bash ./scripts/process_stacks.sh -i
+
+.PHONY: update-index
+update-index: # Update official stacks' index
+	@bash ./scripts/process_stacks.sh --update-index
+
+.PHONY: check-index
+check-index:
+	@bash ./scripts/process_stacks.sh --check-index
+
+.PHONY: install-hooks
+install-hooks: # Install git hooks
+	git config core.hooksPath ./.git-hooks
+
+.PHONY: install-cue
+install-cue: # Install cue
+	@which cue || go install cuelang.org/go/cmd/cue@latest
 
 .PHONY: install-hof
 install-hof: 
@@ -67,18 +79,17 @@ ifeq ($(shell which hof),)
 	@chmod +x ${GOBIN}/hof
 endif
 
-.PHONY: install-hooks
-install-hooks: # Install git hooks
-	git config core.hooksPath ./.git-hooks
+.PHONY: install-dagger
+install-dagger:
+ifeq ($(shell which dagger),)
+	@curl -L https://dl.dagger.io/dagger/install.sh | sh
+	@mv ./bin/dagger ${GOBIN}/dagger
+endif
 
-.PHONY: install-cue
-install-cue: # Install cue
-	@which cue || go install cuelang.org/go/cmd/cue@latest
+.PHONY: install_air
+install_air:
+	which air || go install github.com/cosmtrek/air@latest
 
-.PHONY: gen-index
-gen-index: # List all official stacks
-	@bash ./scripts/process_stacks.sh -g ./index.yaml
-
-.PHONY: check-index
-check-index:
-	@bash ./scripts/process_stacks.sh -c ./index.yaml
+.PHONY: install_yq
+install_yq:
+	which yq || go install github.com/mikefarah/yq/v4@latest
