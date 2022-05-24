@@ -72,5 +72,13 @@ install-hooks: # Install git hooks
 	git config core.hooksPath ./.git-hooks
 
 .PHONY: install-cue
-install-cue: # Install cue.mod
-	which cue || go install cuelang.org/go/cmd/cue@latest
+install-cue: # Install cue
+	@which cue || go install cuelang.org/go/cmd/cue@latest
+
+.PHONY: gen-index
+gen-index: # List all official stacks
+	@bash ./scripts/index.sh -g ./index.yaml
+
+.PHONY: check-index
+check-index:
+	@bash ./scripts/index.sh -c ./index.yaml
