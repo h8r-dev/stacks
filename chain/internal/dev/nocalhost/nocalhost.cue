@@ -89,10 +89,11 @@ import (
 			if waitFor != _|_ {
 				WAIT_FOR: "\(waitFor)"
 			}
-			NH_HOST:  url
-			TOKEN:    token
-			PASSWORD: password
-			MEMBERS:  members
+			NH_HOST:      url
+			TOKEN:        token
+			PASSWORD:     password
+			MEMBERS:      members
+			EMAIL_SUFFIX: emailSuffix
 		}
 		always: true
 		input:  _baseImage.output
