@@ -8,10 +8,13 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/framework/vue"
 	"github.com/h8r-dev/stacks/chain/components/framework/spring"
 	"github.com/h8r-dev/stacks/chain/components/framework/remix"
+	"github.com/h8r-dev/stacks/chain/components/framework/dotnet"
+	"github.com/h8r-dev/stacks/chain/components/framework/react"
 	// Addons
 	"github.com/h8r-dev/stacks/chain/components/addons/loki"
 	"github.com/h8r-dev/stacks/chain/components/addons/nocalhost"
 	"github.com/h8r-dev/stacks/chain/components/addons/prometheus"
+	"github.com/h8r-dev/stacks/chain/components/addons/dapr"
 	nginxCloud "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/cloud"
 	nginxKind "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/kind"
 	// Registry
@@ -30,12 +33,15 @@ import (
 		"vue":    vue
 		"spring": spring
 		"remix":  remix
+		"dotnet": dotnet
+		"react":  react
 	}
 
 	addons: {
 		"loki":                loki
 		"prometheus":          prometheus
 		"nocalhost":           nocalhost
+		"dapr":                dapr
 		"ingress-nginx-cloud": nginxCloud
 		"ingress-nginx-kind":  nginxKind
 		// TODO FIX ME

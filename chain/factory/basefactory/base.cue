@@ -46,6 +46,7 @@ package basefactory
 		alertManager: "alert." + domain
 		grafana:      "grafana." + domain
 		nocalhost:    "nocalhost." + domain
+		dapr:         "dapr." + domain
 	}
 }
 

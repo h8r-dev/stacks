@@ -1,4 +1,4 @@
-package loki
+package dapr
 
 import (
 	"universe.dagger.io/bash"
@@ -17,8 +17,9 @@ import (
 			VERSION:            input.version
 			OUTPUT_PATH:        input.helmName
 			NETWORK_TYPE:       input.networkType
-			CHART_URL_INTERNAL: origin.#Origin.loki.internal.url
-			CHART_URL_GLOBAL:   origin.#Origin.loki.global.url
+			CHART_URL_INTERNAL: origin.#Origin.dapr.internal.url
+			CHART_URL_GLOBAL:   origin.#Origin.dapr.global.url
+			DAPR_DOMAIN:        input.domain.infra.dapr
 		}
 		workdir: "/tmp"
 		script: {
