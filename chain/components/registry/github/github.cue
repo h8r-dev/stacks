@@ -17,7 +17,6 @@ import (
 			USERNAME: strings.ToLower(input.username)
 			PASSWORD: input.password
 			DIR_NAME: input.name
-			//HELM_SET: input.set
 			TAG:      input.tag
 			APP_NAME: input.appName
 		}

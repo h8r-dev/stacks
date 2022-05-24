@@ -1,36 +1,47 @@
 package github
 
 import (
+	"universe.dagger.io/docker"
 	"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
-	"dagger.io/dagger"
 )
 
 #Instance: {
 	input: #Input
 
-	_writeYaml: output: core.#FS
-
-	_writeYaml: core.#WriteFile & {
-		"input":  dagger.#Scratch
-		path:     "docker-publish.yml"
-		contents: input.action
+	_loadTemplates: core.#Source & {
+		path: "./template"
+		include: ["*.yaml"]
 	}
 
-	_writeYamlOutput: _writeYaml.output
+	_loadScripts: core.#Source & {
+		path: "."
+		include: ["*.sh"]
+	}
+
+	templateDir: "/h8r/ci/\(input.name)/templates"
+
+	copy_templates: docker.#Copy & {
+		"input":  input.image
+		contents: _loadTemplates.output
+		dest:     templateDir
+	}
 
 	do: bash.#Run & {
-		"input": input.image
-		mounts: helm: {
-			contents: _writeYamlOutput
-			dest:     "/h8r/ci/\(input.name)"
+		"input": copy_templates.output
+		env: {
+			REPO_NAME:    input.name
+			ORGANIZATION: input.organization
+			APP_NAME:     input.appName
+			HELM_REPO:    input.deployRepo
+			TEMPLATE_DIR: templateDir
 		}
-		script: contents: """
-				mkdir -p /scaffold/\(input.name)/.github/workflows
-				mv /h8r/ci/\(input.name)/docker-publish.yml /scaffold/\(input.name)/.github/workflows/docker-publish.yml
-				echo 'github action workflows added'
-			"""
+		script: {
+			directory: _loadScripts.output
+			filename:  "create-workflow.sh"
+		}
 	}
+
 	output: #Output & {
 		image: do.output
 	}
