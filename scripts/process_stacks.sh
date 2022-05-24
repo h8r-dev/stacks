@@ -3,7 +3,7 @@
 WORK_DIR=$(pwd)/
 
 # Get all subdirs of current working dir.
-ALL_SUB_DIRS_ARR=$(find -s ./official-stack ! -name 'cue.mod' -maxdepth 1 -mindepth 1 -type d | cut -d ' ' -f 1)
+ALL_SUB_DIRS_ARR=$(find ./official-stack ! -name 'cue.mod' -maxdepth 1 -mindepth 1 -type d | cut -d ' ' -f 1)
 
 # Get currently used Golang bin files install path (in GOPATH/bin, unless GOBIN is set)
 GOBIN=$(go env GOBIN | tr -d '\n')
