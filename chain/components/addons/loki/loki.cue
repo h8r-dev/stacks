@@ -23,7 +23,7 @@ import (
 		workdir: "/tmp"
 		script: {
 			directory: src.output
-			filename:  "copy.sh"
+			filename:  "create.sh"
 		}
 	}
 	output: #Output & {
