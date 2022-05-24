@@ -1,9 +1,9 @@
-name: gin-next-europa
+name: dotnet-react-dapr
 version: 1.0.0
 owner:
   name: Heighliner
   contact: heighliner@h8r.io
-description: This is gin-next stack
+description: This is dotnet-react-dapr stack
 icon: https://raw.githubusercontent.com/gin-gonic/logo/master/color.png
 url: https://gin-gonic.com/
-tags: ["go", "gin", "microservice", "redis", "mysql"]
+tags: ["dotnet", "react", "microservice", "dapr"]
