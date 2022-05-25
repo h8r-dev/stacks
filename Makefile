@@ -33,12 +33,9 @@ cuefmt: install-cue # Format all cue files
 cuelint: cuefmt eval # Lint and format all cue files
 	@test -z "$$(git status -s . | grep -e "^ M"  | grep "\.cue" | cut -d ' ' -f3 | tee /dev/stderr)"
 
-find_ignore_names := ! -name '.*' ! -name 'tars' ! -name 'tmp' ! -name 'scripts' ! -name 'cue.mod' ! -name 'chain' ! -name 'cuelib'
 .PHONY: eval
 eval: vendor # Run cue eval to check all plans
-	@cd ./official-stack && find . -maxdepth 1 -mindepth 1 -type d \
-	 $(find_ignore_names) \
- 	 -print0 | xargs -I {} -n 1 -0 bash -c 'cd {} && cue eval ./plans > /dev/null'
+	@bash ./scripts/process_stacks.sh -e
 
 # Watch cuelib files change, and install new codes into stack cude.mod folder automatically.
 # Firstly: Execute `go install github.com/cosmtrek/air@latest` to install `air`.

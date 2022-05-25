@@ -86,6 +86,16 @@ updateIndex() {
   walkStacks addIndexEntry
 }
 
+evalStack() {
+  STACK_DIR=$1
+  cd $STACK_DIR && cue eval ./plans > /dev/null
+}
+
+# Run `cue eval` to check all stacks
+evalAllStack() {
+  walkStacks evalStack
+}
+
 usage() {
   echo "Usage:"
   echo "-i, --install-deps      Install dependencies for stacks"
@@ -109,6 +119,9 @@ for option in "$@"; do
       ;;
     -c|--check-index)
       echo unimplemented
+      ;;
+    -e|--eval)
+      evalAllStack
       ;;
     -h|--help)
       usage
