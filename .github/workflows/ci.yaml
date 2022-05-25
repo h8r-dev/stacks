@@ -23,6 +23,7 @@ jobs:
           - gin-vue
           - spring-vue
           - sample
+          - dotnet-react-dapr
     runs-on: ubuntu-latest
     env:
       stack: ${{ matrix.stacks }}
