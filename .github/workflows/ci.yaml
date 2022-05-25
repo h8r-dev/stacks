@@ -90,3 +90,18 @@ jobs:
         run: |
           go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo
           ginkgo "${STACK_PREFIX}${STACK}/test"
+
+      # cleanup GitHub repositories and packages
+      - name: Cleanup
+        if: always()
+        env:
+          APP_NAME: ${{ steps.hln_up.outputs.app_name }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          ORGANIZATION: heigliner-robot
+          STACK: ${{ env.stack }}
+          STACK_PREFIX: ${{ env.stack_prefix }}
+        run: |
+          go install github.com/yuyicai/gh-cleaner@latest
+          export REPOS="${APP_NAME}-backend,${APP_NAME}-frontend,${APP_NAME}-deploy"
+          export PKGS="${APP_NAME}-backend,${APP_NAME}-frontend"
+          gh-cleaner delete -r ${REPOS} -p ${PKGS} -u ${ORGANIZATION}
