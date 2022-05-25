@@ -68,5 +68,5 @@ jobs:
           git config user.name "h8r-robot"
           git remote set-url origin https://${{ env.ORG }}:${{ secrets.PAT }}@github.com/${{ env.ORG }}/${{ env.HELM_REPO }}.git
           git add .
-          git commit -m "Update images tag ${{ steps.vars.outputs.tag }}"
+          git commit -m "Update image tag: ${{ steps.vars.outputs.head_commit }} for ${{ env.IMAGE_NAME }}"
           git push
