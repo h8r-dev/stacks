@@ -45,9 +45,8 @@ yq -i '.prometheus.ingress.annotations += {"nginx.ingress.kubernetes.io/auth-rea
 # add grafana loki datasource
 yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
-# hln alert rules
-yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0] = {"name": "hln-alerts"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
-yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0].rules[0] = {"alert": "remix-app-alert", "expr": "remix_error_500_count_total > 0"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+# Select hln alert rules (convention: rules created by hln stack will have the label: "role: hln-rules")
+yq -i '.prometheus.prometheusSpec.ruleSelector = {"matchLabels": {"role": "hln-rules"}}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
 # Add application dashboards
 if [ -d "/dashboards" ]; then
@@ -67,6 +66,7 @@ fi
 yq -i '.prometheus.additionalServiceMonitors += {"name": "spring-service-monitor", "namespaceSelector": {"any": true}, "selector": {"matchLabels": {"h8r.io/framework": "spring"}}, "endpoints": [{"path": "/actuator/prometheus", "targetPort": "http"}]}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 # add gin serviceMonitor
 yq -i '.prometheus.additionalServiceMonitors += {"name": "gin-service-monitor", "namespaceSelector": {"any": true}, "selector": {"matchLabels": {"h8r.io/framework": "gin"}}, "endpoints": [{"path": "/metrics", "targetPort": "http"}]}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
 
