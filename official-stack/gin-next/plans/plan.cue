@@ -63,6 +63,9 @@ dagger.#Plan & {
 						ci:        "github"
 						registry:  "github"
 						deployTemplate: helmStarter: "helm-starter/go/gin"
+						extraArgs: helmSet: """
+						'.service.labels = {"h8r.io/framework": "gin"}'
+						"""
 					},
 					{
 						name:      client.env.APP_NAME + "-deploy"

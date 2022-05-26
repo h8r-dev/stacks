@@ -45,10 +45,6 @@ yq -i '.prometheus.ingress.annotations += {"nginx.ingress.kubernetes.io/auth-rea
 # add grafana loki datasource
 yq -i '.grafana.additionalDataSources[0] = {"name": "loki", "type": "loki", "url": "http://loki.loki:3100/", "access": "proxy"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 
-# prometheus sd config
-yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs += {"job_name": "'service'"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
-yq -i '.prometheus.prometheusSpec.additionalScrapeConfigs[-1].kubernetes_sd_configs[0].role = "service"' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
-
 # hln alert rules
 yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0] = {"name": "hln-alerts"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 yq -i '.additionalPrometheusRulesMap.hln-rules.groups[0].rules[0] = {"alert": "remix-app-alert", "expr": "remix_error_500_count_total > 0"}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
@@ -69,6 +65,8 @@ fi
 
 # add spring boot serviceMonitor
 yq -i '.prometheus.additionalServiceMonitors += {"name": "spring-service-monitor", "namespaceSelector": {"any": true}, "selector": {"matchLabels": {"h8r.io/framework": "spring"}}, "endpoints": [{"path": "/actuator/prometheus", "targetPort": "http"}]}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
+# add gin serviceMonitor
+yq -i '.prometheus.additionalServiceMonitors += {"name": "gin-service-monitor", "namespaceSelector": {"any": true}, "selector": {"matchLabels": {"h8r.io/framework": "gin"}}, "endpoints": [{"path": "/metrics", "targetPort": "http"}]}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
 #cat <<EOF > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.sh
 #echo {"username": "admin", "password": "prom-operator","OUTPUT_PATH":"$OUTPUT_PATH","TEST_ENV":"$TEST_ENV"} > /scaffold/$OUTPUT_PATH/infra/prometheus-cd-output-hook.txt
 
