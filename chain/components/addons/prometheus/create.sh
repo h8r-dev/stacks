@@ -50,17 +50,19 @@ yq -i '.prometheus.prometheusSpec.ruleSelector = {"matchLabels": {"role": "hln-r
 
 # Add application dashboards
 if [ -d "/dashboards" ]; then
-    cp /dashboards/*.yaml /scaffold/$OUTPUT_PATH/infra/prometheus-stack/templates/grafana/dashboards-1.14/
+    cp /dashboards/*dashboard.yaml /scaffold/$OUTPUT_PATH/infra/prometheus-stack/templates/grafana/dashboards-1.14/
 fi
 
 # Add dashboardRefs output hook
-if [ -f /dashboards/*annotations.json ]; then
-    for file in /dashboards/*annotations.json
+TMP_FILE=/etc/tmp-annotations.yaml
+echo "[]" > $TMP_FILE
+if [ -f /dashboards/*annotations.yaml ]; then
+    for file in /dashboards/*annotations.yaml
     do
-        # TODO: Combine files
-        TMP_CONTENTS=$(base64 $file | tr -d '\n')
+        yq -i '. += '"$(yq $file -o json)"''  $TMP_FILE
     done
 fi
+TMP_CONTENTS=$(base64 $TMP_FILE | tr -d '\n')
 
 # add spring boot serviceMonitor
 yq -i '.prometheus.additionalServiceMonitors += {"name": "spring-service-monitor", "namespaceSelector": {"any": true}, "selector": {"matchLabels": {"h8r.io/framework": "spring"}}, "endpoints": [{"path": "/actuator/prometheus", "targetPort": "http"}]}' /scaffold/$OUTPUT_PATH/infra/prometheus-stack/values.yaml
