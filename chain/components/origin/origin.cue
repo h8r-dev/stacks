@@ -51,4 +51,14 @@ package origin
 			url:   "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 	}
+	sealedSecrets: {
+		global: {
+			chart: "sealed-secrets"
+			url:   "https://bitnami-labs.github.io/sealed-secrets"
+		}
+		internal: {
+			chart: "sealed-secrets"
+			url:   "https://h8r-helm.pkg.coding.net/release/helm"
+		}
+	}
 }

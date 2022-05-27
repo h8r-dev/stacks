@@ -15,6 +15,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/addons/nocalhost"
 	"github.com/h8r-dev/stacks/chain/components/addons/prometheus"
 	"github.com/h8r-dev/stacks/chain/components/addons/dapr"
+	"github.com/h8r-dev/stacks/chain/components/addons/sealedSecrets"
 	nginxCloud "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/cloud"
 	nginxKind "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/kind"
 	// Registry
@@ -42,6 +43,7 @@ import (
 		"prometheus":          prometheus
 		"nocalhost":           nocalhost
 		"dapr":                dapr
+		"sealedSecrets":       sealedSecrets
 		"ingress-nginx-cloud": nginxCloud
 		"ingress-nginx-kind":  nginxKind
 		// TODO FIX ME
@@ -138,12 +140,13 @@ import (
 					_output: doHelmRegistryScaffold["\(idx-1)"].output.image
 				}
 				"input": registry[i.registry].#Input & {
-					name:      i.name
-					image:     _output
-					chartName: helmScaffold[0].name
-					username:  input.organization
-					password:  input.personalAccessToken
-					appName:   input.appName
+					name:       i.name
+					image:      _output
+					chartName:  helmScaffold[0].name
+					username:   input.organization
+					password:   input.personalAccessToken
+					appName:    input.appName
+					kubeconfig: input.kubeconfig
 				}
 			}
 		}
@@ -180,35 +183,9 @@ import (
 	}
 
 	// should do latest
-	exceptNginxIngressAddonsList: [ for t in input.addons if t.name != "ingress-nginx" {t}]
+	exceptNginxIngressAddonsList: [ for t in input.addons if t.name != "ingress-nginx" {t}] + [{name: "sealedSecrets"}]
 	ingressAddonsList: [ for t in input.addons if t.name == "ingress-nginx" {t}]
 	conbineAddons: [...]
-
-	// ingress-nginx is pre require
-
-	// if len(ingressAddonsList) > 0 {
-	//  _ingressName: string
-	//  if list.Contains(["kind", "minikube"], input.cloudProvider) {
-	//   _ingressName: "ingress-nginx-" + input.cloudProvider
-	//  }
-	//  if !list.Contains(["kind", "minikube"], input.cloudProvider) {
-	//   _ingressName: "ingress-nginx-cloud"
-	//  }
-
-	//  ingressAddons: [
-	//   {
-	//    name:    _ingressName
-	//    version: ingressAddonsList[0].version
-	//   },
-	//  ]
-	//  conbineAddons: exceptNginxIngressAddonsList + ingressAddons
-	// }
-
-	// if len(ingressAddonsList) == 0 {
-	//  conbineAddons: exceptNginxIngressAddonsList
-	// }
-	// cue list for loop bug
-	// https://github.com/cue-lang/cue/issues/798
 
 	doAddonsScaffold: {
 		for idx, i in exceptNginxIngressAddonsList {
