@@ -12,9 +12,10 @@ import (
 	// Chart name, for looking deploy path
 	chartName: string
 
-	image:    docker.#Image
-	username: string
-	password: dagger.#Secret
-	tag:      string | *"main"
-	appName:  string
+	image:       docker.#Image
+	username:    string
+	password:    dagger.#Secret
+	tag:         string | *"main"
+	appName:     string
+	kubeconfig?: dagger.#Secret
 }

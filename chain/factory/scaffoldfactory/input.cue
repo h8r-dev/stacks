@@ -15,4 +15,5 @@ import (
 	domain:               basefactory.#DefaultDomain
 	appName:              string
 	networkType:          string | *"default" | "china_network"
+	kubeconfig?:          dagger.#Secret
 }

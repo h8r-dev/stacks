@@ -55,6 +55,7 @@ dagger.#Plan & {
 				domain:              _domain
 				organization:        _organization.value.contents
 				personalAccessToken: client.env.GITHUB_TOKEN
+				kubeconfig:          _kubeconfig.output.kubeconfig
 				repository: [
 					{
 						name:      client.env.APP_NAME

@@ -27,6 +27,12 @@ import (
 			directory: src.output
 			filename:  "github-registry.sh"
 		}
+		if input.kubeconfig != _|_ {
+			mounts: kubeconfig: {
+				dest:     "/kubeconfig"
+				contents: input.kubeconfig
+			}
+		}
 	}
 	output: #Output & {
 		image: do.output
