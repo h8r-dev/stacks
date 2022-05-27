@@ -45,7 +45,7 @@ else
   kubectl -n "${NAMESPACE}" label secret "${SECRETNAME}" sealedsecrets.bitnami.com/sealed-secrets-key=active
   # Deleting the controller Pod is needed to pick they new keys
   set +e
-  kubectl -n "${NAMESPACE}" delete pod -l name=sealed-secrets-controller > /dev/null 2>&1
+  kubectl -n "${NAMESPACE}" delete pod -l app.kubernetes.io/name=sealed-secrets > /dev/null 2>&1
   set -e
 fi
 
