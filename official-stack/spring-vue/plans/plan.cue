@@ -19,12 +19,13 @@ dagger.#Plan & {
 		}
 
 		env: {
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
-			KUBECONFIG:   string
-			APP_NAME:     string
-			APP_DOMAIN:   string | *"h8r.site"
-			NETWORK_TYPE: string | *"default"
+			ORGANIZATION:    string
+			GITHUB_TOKEN:    dagger.#Secret
+			KUBECONFIG:      string
+			APP_NAME:        string
+			APP_DOMAIN:      string | *"h8r.site"
+			NETWORK_TYPE:    string | *"default"
+			REPO_VISIBILITY: string | *"private"
 		}
 
 		filesystem: "output.yaml": write: contents: actions.up._output.contents
@@ -41,6 +42,8 @@ dagger.#Plan & {
 				kubeconfig: client.commands.kubeconfig.stdout
 			}
 		}
+
+		_repoVisibility: client.env.REPO_VISIBILITY
 
 		_scaffold: scaffoldfactory.#Instance & {
 			input: scaffoldfactory.#Input & {
@@ -92,7 +95,7 @@ dagger.#Plan & {
 				personalAccessToken: client.env.GITHUB_TOKEN
 				organization:        client.env.ORGANIZATION
 				repositorys:         _scaffold.output.image
-				visibility:          "private"
+				visibility:          _repoVisibility
 				kubeconfig:          _kubeconfig.output.kubeconfig
 			}
 		}
