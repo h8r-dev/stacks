@@ -71,6 +71,7 @@ jobs:
           ORGANIZATION: heigliner-robot
           HLN_LOG_LEVEL: "debug"
           HLN_LOG_FORMAT: "plain"
+          REPO_VISIBILITY: "public"
         run: |
           export APP_NAME="$STACK-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
