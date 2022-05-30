@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-printf '## :warning: DO NOT MAKE THIS REPOSITORY PUBLIC' > README.md
+printf '# deploy' > README.md
 if [ ! -z "$STARTER" ]; then
   rm -rf $HOME/.local/share/helm/starters/${STARTER_REPO_NAME}
   git clone -b $STARTER_REPO_VER "$STARTER_REPO_URL" $HOME/.local/share/helm/starters/${STARTER_REPO_NAME}
