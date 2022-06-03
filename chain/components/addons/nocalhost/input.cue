@@ -6,7 +6,7 @@ import (
 )
 
 #Input: {
-	version: string | *"0.6.19-beta.1"
+	version: string | *"0.6.19-beta.2"
 	// for tgz output path
 	helmName:    string
 	image:       docker.#Image
