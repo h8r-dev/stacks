@@ -1,4 +1,4 @@
-package ginnext
+package stacks
 
 import (
 	"github.com/h8r-dev/stacks/cuelib/framework/registry"
