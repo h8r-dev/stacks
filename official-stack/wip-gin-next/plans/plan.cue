@@ -2,7 +2,7 @@ package plans
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/cuelib/stacks/ginnext"
+	"github.com/h8r-dev/stacks/cuelib/stacks"
 )
 
 dagger.#Plan & {
@@ -18,7 +18,7 @@ dagger.#Plan & {
 		}
 	}
 	actions: {
-		up: ginnext.#Install & {
+		up: stacks.#Install & {
 			args: {
 				name:        client.env.APP_NAME
 				domain:      "\(name).h8r.site"
