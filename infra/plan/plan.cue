@@ -2,7 +2,6 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/docker"
 
 	// Utility tools
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
@@ -33,14 +32,19 @@ import (
 
 	_baseImage: base.#Image & {}
 
-	installCD: argocd: argocd
+	// Merge into all infra component installation.
+	installCD: argocd.#Instance & {
+		input: argocd.#Input & {
+			"kubeconfig": kubeconfig
+			image:        _baseImage.output
+		}
+	}
 
 	installInfra: {
 		for component, index in install_list {
 			"\(component)": infra_copmonents[component].#Instance & {
-				_output: docker.#Image
 				if index == 0 {
-					_output: _baseImage.output
+					_output: installCD.output.image
 				}
 				if index > 0 {
 					_output: installComponents["\(index-1)"].output.image
