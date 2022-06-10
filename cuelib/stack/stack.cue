@@ -39,8 +39,12 @@ import (
 		_addCIWorkflows: {
 			for idx, f in args.frameworks {
 				(f.name): ci.#AddWorkflow & {
-					sourceCode: _initFrameworks[(f.name)].sourceCode
-					name:       f.name
+					input: {
+						applicationName:  args.name
+						organization:     args.organization
+						deployRepository: "TODO-deploy"
+						sourceCode:       _initFrameworks[(f.name)].output.sourceCode
+					}
 				}
 			}
 		}
