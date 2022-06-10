@@ -2,7 +2,7 @@ package plans
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/cuelib/stacks"
+	"github.com/h8r-dev/stacks/cuelib/stack"
 )
 
 dagger.#Plan & {
@@ -22,7 +22,7 @@ dagger.#Plan & {
 			REPO_VISIBILITY: string | *"private"
 		}
 	}
-	actions: up: stacks.#Install & {
+	actions: up: stack.#Install & {
 		args: {
 			name:           client.env.APP_NAME
 			domain:         client.env.APP_DOMAIN

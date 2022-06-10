@@ -1,8 +1,8 @@
 package framework
 
 import (
-	"github.com/h8r-dev/stacks/cuelib/framework/gin"
-	"github.com/h8r-dev/stacks/cuelib/framework/next"
+	"github.com/h8r-dev/stacks/cuelib/component/framework/gin"
+	"github.com/h8r-dev/stacks/cuelib/component/framework/next"
 )
 
 #Init: {

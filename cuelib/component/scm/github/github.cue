@@ -6,7 +6,7 @@ import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"strings"
-	"github.com/h8r-dev/stacks/cuelib/internal/utils/base"
+	"github.com/h8r-dev/stacks/cuelib/internal/base"
 )
 
 #Input: {
