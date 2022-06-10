@@ -7,6 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/cuelib/framework"
 	"github.com/h8r-dev/stacks/cuelib/ci"
 	"github.com/h8r-dev/stacks/cuelib/deploy"
+	"github.com/h8r-dev/stacks/cuelib/scm/github"
 )
 
 #Install: {
@@ -47,7 +48,15 @@ import (
 	}
 
 	_pushRepositories: {
-
+		test: github.#Push & {
+			input: {
+				repositoryName:      "\(args.name)-mock-repo"
+				personalAccessToken: args.githubToken
+				organization:        args.organization
+				visibility:          args.repoVisibility
+				kubeconfig:          _transformKubeconfig.output.kubeconfig
+			}
+		}
 	}
 
 	_deployApplication: init: deploy.#Init & {
