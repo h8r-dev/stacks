@@ -22,14 +22,7 @@ import (
 }
 
 #Push: {
-	input: #Input & {
-		contents: _mockSourceCode.output
-	}
-
-	_mockSourceCode: core.#Source & {
-		path: "test"
-		include: ["README.md"]
-	}
+	input: #Input
 
 	_tfScript: core.#Source & {
 		path: "terraform"
@@ -58,7 +51,6 @@ import (
 	_push: bash.#Run & {
 		"input": _deps.output
 		workdir: "/workdir"
-		always:  true
 		env: {
 			REPOSITORY_NAME:     input.repositoryName
 			GITHUB_TOKEN:        input.personalAccessToken
