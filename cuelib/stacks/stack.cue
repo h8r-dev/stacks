@@ -4,7 +4,7 @@ import (
 	"dagger.io/dagger"
 
 	utilsKubeconfig "github.com/h8r-dev/stacks/cuelib/internal/utils/kubeconfig"
-	"github.com/h8r-dev/stacks/cuelib/framework/registry"
+	"github.com/h8r-dev/stacks/cuelib/framework"
 	"github.com/h8r-dev/stacks/cuelib/ci"
 	"github.com/h8r-dev/stacks/cuelib/deploy"
 )
@@ -30,17 +30,17 @@ import (
 
 	_initRepositories: {
 		_initFrameworks: {
-			for idx, framework in args.frameworks {
-				(framework.name): registry.#Init & {
-					name: framework.name
+			for idx, f in args.frameworks {
+				(f.name): framework.#Init & {
+					name: f.name
 				}
 			}
 		}
 		_addCIWorkflows: {
-			for idx, framework in args.frameworks {
-				(framework.name): ci.#AddWorkflow & {
-					sourceCode: _initFrameworks[(framework.name)].sourceCode
-					name:       framework.name
+			for idx, f in args.frameworks {
+				(f.name): ci.#AddWorkflow & {
+					sourceCode: _initFrameworks[(f.name)].sourceCode
+					name:       f.name
 				}
 			}
 		}
@@ -56,9 +56,9 @@ import (
 	}
 
 	_config: {
-		for idx, framework in args.frameworks {
-			(framework.name): registry.#Config & {
-				name:   framework.name
+		for idx, f in args.frameworks {
+			(f.name): framework.#Config & {
+				name:   f.name
 				addons: args.addons
 			}
 		}
