@@ -5,18 +5,16 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/cuelib/internal/utils/base"
+	"github.com/h8r-dev/stacks/cuelib/internal/base"
 
-	"github.com/h8r-dev/stacks/cuelib/framework/gin"
+	"github.com/h8r-dev/stacks/cuelib/component/framework/gin"
 )
 
 dagger.#Plan & {
-	client: {
-		env: {
-			ORGANIZATION: string
-			GITHUB_TOKEN: dagger.#Secret
-			KUBECONFIG:   string
-		}
+	client: env: {
+		ORGANIZATION: string
+		GITHUB_TOKEN: dagger.#Secret
+		KUBECONFIG:   string
 	}
 	actions: {
 		test: {
