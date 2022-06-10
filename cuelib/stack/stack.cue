@@ -7,7 +7,6 @@ import (
 	"github.com/h8r-dev/stacks/cuelib/component/framework"
 	"github.com/h8r-dev/stacks/cuelib/component/ci"
 	"github.com/h8r-dev/stacks/cuelib/component/deploy"
-	"github.com/h8r-dev/stacks/cuelib/component/scm/github"
 )
 
 #Install: {
@@ -24,7 +23,7 @@ import (
 	}
 
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
-		input: utilsKubeconfig.#Input & {
+		input: {
 			kubeconfig: args.kubeconfig
 		}
 	}
@@ -47,14 +46,8 @@ import (
 		}
 	}
 
-	_pushRepositories: test: github.#Push & {
-		input: {
-			repositoryName:      "\(args.name)-mock-repo"
-			personalAccessToken: args.githubToken
-			organization:        args.organization
-			visibility:          args.repoVisibility
-			kubeconfig:          _transformKubeconfig.output.kubeconfig
-		}
+	_pushRepositories: {
+
 	}
 
 	_deployApplication: init: deploy.#Init & {
