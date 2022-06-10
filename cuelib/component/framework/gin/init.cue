@@ -1,6 +1,7 @@
 package gin
 
 import (
+	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	// "universe.dagger.io/bash"
 	// "universe.dagger.io/docker"
@@ -10,7 +11,13 @@ import (
 
 #Init: {
 
-	sourceCode: _sourceCode.output
+	output: {
+		sourceCode: dagger.#FS
+	}
+
+	output: {
+		sourceCode: _sourceCode.output
+	}
 
 	_sourceCode: core.#Source & {
 		path: "template"
