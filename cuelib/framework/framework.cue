@@ -1,4 +1,4 @@
-package registry
+package framework
 
 import (
 	"github.com/h8r-dev/stacks/cuelib/framework/gin"
