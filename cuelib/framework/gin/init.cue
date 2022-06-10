@@ -2,28 +2,44 @@ package gin
 
 import (
 	"dagger.io/dagger/core"
-	"universe.dagger.io/bash"
+	// "universe.dagger.io/bash"
+	// "universe.dagger.io/docker"
 
-	"github.com/h8r-dev/stacks/cuelib/internal/utils/base"
+	// "github.com/h8r-dev/stacks/cuelib/internal/utils/base"
 )
 
 #Init: {
-	sourceCode: "printf(hello world)"
 
-	_baseImage: base.#Image
+	sourceCode: _sourceCode.output
 
-	_sh: core.#Source & {
-		path: "."
-		include: ["init.sh"]
+	_sourceCode: core.#Source & {
+		path: "template"
 	}
 
-	bash.#Run & {
-		always:  true
-		input:   _baseImage.output
-		workdir: "/root"
-		script: {
-			directory: _sh.output
-			filename:  "init.sh"
-		}
-	}
+	// Maybe generate dynamically source codes in future
+
+	// _deps: docker.#Build & {
+	//  steps: [
+	//   base.#Image,
+	//   docker.#Copy & {
+	//    contents: _sourceCode.output
+	//    dest:     "/workdir/source"
+	//   },
+	//  ]
+	// }
+
+	// _sh: core.#Source & {
+	//  path: "."
+	//  include: ["init.sh"]
+	// }
+
+	// bash.#Run & {
+	//  always:  true
+	//  input:   _deps.output
+	//  workdir: "/workdir"
+	//  script: {
+	//   directory: _sh.output
+	//   filename:  "init.sh"
+	//  }
+	// }
 }
