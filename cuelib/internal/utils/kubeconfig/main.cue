@@ -1,6 +1,7 @@
 package kubeconfig
 
 import (
+	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
@@ -8,7 +9,12 @@ import (
 
 // TransformToInternal transforms the given kubeconfig to internal cluster address
 #TransformToInternal: {
-	input: #Input
+	input: kubeconfig: dagger.#Secret
+
+	output: {
+		kubeconfig: dagger.#Secret
+		apiServer:  string
+	}
 
 	_baseImage: base.#Image
 
@@ -39,7 +45,7 @@ import (
 		path:  "/result"
 	}
 
-	output: #Output & {
+	output: {
 		kubeconfig: _getSecret.output
 		apiServer:  _run.export.files."/api_server"
 	}
