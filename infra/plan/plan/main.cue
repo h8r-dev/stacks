@@ -2,7 +2,6 @@ package main
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/docker"
 
 	// Utility tools
 	"github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
@@ -20,8 +19,6 @@ dagger.#Plan & {
 			KUBECONFIG:   string
 			NETWORK_TYPE: string | *"default"
 		}
-
-		filesystem: "output.yaml": write: contents: actions.up._output.contents
 	}
 
 	actions: {
@@ -33,14 +30,14 @@ dagger.#Plan & {
 
 		up: {
 			executePlan: plan: #Plan & {
-				kubeconfig:  _kubeconfig.output.kubeconfig
+				kubeconfig:  client.commands.kubeconfig.stdout
 				networkType: client.env.NETWORK_TYPE
 			}
 
 			// Store install status in a Configmap resource in K8S.
-			storeState: {
+			// storeState: {
 
-			}
+			// }
 		}
 	}
 }

@@ -28,7 +28,9 @@ import (
 		"argocd":        argocd
 	}
 
-	install_list: ["argocd", "loki", "prometheus", "nocalhost", "dapr", "sealedSecrets"]
+	// Select the infra components to install.
+	// install_list: ["argocd", "loki", "prometheus", "nocalhost", "dapr", "sealedSecrets"]
+	install_list: ["loki", "prometheus", "nocalhost", "dapr", "sealedSecrets"]
 
 	_baseImage: base.#Image & {}
 
@@ -40,18 +42,12 @@ import (
 		}
 	}
 
-	installInfra: {
+	install: {
 		for component, index in install_list {
 			"\(component)": infra_copmonents[component].#Instance & {
-				if index == 0 {
-					_output: installCD.output.image
-				}
-				if index > 0 {
-					_output: installComponents["\(index-1)"].output.image
-				}
 				input: {
 					helmName:    "h8r-infra-compnents"
-					image:       _output
+					image:       _baseImage.output
 					networkType: input.networkType
 				}
 			}
