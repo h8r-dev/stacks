@@ -13,33 +13,40 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			KUBECONFIG: string
-			APP_NAME:   string
+			ORGANIZATION:    string
+			GITHUB_TOKEN:    dagger.#Secret
+			KUBECONFIG:      string
+			APP_NAME:        string
+			APP_DOMAIN:      string | *"h8r.site"
+			NETWORK_TYPE:    string | *"default"
+			REPO_VISIBILITY: string | *"private"
 		}
 	}
-	actions: {
-		up: stacks.#Install & {
-			args: {
-				name:        client.env.APP_NAME
-				domain:      "\(name).h8r.site"
-				githubToken: "ghp_WAFSFSGTJHasdsadwdsadwad"
-				frameworks: [
-					{
-						name: "gin"
-					},
-					{
-						name: "next"
-					},
-				]
-				addons: [
-					{
-						name: "nocalhost"
-					},
-					{
-						name: "prometheus"
-					},
-				]
-			}
+	actions: up: stacks.#Install & {
+		args: {
+			name:           client.env.APP_NAME
+			domain:         client.env.APP_DOMAIN
+			networkType:    client.env.NETWORK_TYPE
+			repoVisibility: client.env.REPO_VISIBILITY
+			organization:   client.env.ORGANIZATION
+			githubToken:    client.env.GITHUB_TOKEN
+			kubeconfig:     client.commands.kubeconfig.stdout
+			frameworks: [
+				{
+					name: "gin"
+				},
+				{
+					name: "next"
+				},
+			]
+			addons: [
+				{
+					name: "nocalhost"
+				},
+				{
+					name: "prometheus"
+				},
+			]
 		}
 	}
 }
