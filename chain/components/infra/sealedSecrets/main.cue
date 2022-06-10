@@ -20,6 +20,11 @@ import (
 			CHART_URL_INTERNAL: origin.#Origin.sealedSecrets.internal.url
 			CHART_URL_GLOBAL:   origin.#Origin.sealedSecrets.global.url
 		}
+		mounts: kubeconfig: {
+			dest:     "/root/.kube/config"
+			type:     "secret"
+			contents: input.kubeconfig
+		}
 		workdir: "/tmp"
 		script: {
 			directory: src.output

@@ -4,9 +4,6 @@ import (
 	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
 	"github.com/h8r-dev/stacks/chain/internal/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
-	"universe.dagger.io/bash"
-	"dagger.io/dagger/core"
-	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Instance: {
@@ -44,41 +41,5 @@ import (
 	output: #Output & {
 		image:   _patch.output
 		success: _patch.success
-	}
-}
-
-#Init: {
-	input: #Input
-	do: {
-		src: core.#Source & {
-			path: "."
-		}
-		createApps: bash.#Run & {
-			env: {
-				KUBECONFIG:    "/etc/kubernetes/config"
-				ARGO_SERVER:   basefactory.#DefaultInternalDomain.infra.argocd
-				ARGO_URL:      input.domain.infra.argocd
-				ARGO_USERNAME: "admin"
-				if input.set != null {
-					HELM_SET: input.set
-				}
-				APP_NAMESPACE: input.domain.application.productionNamespace
-				APP_SERVER:    "https://kubernetes.default.svc"
-			}
-			mounts: kubeconfig: {
-				dest:     "/etc/kubernetes/config"
-				contents: input.kubeconfig
-			}
-			"input": input.image
-			workdir: "/scaffold"
-			script: {
-				directory: src.output
-				filename:  "create-apps.sh"
-			}
-		}
-	}
-	output: #Output & {
-		image:   do.createApps.output
-		success: do.createApps.success
 	}
 }

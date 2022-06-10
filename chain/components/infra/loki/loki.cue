@@ -20,6 +20,11 @@ import (
 			CHART_URL_INTERNAL: origin.#Origin.loki.internal.url
 			CHART_URL_GLOBAL:   origin.#Origin.loki.global.url
 		}
+		mounts: kubeconfig: {
+			dest:     "/root/.kube/config"
+			type:     "secret"
+			contents: input.kubeconfig
+		}
 		workdir: "/tmp"
 		script: {
 			directory: src.output

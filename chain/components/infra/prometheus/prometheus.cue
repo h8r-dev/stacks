@@ -15,6 +15,7 @@ import (
 		"input": input.image
 		env: {
 			VERSION:             input.version
+			HELM_NAME:           input.helmName
 			OUTPUT_PATH:         input.helmName
 			GRAFANA_DOMAIN:      input.domain.infra.grafana
 			ALERTMANAGER_DOMAIN: input.domain.infra.alertManager
@@ -22,6 +23,11 @@ import (
 			NETWORK_TYPE:        input.networkType
 			CHART_URL_INTERNAL:  origin.#Origin.prometheus.internal.url
 			CHART_URL_GLOBAL:    origin.#Origin.prometheus.global.url
+		}
+		mounts: kubeconfig: {
+			dest:     "/root/.kube/config"
+			type:     "secret"
+			contents: input.kubeconfig
 		}
 		workdir: "/tmp"
 		script: {
