@@ -3,21 +3,22 @@ package next
 import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
-	"universe.dagger.io/docker"
+
+	"github.com/h8r-dev/stacks/cuelib/internal/utils/base"
 )
 
 #Init: {
 	sourceCode: "printf(hello world)"
-	_deps:      docker.#Pull & {
-		source: "heighlinerdev/stack-base:debian"
-	}
+
+	_baseImage: base.#Image
+
 	_sh: core.#Source & {
 		path: "."
 		include: ["init.sh"]
 	}
 	bash.#Run & {
 		always:  true
-		input:   _deps.output
+		input:   _baseImage.output
 		workdir: "/root"
 		script: {
 			directory: _sh.output
