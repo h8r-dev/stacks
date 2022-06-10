@@ -30,7 +30,7 @@ installDependencies() {
   echo "Installing dependencies for: $STACK_DIR..."
   cd $STACK_DIR
   hof mod vendor cue
-  dagger project update
+  # dagger project update
   cd $WORK_DIR
 }
 
