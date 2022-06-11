@@ -7,6 +7,8 @@ on:
   pull_request_target:
     branches:
       - main
+  schedule:
+    - cron: '0 2 * * *'
 
 jobs:
   test-stack:
@@ -14,7 +16,8 @@ jobs:
     # As pull_request_target if it is a fork.
     if: >-
       ( github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork == true ) ||
-      ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false )
+      ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false ) || 
+      （github.event_name == 'schedule'）
     strategy:
       matrix:
         stacks:
