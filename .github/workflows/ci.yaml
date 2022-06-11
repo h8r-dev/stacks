@@ -9,6 +9,7 @@ on:
       - main
   schedule:
     - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   test-stack:
@@ -27,15 +28,24 @@ jobs:
           - spring-vue
           - sample
           - dotnet-react-dapr
+        network:
+          - default
+          - china_network
     runs-on: ubuntu-latest
     env:
       stack: ${{ matrix.stacks }}
+      network: ${{ matrix.network }}
       stack_prefix: "official-stack/"
     steps:
-      - name: Check out
+      - name: Check out merge
+        if: github.event_name == 'pull_request_target'
         uses: actions/checkout@v3
         with:
           ref: "refs/pull/${{ github.event.number }}/merge"
+
+      - name: Check out
+        if: github.event_name != 'pull_request_target'
+        uses: actions/checkout@v3
 
       - name: Create Kind Cluster
         uses: helm/kind-action@deab45fc8df9de5090a604e8ec11778eea7170bd
@@ -69,6 +79,7 @@ jobs:
         id: hln_up
         env:
           STACK: ${{ env.stack }}
+          NETWORK_TYPE: ${{ env.network }}
           STACK_PREFIX: ${{ env.stack_prefix }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
