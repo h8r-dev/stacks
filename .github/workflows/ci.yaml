@@ -87,11 +87,12 @@ jobs:
           HLN_LOG_FORMAT: "plain"
           REPO_VISIBILITY: "public"
         run: |
-          export APP_NAME="$STACK-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
+          export APP_NAME="$STACK-$NETWORK_TYPE-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
           hln up $APP_NAME --dir "${STACK_PREFIX}${STACK}"
 
       - name: Setup Go
+        if: always()
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
