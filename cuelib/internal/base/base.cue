@@ -11,9 +11,9 @@ import (
 }
 
 #HelmStarter: {
-	url:      "https://github.com/h8r-dev/helm-starter.git"
-	repoName: "helm-starter"
-	version:  "main"
+	url:      string | *"https://github.com/h8r-dev/helm-starter.git"
+	repoName: string | *"helm-starter"
+	version:  string | *"main"
 }
 
 #DefaultDomain: {
@@ -30,4 +30,9 @@ import (
 		nocalhost:    "nocalhost." + domain
 		dapr:         "dapr." + domain
 	}
+}
+
+HelmStarter: {
+	gin:  "helm-starter/go/gin"
+	next: "helm-starter/nodejs/node"
 }

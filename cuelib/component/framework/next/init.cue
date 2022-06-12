@@ -6,13 +6,9 @@ import (
 )
 
 #Init: {
-	output: {
-		sourceCode: dagger.#FS
-	}
+	output: sourceCode: dagger.#FS
 
-	output: {
-		sourceCode: _sourceCode.output
-	}
+	output: sourceCode: _sourceCode.output
 
 	_sourceCode: core.#Source & {
 		path: "template"

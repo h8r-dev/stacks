@@ -9,7 +9,7 @@ import (
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
 )
 
-#Create: {
+#CreateChart: {
 	input: {
 		name:      string
 		contents?: dagger.#FS
@@ -82,7 +82,5 @@ import (
 		export: directories: "/helm": _
 	}
 
-	output: {
-		fs: _run.export.directories."/helm"
-	}
+	output: fs: _run.export.directories."/helm"
 }

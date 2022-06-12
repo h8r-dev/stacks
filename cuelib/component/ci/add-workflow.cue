@@ -17,9 +17,7 @@ import (
 		sourceCode:       dagger.#FS
 	}
 
-	output: {
-		sourceCode: _do.export.directories."/workdir/source"
-	}
+	output: sourceCode: _do.export.directories."/workdir/source"
 
 	_loadWorkflows: core.#Source & {
 		path: "./template"
