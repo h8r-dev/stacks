@@ -32,6 +32,21 @@ import (
 	}
 }
 
+#DefaultInternalDomain: {
+	application: {
+		domain:              ""
+		productionNamespace: "production"
+	}
+	infra: {
+		domain:       ".svc"
+		argocd:       "argocd-server.argocd" + domain
+		prometheus:   "prometheus" + domain
+		alertManager: "alert" + domain
+		grafana:      "grafana" + domain
+		nocalhost:    "nocalhost-web.nocalhost" + domain
+	}
+}
+
 HelmStarter: {
 	gin:  "helm-starter/go/gin"
 	next: "helm-starter/nodejs/node"

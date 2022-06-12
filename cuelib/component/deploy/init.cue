@@ -7,7 +7,12 @@ import (
 
 #Init: {
 	input: {
-		name: string
+		name:           string
+		domain:         string
+		repoVisibility: string
+		organization:   string
+		githubToken:    dagger.#Secret
+		kubeconfig:     dagger.#Secret
 		frameworks: [...]
 	}
 	output: chart: _createParentChart.output.fs
@@ -34,6 +39,17 @@ import (
 				name:      input.name
 				subcharts: _subChartList
 			}
+		}
+	}
+
+	_push: github.#Push & {
+		input: {
+			repositoryName:      "helm-test"
+			contents:            _createParentChart.output.fs
+			personalAccessToken: args.githubToken
+			organization:        args.organization
+			visibility:          args.repoVisibility
+			kubeconfig:          _transformKubeconfig.output.kubeconfig
 		}
 	}
 }
