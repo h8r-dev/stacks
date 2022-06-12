@@ -7,6 +7,9 @@ on:
   pull_request_target:
     branches:
       - main
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   test-stack:
@@ -14,8 +17,10 @@ jobs:
     # As pull_request_target if it is a fork.
     if: >-
       ( github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork == true ) ||
-      ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false )
+      ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false ) ||
+      ( github.event_name == 'schedule' )
     strategy:
+      fail-fast: false
       matrix:
         stacks:
           # Add stack here if you want to test it.
@@ -24,15 +29,24 @@ jobs:
           - spring-vue
           - sample
           - dotnet-react-dapr
+        network:
+          - default
+          - china_network
     runs-on: ubuntu-latest
     env:
       stack: ${{ matrix.stacks }}
+      network: ${{ matrix.network }}
       stack_prefix: "official-stack/"
     steps:
-      - name: Check out
+      - name: Check out merge
+        if: github.event_name == 'pull_request_target'
         uses: actions/checkout@v3
         with:
           ref: "refs/pull/${{ github.event.number }}/merge"
+
+      - name: Check out
+        if: github.event_name != 'pull_request_target'
+        uses: actions/checkout@v3
 
       - name: Create Kind Cluster
         uses: helm/kind-action@deab45fc8df9de5090a604e8ec11778eea7170bd
@@ -66,6 +80,7 @@ jobs:
         id: hln_up
         env:
           STACK: ${{ env.stack }}
+          NETWORK_TYPE: ${{ env.network }}
           STACK_PREFIX: ${{ env.stack_prefix }}
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           ORGANIZATION: heigliner-robot
@@ -73,11 +88,16 @@ jobs:
           HLN_LOG_FORMAT: "plain"
           REPO_VISIBILITY: "public"
         run: |
-          export APP_NAME="$STACK-$(date +'%Y-%m-%dt%H-%M-%S' -d '+8 hour')"
+          NET=""
+          if [[ ${{ env.network }} == "china_network" ]]; then
+            NET="-cn"
+          fi
+          export APP_NAME="$STACK$NET-$(date +'%m-%dt%H-%M-%S' -d '+8 hour')"
           echo "::set-output name=app_name::$APP_NAME"
           hln up $APP_NAME --dir "${STACK_PREFIX}${STACK}"
 
       - name: Setup Go
+        if: always()
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
@@ -104,6 +124,6 @@ jobs:
           STACK_PREFIX: ${{ env.stack_prefix }}
         run: |
           go install github.com/yuyicai/gh-cleaner@latest
-          export REPOS="${APP_NAME}-backend,${APP_NAME}-frontend,${APP_NAME}-deploy"
-          export PKGS="${APP_NAME}-backend,${APP_NAME}-frontend"
+          export PKGS="${APP_NAME}-backend,${APP_NAME}-frontend,${APP_NAME}"
+          export REPOS="${PKGS},${APP_NAME}-deploy"
           gh-cleaner delete -r ${REPOS} -p ${PKGS} -u ${ORGANIZATION}
