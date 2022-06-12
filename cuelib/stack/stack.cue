@@ -5,6 +5,7 @@ import (
 
 	utilsKubeconfig "github.com/h8r-dev/stacks/cuelib/internal/utils/kubeconfig"
 	"github.com/h8r-dev/stacks/cuelib/component/framework"
+	// "github.com/h8r-dev/stacks/cuelib/component/scm/github"
 	"github.com/h8r-dev/stacks/cuelib/component/ci"
 	"github.com/h8r-dev/stacks/cuelib/component/deploy"
 )
@@ -23,9 +24,7 @@ import (
 	}
 
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
-		input: {
-			kubeconfig: args.kubeconfig
-		}
+		input: kubeconfig: args.kubeconfig
 	}
 
 	_initRepositories: {
@@ -54,9 +53,23 @@ import (
 
 	}
 
-	_deployApplication: init: deploy.#Init & {
-		name:       args.name
-		frameworks: args.frameworks
+	_deployApplication: {
+		_init: deploy.#Init & {
+			input: {
+				name:       args.name
+				frameworks: args.frameworks
+			}
+		}
+		// _push: github.#Push & {
+		//  input: {
+		//   repositoryName:      "helm-test"
+		//   contents:            _init.output.chart
+		//   personalAccessToken: args.githubToken
+		//   organization:        args.organization
+		//   visibility:          args.repoVisibility
+		//   kubeconfig:          _transformKubeconfig.output.kubeconfig
+		//  }
+		// }
 	}
 
 	_config: {

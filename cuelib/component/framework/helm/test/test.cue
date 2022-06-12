@@ -37,7 +37,7 @@ dagger.#Plan & {
 			script: contents: """
 				ls -laR /helm
 				"""
-			mounts: "helm": {
+			mounts: helm: {
 				dest:     "/helm"
 				contents: _createChart2.output.fs
 			}
