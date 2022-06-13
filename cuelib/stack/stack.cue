@@ -58,20 +58,15 @@ import (
 	_deployApplication: {
 		_init: deploy.#Init & {
 			input: {
-				name:       args.name
-				frameworks: args.frameworks
+				name:           args.name
+				domain:         args.domain
+				repoVisibility: args.repoVisibility
+				organization:   args.organization
+				githubToken:    args.githubToken
+				kubeconfig:     _transformKubeconfig.output.kubeconfig
+				frameworks:     args.frameworks
 			}
 		}
-		// _push: github.#Push & {
-		//  input: {
-		//   repositoryName:      "helm-test"
-		//   contents:            _init.output.chart
-		//   personalAccessToken: args.githubToken
-		//   organization:        args.organization
-		//   visibility:          args.repoVisibility
-		//   kubeconfig:          _transformKubeconfig.output.kubeconfig
-		//  }
-		// }
 	}
 
 	_config: {
