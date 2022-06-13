@@ -3,11 +3,13 @@ package stack
 import (
 	"dagger.io/dagger"
 
+	"github.com/h8r-dev/stacks/cuelib/internal/var"
 	utilsKubeconfig "github.com/h8r-dev/stacks/cuelib/internal/utils/kubeconfig"
 	"github.com/h8r-dev/stacks/cuelib/component/framework"
 	// "github.com/h8r-dev/stacks/cuelib/component/scm/github"
 	"github.com/h8r-dev/stacks/cuelib/component/ci"
 	"github.com/h8r-dev/stacks/cuelib/component/deploy"
+	"github.com/h8r-dev/stacks/cuelib/internal/utils/echo"
 )
 
 #Install: {
@@ -22,6 +24,21 @@ import (
 		frameworks: [...]
 		addons: [...]
 	}
+
+	_var: var.#Generator & {
+		input: {
+			applicationName: args.name
+			domain:          args.domain
+			networkType:     args.networkType
+			organization:    args.organization
+			frameworks:      args.frameworks
+			addons:          args.addons
+		}
+	}
+
+	// _echo: echo.#Run & {
+	//  msg: _var.gin.repoURL
+	// }
 
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
 		input: kubeconfig: args.kubeconfig
