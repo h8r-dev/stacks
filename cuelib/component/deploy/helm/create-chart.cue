@@ -4,45 +4,32 @@ import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
-	"universe.dagger.io/docker"
 
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
 )
 
 #CreateChart: {
 	input: {
-		name:      string
-		contents?: dagger.#FS
+		name: string
 		// Helm values set
 		// Format: '.image.repository = "rep" | .image.tag = "tag"'
 		set?: string | *""
-		// Helm starter scaffold
+		// Helm starter
 		starter?:               string | *""
 		domain:                 base.#DefaultDomain
 		gitOrganization?:       string
 		appName:                string
 		ingressHostPath:        string | *"/"
 		rewriteIngressHostPath: bool | *false
-		mergeAllCharts:         bool | *false
 		repositoryType:         string | *"frontend" | "backend" | "deploy"
 	}
 
 	output: {
-		fs:      dagger.#FS
+		chart:   dagger.#FS
 		success: bool | *true
 	}
 
-	_deps: docker.#Build & {
-		steps: [
-			base.#Image,
-			if input.contents != _|_ {
-				docker.#Copy & {
-					contents: input.contents
-					dest:     "/helm"
-				}
-			},
-		]
-	}
+	_deps: base.#Image
 
 	_sh: core.#Source & {
 		path: "."
@@ -70,7 +57,6 @@ import (
 			APPLICATION_DOMAIN:        input.domain.application.domain
 			INGRESS_HOST_PATH:         input.ingressHostPath
 			REWRITE_INGRESS_HOST_PATH: "\(input.rewriteIngressHostPath)"
-			MERGE_ALL_CHARTS:          "\(input.mergeAllCharts)"
 			REPOSITORY_TYPE:           input.repositoryType
 		}
 		"input": _deps.output
@@ -82,5 +68,5 @@ import (
 		export: directories: "/helm": _
 	}
 
-	output: fs: _run.export.directories."/helm"
+	output: chart: _run.export.directories."/helm"
 }
