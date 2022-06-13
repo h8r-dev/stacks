@@ -27,14 +27,6 @@ package var
 		}
 	}
 
-	// framework: [name=string]: _#repository & {
-	//  type: input.scmType
-	//  input: {
-	//   prefix:       input.applicationName
-	//   suffix:       _frameworkType[(name)]
-	//   organization: input.organization
-	//  }
-	// }
 	deploy: _#repository & {
 		type: input.scmType
 		"input": {
