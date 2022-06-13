@@ -28,29 +28,31 @@ import (
 	}
 
 	_initRepositories: {
-		_initFrameworks: {
-			for idx, f in args.frameworks {
-				(f.name): framework.#Init & {
+		for idx, f in args.frameworks {
+			(f.name): {
+				_code: framework.#Init & {
 					name: f.name
 				}
-			}
-		}
-		_addCIWorkflows: {
-			for idx, f in args.frameworks {
-				(f.name): ci.#AddWorkflow & {
+				_addWorkflow: ci.#AddWorkflow & {
 					input: {
 						applicationName:  args.name
 						organization:     args.organization
 						deployRepository: "TODO-deploy"
-						sourceCode:       _initFrameworks[(f.name)].output.sourceCode
+						sourceCode:       _code.output.sourceCode
 					}
 				}
+				// _push: github.#Push & {
+				//  input: {
+				//   repositoryName:      "\(args.name)-\(f.name)"
+				//   contents:            _addWorkflow.output.sourceCode
+				//   personalAccessToken: args.githubToken
+				//   organization:        args.organization
+				//   visibility:          args.repoVisibility
+				//   kubeconfig:          _transformKubeconfig.output.kubeconfig
+				//  }
+				// }
 			}
 		}
-	}
-
-	_pushRepositories: {
-
 	}
 
 	_deployApplication: {
