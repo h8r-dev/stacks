@@ -15,7 +15,7 @@ import (
 	personalAccessToken: dagger.#Secret
 	organization:        string
 	visibility:          string
-	kubeconfig:          dagger.#Secret
+	kubeconfig:          dagger.#Secret // Store terraform state on the cluster
 	gitInitBranch:       string | *"main"
 	gitUserName:         string | *"heighliner"
 	gitUserEmail:        string | *"heighliner@h8r.dev"
