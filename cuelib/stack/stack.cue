@@ -72,17 +72,15 @@ import (
 		}
 	}
 
-	_deployApplication: {
-		_init: deploy.#Init & {
-			input: {
-				name:           args.name
-				domain:         args.domain
-				repoVisibility: args.repoVisibility
-				organization:   args.organization
-				githubToken:    args.githubToken
-				kubeconfig:     _transformKubeconfig.output.kubeconfig
-				frameworks:     args.frameworks
-			}
+	_deployApplication: _init: deploy.#Init & {
+		input: {
+			name:           args.name
+			domain:         args.domain
+			repoVisibility: args.repoVisibility
+			organization:   args.organization
+			githubToken:    args.githubToken
+			kubeconfig:     _transformKubeconfig.output.kubeconfig
+			frameworks:     args.frameworks
 		}
 	}
 

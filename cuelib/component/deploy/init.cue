@@ -1,6 +1,9 @@
 package deploy
 
 import (
+	"dagger.io/dagger"
+
+	"github.com/h8r-dev/stacks/cuelib/component/scm/github"
 	"github.com/h8r-dev/stacks/cuelib/component/deploy/helm"
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
 )
@@ -15,7 +18,6 @@ import (
 		kubeconfig:     dagger.#Secret
 		frameworks: [...]
 	}
-	output: chart: _createParentChart.output.fs
 
 	_createHelmChart: {
 		for f in input.frameworks {
@@ -42,14 +44,24 @@ import (
 		}
 	}
 
-	_push: github.#Push & {
-		input: {
-			repositoryName:      "helm-test"
-			contents:            _createParentChart.output.fs
-			personalAccessToken: args.githubToken
-			organization:        args.organization
-			visibility:          args.repoVisibility
-			kubeconfig:          _transformKubeconfig.output.kubeconfig
+	_createEncryptedSecret: helm.#EncryptSecret & {
+		"input": {
+			name:       input.name
+			chart:      _createParentChart.output.chart
+			username:   input.organization
+			password:   input.githubToken
+			kubeconfig: input.kubeconfig
 		}
 	}
+
+	// _crateRepo: github.#Push & {
+	//  "input": {
+	//   repositoryName:      "helm-test-02"
+	//   contents:            _createEncryptedSecret.output.chart
+	//   personalAccessToken: input.githubToken
+	//   organization:        input.organization
+	//   visibility:          input.repoVisibility
+	//   kubeconfig:          input.kubeconfig
+	//  }
+	// }
 }
