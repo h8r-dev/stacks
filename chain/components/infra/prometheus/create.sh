@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 CHART_DIR=/scaffold/$OUTPUT_PATH/infra/prometheus-stack
 
@@ -9,7 +9,7 @@ pull_heml_chart() {
   echo "Pulling prometheus-stack helm chart"
 
   KEY="GLOBAL"
-  if [ "$NETWORK_TYPE" == "china_network" ]; then
+  if [ "$NETWORK_TYPE" == "cn" ]; then
       KEY="INTERNAL"
   fi
 
@@ -93,7 +93,11 @@ config_misc() {
   ' $CHART_DIR/values.yaml
 
   # Config hln alert rules (convention: rules created by hln stack will have the label: "role: hln-rules")
-  yq -i '.prometheus.prometheusSpec.ruleSelector = {"matchLabels": {"role": "hln-rules"}}' $CHART_DIR/values.yaml
+  yq -i '
+    .prometheus.prometheusSpec.ruleSelector = {
+      "matchLabels": {"role": "hln-rules"}
+    }
+  ' $CHART_DIR/values.yaml
 }
 
 #---------------------------------------------------------

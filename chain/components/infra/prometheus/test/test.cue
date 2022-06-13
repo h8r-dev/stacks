@@ -15,7 +15,7 @@ dagger.#Plan & {
 				image:    _baseImage.output
 				helmName: "docs-deploy"
 				// networkType: "default"
-				networkType: "china_network"
+				networkType: "cn"
 			}
 		}
 		test: bash.#Run & {

@@ -2,7 +2,7 @@
 
 #helm pull nocalhost --repo https://nocalhost.github.io/charts --version "${VERSION}"
 KEY="GLOBAL"
-if [ "$NETWORK_TYPE" == "china_network" ]; then
+if [ "$NETWORK_TYPE" == "cn" ]; then
     KEY="INTERNAL"
 fi
 #NETWORK_TYPE="$(echo $NETWORK_TYPE | tr a-z A-Z)"

@@ -5,6 +5,8 @@ import (
 
 	// Utility tools
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
+	kubeconfigUtil "github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
+	kubectlUtil "github.com/h8r-dev/stacks/chain/components/utils/kubectl"
 
 	// Infra components
 	"github.com/h8r-dev/stacks/chain/components/infra/loki"
@@ -18,6 +20,15 @@ import (
 #Plan: {
 	kubeconfig:  dagger.#Secret
 	networkType: string
+	namespace:   string | *"heighliner-infra"
+
+	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
+		input: kubeconfigUtil.#Input & {
+			"kubeconfig": kubeconfig
+		}
+	}
+
+	_kubeconfig: _internalKubeconfig.output.kubeconfig
 
 	infra_copmonents: {
 		"loki":          loki
@@ -31,31 +42,35 @@ import (
 	// Select the infra components to install.
 	// install_list: ["argocd", "loki", "prometheus", "nocalhost", "dapr", "sealedSecrets"]
 	// install_list: ["loki", "prometheus", "nocalhost", "dapr", "sealedSecrets"]
-	install_list: ["loki", "sealedSecrets", "prometheus"]
-	// install_list: ["loki", "sealedSecrets"]
+	install_list: ["loki", "sealedSecrets", "prometheus", "dapr"]
 
 	_baseImage: base.#Image & {}
 
-	// Merge into all infra component installation.
-	// installCD: argocd.#Instance & {
-	//  input: argocd.#Input & {
-	//   "kubeconfig": kubeconfig
-	//   image:        _baseImage.output
-	//  }
-	// }
+	createNamespace: kubectlUtil.#CreateNamespace & {
+		"namespace": namespace
+		image:       _baseImage.output
+	}
 
-	install: {
-		for index, component in install_list {
-			"\(component)": infra_copmonents[component].#Instance & {
-				input: {
-					helmName:      "\(component)"
-					image:         _baseImage.output
-					"networkType": networkType
-					"kubeconfig":  kubeconfig
-				}
-			}
+	// Merge into all infra component installation.
+	installCD: argocd.#Instance & {
+		input: argocd.#Input & {
+			kubeconfig: _kubeconfig
+			image:      _baseImage.output
 		}
 	}
+
+	// install: {
+	//  for index, component in install_list {
+	//   "\(component)": infra_copmonents[component].#Instance & {
+	//    input: {
+	//     helmName:      "\(component)"
+	//     image:         _baseImage.output
+	//     "networkType": networkType
+	//     "kubeconfig":  _kubeconfig
+	//    }
+	//   }
+	//  }
+	// }
 }
 
 #StoreStateInConfigmap: kubeconfig: dagger.#Secret

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 KEY="GLOBAL"
-if [ "$NETWORK_TYPE" == "china_network" ]; then
+if [ "$NETWORK_TYPE" == "cn" ]; then
     KEY="INTERNAL"
 fi
 
