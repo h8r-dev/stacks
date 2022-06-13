@@ -22,7 +22,7 @@ import (
 	}
 
 	output: {
-		fs:      dagger.#FS
+		chart:   dagger.#FS
 		success: bool | *true
 	}
 
@@ -56,5 +56,5 @@ import (
 		export: directories: "/helm": _
 	}
 
-	output: fs: _run.export.directories."/helm"
+	output: chart: _run.export.directories."/helm"
 }

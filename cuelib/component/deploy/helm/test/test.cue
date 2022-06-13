@@ -4,7 +4,7 @@ import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
 
-	"github.com/h8r-dev/stacks/cuelib/component/framework/helm"
+	"github.com/h8r-dev/stacks/cuelib/component/deploy/helm"
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
 )
 
@@ -12,7 +12,7 @@ dagger.#Plan & {
 	actions: {
 		_baseImage: base.#Image
 
-		_createChart1: helm.#Create & {
+		_createChart1: helm.#CreateChart & {
 			input: {
 				name:    "chart1"
 				appName: "test"
@@ -22,13 +22,22 @@ dagger.#Plan & {
 			}
 		}
 
-		_createChart2: helm.#Create & {
+		_createChart2: helm.#CreateChart & {
 			input: {
-				name:           "chart2"
-				appName:        "test"
-				starter:        "helm-starter/go/gin"
-				contents:       _createChart1.output.fs
-				mergeAllCharts: true
+				name:    "chart2"
+				appName: "test"
+				starter: "helm-starter/go/gin"
+			}
+		}
+
+		_subChartList: [_createChart1.output.chart, _createChart2.output.chart]
+
+		_createParentChart: {
+			helm.#CreateParentChart & {
+				"input": {
+					name:      "test-chart"
+					subcharts: _subChartList
+				}
 			}
 		}
 
@@ -39,7 +48,7 @@ dagger.#Plan & {
 				"""
 			mounts: helm: {
 				dest:     "/helm"
-				contents: _createChart2.output.fs
+				contents: _createParentChart.output.chart
 			}
 		}
 	}

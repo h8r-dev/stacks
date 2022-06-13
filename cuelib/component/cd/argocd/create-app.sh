@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 # wait until argocd is ready
-echo "Waiting for argocd to be ready"
+echo "Waiting for argocd to be ready..."
 curl --retry 300 --retry-delay 2 "$ARGO_SERVER" --fail --insecure >> /dev/null 2>&1
+echo "Argocd is ready."
 echo 'y' | argocd login "$ARGO_SERVER" --username "$ARGO_USERNAME" --password "$PASSWORD" --insecure --grpc-web
 
 # Add argocd repo

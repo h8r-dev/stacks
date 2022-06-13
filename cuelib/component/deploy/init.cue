@@ -1,7 +1,7 @@
 package deploy
 
 import (
-	"github.com/h8r-dev/stacks/cuelib/component/framework/helm"
+	"github.com/h8r-dev/stacks/cuelib/component/deploy/helm"
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
 )
 
@@ -30,7 +30,7 @@ import (
 	}
 
 	_subChartList: [ for f in input.frameworks {
-		_createHelmChart[(f.name)].output.fs
+		_createHelmChart[(f.name)].output.chart
 	}]
 
 	_createParentChart: {
