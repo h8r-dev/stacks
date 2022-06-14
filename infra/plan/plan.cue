@@ -65,7 +65,7 @@ import (
 	installCD: argocd.#Instance & {
 		input: argocd.#Input & {
 			waitFor:    _createNamespace.success
-			namespace:  _createNamespace.value.contents
+			namespace:  "argocd"
 			kubeconfig: _kubeconfig
 			image:      _baseImage.output
 		}
