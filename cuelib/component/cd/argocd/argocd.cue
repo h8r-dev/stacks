@@ -45,6 +45,7 @@ import (
 			REPO_PASSWORD: input.repositoryPassword
 			APP_NAME:      input.name
 			APP_PATH:      input.appPath
+			WAIT_FOR:      "\(input.waitFor)"
 		}
 		"input": _deps.output
 		script: {

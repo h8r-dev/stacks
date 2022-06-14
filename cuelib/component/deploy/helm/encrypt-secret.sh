@@ -61,17 +61,3 @@ kubectl create secret docker-registry "${IMAGE_PULL_SECRET_NAME}" \
 # Encrypt image pull secret
 echo "generate encrypted image pull secret."
 kubeseal --format yaml --scope cluster-wide --cert "${PUBLICKEY}" <"${IMAGE_PULL_SECRET}" >"${ENCRYPTED_IMAGE_PULL_SECRET}"
-
-# Update chart default values.
-for chart in "${APP_NAME}"/charts/*; do
-  echo "helm chart: $chart"
-  if [ -d "$chart" ]; then
-    yq -i '
-      .image.repository = "ghcr.io/'"${USERNAME}"'/'"${DIR_NAME}"'" |
-      .image.tag = "'"${TAG}"'" |
-      .imagePullSecrets[0].name = "'"${IMAGE_PULL_SECRET_NAME}"'" |
-      .image.pullPolicy = "IfNotPresent"
-    ' "${chart}/values.yaml"
-  fi
-done
-

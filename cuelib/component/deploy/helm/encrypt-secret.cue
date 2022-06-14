@@ -16,7 +16,6 @@ import (
 	chart:      dagger.#FS
 	username:   string
 	password:   dagger.#Secret
-	tag:        string | *"main"
 	kubeconfig: dagger.#Secret
 }
 
@@ -47,7 +46,6 @@ import (
 		env: {
 			USERNAME: strings.ToLower(input.username)
 			PASSWORD: input.password
-			TAG:      input.tag
 			APP_NAME: input.name
 		}
 		"input": _deps.output

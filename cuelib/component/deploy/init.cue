@@ -3,9 +3,11 @@ package deploy
 import (
 	"dagger.io/dagger"
 
-	"github.com/h8r-dev/stacks/cuelib/component/scm/github"
+	// "github.com/h8r-dev/stacks/cuelib/component/cd/argocd"
+	// "github.com/h8r-dev/stacks/cuelib/component/scm/github"
 	"github.com/h8r-dev/stacks/cuelib/component/deploy/helm"
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
+	"github.com/h8r-dev/stacks/cuelib/internal/var"
 )
 
 #Init: {
@@ -16,6 +18,7 @@ import (
 		organization:   string
 		githubToken:    dagger.#Secret
 		kubeconfig:     dagger.#Secret
+		vars:           var.#Generator
 		frameworks: [...]
 	}
 
@@ -23,9 +26,11 @@ import (
 		for f in input.frameworks {
 			(f.name): helm.#CreateChart & {
 				"input": {
-					name:    f.name
-					appName: input.name
-					starter: base.HelmStarter[(f.name)]
+					name:     input.vars[(f.name)].repoName
+					appName:  input.name
+					starter:  base.HelmStarter[(f.name)]
+					repoURL:  input.vars[(f.name)].repoURL
+					imageURL: input.vars[(f.name)].imageURL
 				}
 			}
 		}
@@ -56,12 +61,24 @@ import (
 
 	// _crateRepo: github.#Push & {
 	//  "input": {
-	//   repositoryName:      "helm-test-02"
+	//   repositoryName:      input.vars.deploy.repoName
 	//   contents:            _createEncryptedSecret.output.chart
 	//   personalAccessToken: input.githubToken
 	//   organization:        input.organization
 	//   visibility:          input.repoVisibility
 	//   kubeconfig:          input.kubeconfig
+	//  }
+	// }
+
+	// _createApp: argocd.#CreateApp & {
+	//  "input": {
+	//   name:               input.name
+	//   repositoryPassword: input.githubToken
+	//   repositoryURL:      input.vars.deploy.repoURL
+	//   appPath:            "\(name)"
+	//   // TODO: get password from K8s secret
+	//   password: "yY92JxckU8-6klMD"
+	//   waitFor:  _crateRepo.output.success
 	//  }
 	// }
 }

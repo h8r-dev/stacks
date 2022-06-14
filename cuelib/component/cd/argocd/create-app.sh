@@ -8,6 +8,7 @@ echo 'y' | argocd login "$ARGO_SERVER" --username "$ARGO_USERNAME" --password "$
 
 # Add argocd repo
 retry_count=0
+echo "add repo url: $REPO_URL"
 while ! argocd repo add "$REPO_URL" --username "x-access" --password "$REPO_PASSWORD"
 do
 	if [ $retry_count -ge 10 ]; then
