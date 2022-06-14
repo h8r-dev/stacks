@@ -7,7 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/cuelib/internal/addon"
 	utilsKubeconfig "github.com/h8r-dev/stacks/cuelib/internal/utils/kubeconfig"
 	"github.com/h8r-dev/stacks/cuelib/component/framework"
-	// "github.com/h8r-dev/stacks/cuelib/component/scm/github"
+	"github.com/h8r-dev/stacks/cuelib/component/scm/github"
 	"github.com/h8r-dev/stacks/cuelib/component/ci"
 	"github.com/h8r-dev/stacks/cuelib/component/deploy"
 	// "github.com/h8r-dev/stacks/cuelib/internal/utils/echo"
@@ -45,7 +45,7 @@ import (
 		input: kubeconfig: args.kubeconfig
 	}
 
-	_read: addon.#Read & {
+	_infra: addon.#ReadInfraConfig & {
 		input: kubeconfig: _transformKubeconfig.output.kubeconfig
 	}
 
@@ -59,20 +59,20 @@ import (
 					input: {
 						applicationName:  args.name
 						organization:     args.organization
-						deployRepository: "TODO-deploy"
+						deployRepository: _var.deploy.repoName
 						sourceCode:       _code.output.sourceCode
 					}
 				}
-				// _push: github.#Push & {
-				//  input: {
-				//   repositoryName:      "\(args.name)-\(f.name)"
-				//   contents:            _addWorkflow.output.sourceCode
-				//   personalAccessToken: args.githubToken
-				//   organization:        args.organization
-				//   visibility:          args.repoVisibility
-				//   kubeconfig:          _transformKubeconfig.output.kubeconfig
-				//  }
-				// }
+				_push: github.#Push & {
+					input: {
+						repositoryName:      _var[(f.name)].repoName
+						contents:            _addWorkflow.output.sourceCode
+						personalAccessToken: args.githubToken
+						organization:        args.organization
+						visibility:          args.repoVisibility
+						kubeconfig:          _transformKubeconfig.output.kubeconfig
+					}
+				}
 			}
 		}
 	}
@@ -87,6 +87,7 @@ import (
 			kubeconfig:     _transformKubeconfig.output.kubeconfig
 			frameworks:     args.frameworks
 			vars:           _var
+			cdVar:          _infra.argoCD
 		}
 	}
 

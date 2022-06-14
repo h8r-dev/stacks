@@ -2,25 +2,45 @@ package test
 
 import (
 	"dagger.io/dagger"
+
+	utilsKubeconfig "github.com/h8r-dev/stacks/cuelib/internal/utils/kubeconfig"
 	"github.com/h8r-dev/stacks/cuelib/component/cd/argocd"
+	"github.com/h8r-dev/stacks/cuelib/internal/addon"
 )
 
 dagger.#Plan & {
-	client: env: {
-		ORGANIZATION: string
-		GITHUB_TOKEN: dagger.#Secret
-		APP_NAME:     string
-		REPO_URL:     string
-		PASSWORD:     dagger.#Secret
+	client: {
+		commands: kubeconfig: {
+			name: "cat"
+			args: [env.KUBECONFIG]
+			stdout: dagger.#Secret
+		}
+		env: {
+			ORGANIZATION: string
+			GITHUB_TOKEN: dagger.#Secret
+			APP_NAME:     string
+			REPO_URL:     string
+			KUBECONFIG:   string
+		}
 	}
 
-	actions: test: argocd.#CreateApp & {
-		input: {
-			name:               client.env.APP_NAME
-			repositoryPassword: client.env.GITHUB_TOKEN
-			repositoryURL:      client.env.REPO_URL
-			appPath:            "\(name)"
-			password:           client.env.PASSWORD
+	actions: {
+		_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
+			input: kubeconfig: client.commands.kubeconfig.stdout
+		}
+
+		_infra: addon.#ReadInfraConfig & {
+			input: kubeconfig: _transformKubeconfig.output.kubeconfig
+		}
+
+		test: argocd.#CreateApp & {
+			input: {
+				name:               client.env.APP_NAME
+				repositoryPassword: client.env.GITHUB_TOKEN
+				repositoryURL:      client.env.REPO_URL
+				appPath:            "\(name)"
+				argoVar:            _infra.argoCD
+			}
 		}
 	}
 }

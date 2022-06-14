@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+NAMESPACE=${NAMESPACE:-"heighliner-infra"}
 ADDON_FILE=/addon.yaml
 PROMETHEUS_FILE=/prometheus.yaml
 GRAFANA_FILE=/grafana.yaml
@@ -9,7 +10,7 @@ ARGO_CD_FILE=/argo-cd.yaml
 SEALED_SECRETS_FILE=/sealed-secrets.yaml
 DAPR_FILE=/dapr.yaml
 
-kubectl get cm/heighliner-infra-config -n heighliner-infra -o yaml | yq '.data.infra' > ${ADDON_FILE}
+kubectl get cm/heighliner-infra-config -n "${NAMESPACE}" -o yaml | yq '.data.infra' > ${ADDON_FILE}
 yq '.prometheus' ${ADDON_FILE} > ${PROMETHEUS_FILE}
 yq '.grafana' ${ADDON_FILE} > ${GRAFANA_FILE}
 yq '.loki' ${ADDON_FILE} > ${LOKI_FILE}

@@ -10,10 +10,10 @@ import (
 
 #Input: {
 	name:               string
+	argoVar:            dagger.#Secret
 	repositoryPassword: dagger.#Secret
 	repositoryURL:      string
 	appPath:            string
-	password:           string | dagger.#Secret
 	waitFor:            bool | *true
 	domain:             base.#DefaultDomain
 	// Helm set values, such as "key1=value1,key2=value2"
@@ -32,15 +32,12 @@ import (
 
 	_run: bash.#Run & {
 		env: {
-			ARGO_SERVER:   base.#DefaultInternalDomain.infra.argocd
-			ARGO_URL:      input.domain.infra.argocd
-			ARGO_USERNAME: "admin"
+			ARGO_VAR: input.argoVar
 			if input.set != null {
 				HELM_SET: input.set
 			}
 			APP_NAMESPACE: input.domain.application.productionNamespace
 			APP_SERVER:    "https://kubernetes.default.svc"
-			PASSWORD:      input.password
 			REPO_URL:      input.repositoryURL
 			REPO_PASSWORD: input.repositoryPassword
 			APP_NAME:      input.name
