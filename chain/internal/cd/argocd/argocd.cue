@@ -253,11 +253,11 @@ import (
 		}
 		script: contents: #"""
 			# patch deployment cause ingress redirct: https://github.com/argoproj/argo-cd/issues/2953
-			kubectl patch deployment argocd-server --patch '{"spec": {"template": {"spec": {"containers": [{"name": "argocd-server","command": ["argocd-server", "--insecure"]}]}}}}' -n $NAMESPACE
-			kubectl patch statefulset argocd-application-controller --patch '{"spec": {"template": {"spec": {"containers": [{"name": "argocd-application-controller","command": ["argocd-application-controller", "--app-resync", "30"]}]}}}}' -n $NAMESPACE
-			kubectl wait --for=condition=Available deployment argocd-server -n $NAMESPACE --timeout 600s
-			kubectl rollout status --watch --timeout=600s statefulset/argocd-application-controller -n $NAMESPACE
-			kubectl rollout status --watch --timeout=600s deployment/argocd-server -n $NAMESPACE
+			kubectl patch deployment argo-argocd-server --patch '{"spec": {"template": {"spec": {"containers": [{"name": "server","command": ["argocd-server", "--insecure"]}]}}}}' -n $NAMESPACE
+			kubectl patch statefulset argo-argocd-application-controller --patch '{"spec": {"template": {"spec": {"containers": [{"name": "application-controller","command": ["argocd-application-controller", "--app-resync", "30"]}]}}}}' -n $NAMESPACE
+			kubectl wait --for=condition=Available deployment argo-argocd-server -n $NAMESPACE --timeout 600s
+			kubectl rollout status --watch --timeout=600s statefulset/argo-argocd-application-controller -n $NAMESPACE
+			kubectl rollout status --watch --timeout=600s deployment/argo-argocd-server -n $NAMESPACE
 			secret="$(kubectl -n $NAMESPACE get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo)"
 			mkdir -p /infra/argocd
 			printf -- $secret > /infra/argocd/secret

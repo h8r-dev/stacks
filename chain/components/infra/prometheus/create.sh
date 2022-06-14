@@ -107,10 +107,16 @@ config_misc() {
 # Install helm chart
 #---------------------------------------------------------
 install() {
+  RELEASE_NAME="prometheus"
+  # fix HELM UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+  kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-upgrade
+  kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-install
+
   echo "Installing $CHART_NAME and waiting for it to be ready..."
-  helm install $CHART_DIR \
+  helm upgrade $RELEASE_NAME $CHART_DIR \
     -n $NAMESPACE \
-    --generate-name \
+    --install \
+    --timeout 10m \
     --wait
 }
 
