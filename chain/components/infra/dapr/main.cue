@@ -21,6 +21,11 @@ import (
 			CHART_URL_GLOBAL:   origin.#Origin.dapr.global.url
 			DAPR_DOMAIN:        input.domain.infra.dapr
 		}
+		mounts: kubeconfig: {
+			dest:     "/root/.kube/config"
+			type:     "secret"
+			contents: input.kubeconfig
+		}
 		workdir: "/tmp"
 		script: {
 			directory: src.output

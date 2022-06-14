@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
-CHART_DIR=/scaffold/$OUTPUT_PATH/infra/prometheus-stack
+CHART_NAME=prometheus-stack
+CHART_DIR=/scaffold/$OUTPUT_PATH/infra/$CHART_NAME
 
 #---------------------------------------------------------
 # Pull Helm chart to $CHART_DIR and config it to match our needs
@@ -64,15 +65,16 @@ config_ingress_settings() {
 
 #---------------------------------------------------------
 # Config default password for services.
-#
-# Default password is heighliner123!, below content generated with command: `htpasswd -c auth admin`
+# username: admin
+# password: heighliner123!
 #---------------------------------------------------------
 config_default_password() {
   printf 'admin:$apr1$rviPk66W$HepYtRwZBa.Uvmi/pqK2N1' > auth.txt
   dir=$CHART_DIR/templates/basic-auth
   mkdir -p $dir
 
-  kubectl create secret generic basic-auth \
+  secret_name=$CHART_NAME-basic-auth
+  kubectl create secret generic $secret_name \
     --from-file auth.txt \
     --dry-run=client \
     -o yaml > $dir/basic-auth.yaml

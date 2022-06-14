@@ -17,6 +17,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/infra/cd/argocd"
 )
 
+// TODO: precheck resources that existed in the namespace.
 #Plan: {
 	kubeconfig:  dagger.#Secret
 	networkType: string
@@ -32,7 +33,8 @@ import (
 	}
 
 	// Select the infra components to install.
-	install_list: ["argocd", "loki", "sealedSecrets", "prometheus", "dapr"]
+	// install_list: ["argocd", "loki", "sealedSecrets", "prometheus", "dapr"]
+	install_list: ["loki", "sealedSecrets", "prometheus", "dapr"]
 
 	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
 		input: kubeconfigUtil.#Input & {
@@ -59,18 +61,18 @@ import (
 		}
 	}
 
-	// install: {
-	//  for index, component in install_list {
-	//   "\(component)": infra_copmonents[component].#Instance & {
-	//    input: {
-	//     helmName:      "\(component)"
-	//     image:         _baseImage.output
-	//     "networkType": networkType
-	//     "kubeconfig":  _kubeconfig
-	//    }
-	//   }
-	//  }
-	// }
+	install: {
+		for index, component in install_list {
+			"\(component)": infra_copmonents[component].#Instance & {
+				input: {
+					helmName:      "\(component)"
+					image:         _baseImage.output
+					"networkType": networkType
+					kubeconfig:    _kubeconfig
+				}
+			}
+		}
+	}
 }
 
 #StoreStateInConfigmap: kubeconfig: dagger.#Secret
