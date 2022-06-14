@@ -32,6 +32,10 @@ import (
 					starter:  base.HelmStarter[(f.name)]
 					repoURL:  input.vars[(f.name)].repoURL
 					imageURL: input.vars[(f.name)].imageURL
+					if input.vars[(f.name)].frameworkType == "backend" {
+						ingressHostPath:        "/api"
+						rewriteIngressHostPath: true
+					}
 				}
 			}
 		}

@@ -44,9 +44,10 @@ _#repository: {
 		suffix:       string
 		organization: string
 	}
-	repoName: "\(input.prefix)-\(input.suffix)"
-	repoURL:  "https://github.com/\(input.organization)/\(repoName)"
-	imageURL: "ghcr.io/\(input.organization)/\(repoName)"
+	repoName:      "\(input.prefix)-\(input.suffix)"
+	repoURL:       "https://github.com/\(input.organization)/\(repoName)"
+	imageURL:      "ghcr.io/\(input.organization)/\(repoName)"
+	frameworkType: "\(input.suffix)"
 }
 
 _frameworkType: {
