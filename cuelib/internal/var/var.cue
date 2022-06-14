@@ -45,7 +45,7 @@ _#repository: {
 		organization: string
 	}
 	repoName: "\(input.prefix)-\(input.suffix)"
-	repoURL:  "github.com/\(input.organization)/\(repoName)"
+	repoURL:  "https://github.com/\(input.organization)/\(repoName)"
 	imageURL: "ghcr.io/\(input.organization)/\(repoName)"
 }
 

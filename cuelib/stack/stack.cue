@@ -9,7 +9,7 @@ import (
 	// "github.com/h8r-dev/stacks/cuelib/component/scm/github"
 	"github.com/h8r-dev/stacks/cuelib/component/ci"
 	"github.com/h8r-dev/stacks/cuelib/component/deploy"
-	"github.com/h8r-dev/stacks/cuelib/internal/utils/echo"
+	// "github.com/h8r-dev/stacks/cuelib/internal/utils/echo"
 )
 
 #Install: {
@@ -72,7 +72,7 @@ import (
 		}
 	}
 
-	_deployApplication: _init: deploy.#Init & {
+	_deployApp: deploy.#Init & {
 		input: {
 			name:           args.name
 			domain:         args.domain
@@ -81,6 +81,7 @@ import (
 			githubToken:    args.githubToken
 			kubeconfig:     _transformKubeconfig.output.kubeconfig
 			frameworks:     args.frameworks
+			vars:           _var
 		}
 	}
 

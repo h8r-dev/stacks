@@ -21,7 +21,8 @@ import (
 		appName:                string
 		ingressHostPath:        string | *"/"
 		rewriteIngressHostPath: bool | *false
-		repositoryType:         string | *"frontend" | "backend" | "deploy"
+		repoURL?:               string
+		imageURL:               string
 	}
 
 	output: {
@@ -33,7 +34,7 @@ import (
 
 	_sh: core.#Source & {
 		path: "."
-		include: ["create.sh"]
+		include: ["create-chart.sh"]
 	}
 
 	_starter: base.#HelmStarter
@@ -57,13 +58,16 @@ import (
 			APPLICATION_DOMAIN:        input.domain.application.domain
 			INGRESS_HOST_PATH:         input.ingressHostPath
 			REWRITE_INGRESS_HOST_PATH: "\(input.rewriteIngressHostPath)"
-			REPOSITORY_TYPE:           input.repositoryType
+			if input.repoURL != _|_ {
+				GIT_URL: input.repoURL
+			}
+			IMAGE_URL: input.imageURL
 		}
 		"input": _deps.output
 		workdir: "/helm"
 		script: {
 			directory: _sh.output
-			filename:  "create.sh"
+			filename:  "create-chart.sh"
 		}
 		export: directories: "/helm": _
 	}

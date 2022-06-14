@@ -23,6 +23,7 @@ import (
 
 #Push: {
 	input: #Input
+	output: success: _push.success
 
 	_tfScript: core.#Source & {
 		path: "terraform"
