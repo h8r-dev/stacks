@@ -2,7 +2,7 @@ package plans
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/cuelib/stack"
+	"github.com/h8r-dev/stacks/chain/v3/stack"
 )
 
 dagger.#Plan & {
