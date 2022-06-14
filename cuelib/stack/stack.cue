@@ -38,7 +38,7 @@ import (
 	}
 
 	// _echo: echo.#Run & {
-	//  msg: _read.alertManager
+	//  msg: _read.alertManager.credentials
 	// }
 
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
