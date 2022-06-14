@@ -6,7 +6,8 @@ IMAGE_PULL_SECRET_NAME="${APP_NAME}"
 export KUBECONFIG="/kubeconfig"
 # Set seale secret parameter
 export SEALED_SECRET_PATH="/sealed-secrets/${APP_NAME}"
-export NAMESPACE="sealed-secrets"
+# // TODO: get namespace from infra config
+export NAMESPACE="heighliner-infra"
 export SECRETNAME="sealed-secret-${APP_NAME}"
 export PRIVATEKEY="${SEALED_SECRET_PATH}/sealed-secret.key"
 export PUBLICKEY="${SEALED_SECRET_PATH}/sealed-secret.crt"
