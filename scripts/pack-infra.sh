@@ -15,5 +15,5 @@ cd $INFRA_DIR
 hof mod vendor cue
 
 cd $WORKDIR
-mkdir $INFRA_DST
+mkdir -p $INFRA_DST
 tar czf "$INFRA_DST/infra.tar.gz" "$INFRA_DIR"
