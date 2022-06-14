@@ -7,11 +7,18 @@ fi
 
 echo "Install sealed-secrets helm chart"
 CHART_NAME=sealed-secrets
-helm install $CHART_NAME \
+
+RELEASE_NAME="sealed"
+# fix HELM UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-upgrade
+kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-install
+
+helm upgrade $RELEASE_NAME $CHART_NAME \
     -n $NAMESPACE \
     --repo "$(eval echo '$'"CHART_URL_$KEY")" \
     --version "${VERSION}" \
-    --generate-name \
+    --install \
+    --timeout 10m \
     --wait
 
 echo "Install sealed-secrets helm chart Done."

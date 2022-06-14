@@ -15,6 +15,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/infra/sealedSecrets"
 	"github.com/h8r-dev/stacks/chain/components/infra/prometheus"
 	"github.com/h8r-dev/stacks/chain/components/infra/cd/argocd"
+	"github.com/h8r-dev/stacks/chain/components/infra/heighliner/dashboard"
 
 	// State management
 	"github.com/h8r-dev/stacks/chain/components/infra/state"
@@ -34,11 +35,12 @@ import (
 		"dapr":          dapr
 		"sealedSecrets": sealedSecrets
 		"argocd":        argocd
+		"dashboard":     dashboard
 	}
 
 	// Select the infra components to install.
 	// install_list: ["argocd", "loki", "sealedSecrets", "prometheus", "dapr"]
-	install_list: ["loki", "sealedSecrets", "prometheus", "dapr"]
+	install_list: ["loki", "sealedSecrets", "prometheus", "dashboard"]
 
 	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
 		input: kubeconfigUtil.#Input & {
@@ -64,10 +66,11 @@ import (
 	// Merge into all infra component installation.
 	installCD: argocd.#Instance & {
 		input: argocd.#Input & {
-			waitFor:    _createNamespace.success
-			namespace:  _createNamespace.value.contents
-			kubeconfig: _kubeconfig
-			image:      _baseImage.output
+			waitFor:       _createNamespace.success
+			namespace:     _createNamespace.value.contents
+			kubeconfig:    _kubeconfig
+			image:         _baseImage.output
+			"networkType": networkType
 		}
 	}
 

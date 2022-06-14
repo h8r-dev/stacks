@@ -4,15 +4,43 @@ import (
 	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
 	"github.com/h8r-dev/stacks/chain/internal/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
+	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/components/origin"
+	"dagger.io/dagger/core"
 )
 
 #Instance: {
 	input: #Input
-	do:    kubectl.#Apply & {
-		url:        input.url
-		namespace:  input.namespace
-		kubeconfig: input.kubeconfig
-		waitFor:    input.waitFor
+	src:   core.#Source & {
+		path: "."
+	}
+	// do:    kubectl.#Apply & {
+	//  url:        input.url
+	//  namespace:  input.namespace
+	//  kubeconfig: input.kubeconfig
+	//  waitFor:    input.waitFor
+	// }
+	do: bash.#Run & {
+		always:  true
+		"input": input.image
+		env: {
+			NAMESPACE:          input.namespace
+			VERSION:            input.version
+			OUTPUT_PATH:        input.helmName
+			NETWORK_TYPE:       input.networkType
+			CHART_URL_INTERNAL: origin.#Origin.argocd.internal.url
+			CHART_URL_GLOBAL:   origin.#Origin.argocd.global.url
+		}
+		mounts: kubeconfig: {
+			dest:     "/root/.kube/config"
+			type:     "secret"
+			contents: input.kubeconfig
+		}
+		workdir: "/tmp"
+		script: {
+			directory: src.output
+			filename:  "create.sh"
+		}
 	}
 	// patch argocd http
 	_patch: argocd.#Patch & {
@@ -31,7 +59,7 @@ import (
 		namespace:          input.namespace
 		hostName:           input.domain.infra.argocd
 		path:               "/"
-		backendServiceName: "argocd-server"
+		backendServiceName: "argo-argocd-server"
 		"ingressVersion":   ingressVersion.content
 	}
 	applyIngressYaml: kubectl.#Manifest & {

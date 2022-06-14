@@ -60,9 +60,15 @@ create_auth_identity() {
 }
 
 install() {
-  helm install $CHART_DIR \
+  RELEASE_NAME="dapr"
+  # fix HELM UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+  kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-upgrade
+  kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-install
+
+  helm upgrade $RELEASE_NAME $CHART_DIR \
     -n $NAMESPACE \
-    --generate-name \
+    --install \
+    --timeout 10m \
     --wait
 }
 
