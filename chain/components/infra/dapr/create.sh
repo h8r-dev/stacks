@@ -60,7 +60,10 @@ create_auth_identity() {
 }
 
 install() {
-  helm install $CHART_DIR --generate-name
+  helm install $CHART_DIR \
+    -n $NAMESPACE \
+    --generate-name \
+    --wait
 }
 
 pull_heml_chart

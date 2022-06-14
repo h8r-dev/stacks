@@ -6,8 +6,10 @@ if [ "$NETWORK_TYPE" == "cn" ]; then
 fi
 
 helm install loki-stack \
+    -n $NAMESPACE \
     --repo `eval echo '$'"CHART_URL_$KEY"`\
     --version $VERSION \
-    --generate-name
+    --generate-name \
+    --wait
 
 echo "Install loki-stack helm chart Done."

@@ -7,10 +7,13 @@ import (
 )
 
 #Input: {
-	version:     string | *"2.1.8"
+	version: string | *"2.1.8"
+
 	helmName:    string
-	image:       docker.#Image
-	domain:      basefactory.#DefaultDomain
 	networkType: string
 	kubeconfig:  dagger.#Secret
+	image:       docker.#Image
+	namespace:   string
+	waitFor:     bool | *true
+	domain:      basefactory.#DefaultDomain
 }

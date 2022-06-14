@@ -94,7 +94,8 @@ config_misc() {
     }
   ' $CHART_DIR/values.yaml
 
-  # Config hln alert rules (convention: rules created by hln stack will have the label: "role: hln-rules")
+  # Config hln alert rules
+  # convention: rules created by hln stack will have the label: "role: hln-rules"
   yq -i '
     .prometheus.prometheusSpec.ruleSelector = {
       "matchLabels": {"role": "hln-rules"}
@@ -106,7 +107,11 @@ config_misc() {
 # Install helm chart
 #---------------------------------------------------------
 install() {
-  helm install $CHART_DIR --generate-name
+  echo "Installing $CHART_NAME and waiting for it to be ready..."
+  helm install $CHART_DIR \
+    -n $NAMESPACE \
+    --generate-name \
+    --wait
 }
 
 pull_heml_chart

@@ -14,6 +14,7 @@ import (
 	do: bash.#Run & {
 		"input": input.image
 		env: {
+			NAMESPACE:          input.namespace
 			VERSION:            input.version
 			OUTPUT_PATH:        input.helmName
 			NETWORK_TYPE:       input.networkType
