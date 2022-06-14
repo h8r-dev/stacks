@@ -88,7 +88,7 @@ import (
 			flags: "-c": #"""
 			mkdir /source
 			printf '\#(manifest)' > /source/k8s.yaml
-			cat /source/k8s.yaml
+			# cat /source/k8s.yaml
 			kubectl create namespace "$KUBE_NAMESPACE"  > /dev/null 2>&1 || true
 			if [ -d /source ] || [ -f /source ]; then
 				kubectl --namespace "$KUBE_NAMESPACE" apply -R -f /source

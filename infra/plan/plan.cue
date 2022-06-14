@@ -15,6 +15,9 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/infra/sealedSecrets"
 	"github.com/h8r-dev/stacks/chain/components/infra/prometheus"
 	"github.com/h8r-dev/stacks/chain/components/infra/cd/argocd"
+
+	// State management
+	"github.com/h8r-dev/stacks/chain/components/infra/state"
 )
 
 // TODO: precheck resources that existed in the namespace.
@@ -22,6 +25,7 @@ import (
 	kubeconfig:  dagger.#Secret
 	networkType: string
 	namespace:   string | *"heighliner-infra"
+	domain:      string
 
 	infra_copmonents: {
 		"loki":          loki
@@ -49,6 +53,12 @@ import (
 		"namespace": namespace
 		kubeconfig:  _kubeconfig
 		image:       _baseImage.output
+	}
+
+	initState: state.#Store & {
+		waitFor:    _createNamespace.success
+		namespace:  _createNamespace.value.contents
+		kubeconfig: _kubeconfig
 	}
 
 	// Merge into all infra component installation.
