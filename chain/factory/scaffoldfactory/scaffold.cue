@@ -10,6 +10,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/framework/remix"
 	"github.com/h8r-dev/stacks/chain/components/framework/dotnet"
 	"github.com/h8r-dev/stacks/chain/components/framework/react"
+
 	// Addons
 	"github.com/h8r-dev/stacks/chain/components/addons/loki"
 	"github.com/h8r-dev/stacks/chain/components/addons/nocalhost"
@@ -18,6 +19,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/addons/sealedSecrets"
 	nginxCloud "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/cloud"
 	nginxKind "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/kind"
+
 	// Registry
 	githubRegistry "github.com/h8r-dev/stacks/chain/components/registry/github"
 	"github.com/h8r-dev/stacks/chain/components/ci/github"
