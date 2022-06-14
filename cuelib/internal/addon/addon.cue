@@ -8,17 +8,17 @@ import (
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
 )
 
-#Read: {
+#ReadInfraConfig: {
 
 	input: kubeconfig: dagger.#Secret
 
-	prometheus:    _do.export.files."/prometheus.yaml"
-	grafana:       _do.export.files."/grafana.yaml"
-	loki:          _do.export.files."/loki.yaml"
-	alertManager:  _do.export.files."/alert-manager.yaml"
-	argoCD:        _do.export.files."/argo-cd.yaml"
-	sealedSecrets: _do.export.files."/sealed-secrets.yaml"
-	dapr:          _do.export.files."/dapr.yaml"
+	prometheus:    _do.export.secrets."/prometheus.yaml"
+	grafana:       _do.export.secrets."/grafana.yaml"
+	loki:          _do.export.secrets."/loki.yaml"
+	alertManager:  _do.export.secrets."/alert-manager.yaml"
+	argoCD:        _do.export.secrets."/argo-cd.yaml"
+	sealedSecrets: _do.export.secrets."/sealed-secrets.yaml"
+	dapr:          _do.export.secrets."/dapr.yaml"
 
 	_baseImage: base.#Image
 
@@ -41,14 +41,14 @@ import (
 			directory: _sh.output
 			filename:  "read-config.sh"
 		}
-		export: files: {
-			"/prometheus.yaml":     string
-			"/grafana.yaml":        string
-			"/loki.yaml":           string
-			"/alert-manager.yaml":  string
-			"/argo-cd.yaml":        string
-			"/sealed-secrets.yaml": string
-			"/dapr.yaml":           string
+		export: secrets: {
+			"/prometheus.yaml":     dagger.#Secret
+			"/grafana.yaml":        dagger.#Secret
+			"/loki.yaml":           dagger.#Secret
+			"/alert-manager.yaml":  dagger.#Secret
+			"/argo-cd.yaml":        dagger.#Secret
+			"/sealed-secrets.yaml": dagger.#Secret
+			"/dapr.yaml":           dagger.#Secret
 		}
 	}
 }
