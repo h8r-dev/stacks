@@ -42,6 +42,9 @@ else
   openssl req -x509 -new -nodes -key "${PRIVATEKEY}" -days 3650 -out "${PUBLICKEY}" -subj "/CN=sealed-secret/O=sealed-secret"
   # Create sealed secrets.
   echo "create sealed secrets."
+  if [ ! $(kubectl get ns ${NAMESPACE}) ]; then
+    kubectl create namespace ${NAMESPACE}
+  fi
   kubectl -n "${NAMESPACE}" create secret tls "${SECRETNAME}" --cert="${PUBLICKEY}" --key="${PRIVATEKEY}"
   kubectl -n "${NAMESPACE}" label secret "${SECRETNAME}" sealedsecrets.bitnami.com/sealed-secrets-key=active
   # Deleting the controller Pod is needed to pick they new keys
