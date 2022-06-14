@@ -22,14 +22,6 @@ import (
 	networkType: string
 	namespace:   string | *"heighliner-infra"
 
-	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
-		input: kubeconfigUtil.#Input & {
-			"kubeconfig": kubeconfig
-		}
-	}
-
-	_kubeconfig: _internalKubeconfig.output.kubeconfig
-
 	infra_copmonents: {
 		"loki":          loki
 		"prometheus":    prometheus
@@ -40,20 +32,28 @@ import (
 	}
 
 	// Select the infra components to install.
-	// install_list: ["argocd", "loki", "prometheus", "nocalhost", "dapr", "sealedSecrets"]
-	// install_list: ["loki", "prometheus", "nocalhost", "dapr", "sealedSecrets"]
-	install_list: ["loki", "sealedSecrets", "prometheus", "dapr"]
+	install_list: ["argocd", "loki", "sealedSecrets", "prometheus", "dapr"]
 
-	_baseImage: base.#Image & {}
+	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
+		input: kubeconfigUtil.#Input & {
+			"kubeconfig": kubeconfig
+		}
+	}
 
-	createNamespace: kubectlUtil.#CreateNamespace & {
+	_kubeconfig: _internalKubeconfig.output.kubeconfig
+	_baseImage:  base.#Image & {}
+
+	_createNamespace: kubectlUtil.#CreateNamespace & {
 		"namespace": namespace
+		kubeconfig:  _kubeconfig
 		image:       _baseImage.output
 	}
 
 	// Merge into all infra component installation.
 	installCD: argocd.#Instance & {
 		input: argocd.#Input & {
+			waitFor:    _createNamespace.success
+			namespace:  _createNamespace.value.contents
 			kubeconfig: _kubeconfig
 			image:      _baseImage.output
 		}

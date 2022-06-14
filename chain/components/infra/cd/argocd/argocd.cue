@@ -16,6 +16,7 @@ import (
 	}
 	// patch argocd http
 	_patch: argocd.#Patch & {
+		namespace:  input.namespace
 		kubeconfig: input.kubeconfig
 		"input":    input.image
 		waitFor:    do.success

@@ -1,15 +1,16 @@
 package kubectl
 
 import (
+	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 )
 
 #CreateNamespace: {
-	namespace: string
-	image:     docker.#Image
+	kubeconfig: dagger.#Secret
+	namespace:  string
+	image:      docker.#Image
 
 	valuePath: "/tmp/namespace.txt"
 
@@ -19,10 +20,15 @@ import (
 			NAMESPACE: namespace
 			VALUEPATH: valuePath
 		}
+		mounts: "kubeconfig": {
+			dest:     "/root/.kube/config"
+			type:     "secret"
+			contents: kubeconfig
+		}
 		script: contents: """
-			  echo "Creating namespace $NAMESPACE"
-			  kubectl create namespace $NAMESPACE > /dev/null 2>&1 || true
-			  echo $NAMESPACE > $VALUEPATH
+			    echo "Creating namespace: $NAMESPACE"
+			    kubectl create namespace $NAMESPACE > /dev/null 2>&1 || true
+			    printf $NAMESPACE > $VALUEPATH
 			"""
 	}
 
@@ -30,4 +36,6 @@ import (
 		input: run.output.rootfs
 		path:  valuePath
 	}
+
+	success: run.success
 }
