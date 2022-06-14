@@ -59,6 +59,10 @@ update-index: # Update official stacks' index
 check-index:
 	@bash ./scripts/process_stacks.sh --check-index
 
+.PHONY: pack-infra
+pack-infra: install-hof # pack infra plan
+	@bash ./scripts/pack-infra.sh
+
 .PHONY: install-hooks
 install-hooks: # Install git hooks
 	git config core.hooksPath ./.git-hooks
