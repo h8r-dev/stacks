@@ -4,6 +4,7 @@ import (
 	"dagger.io/dagger"
 
 	"github.com/h8r-dev/stacks/cuelib/internal/var"
+	"github.com/h8r-dev/stacks/cuelib/internal/addon"
 	utilsKubeconfig "github.com/h8r-dev/stacks/cuelib/internal/utils/kubeconfig"
 	"github.com/h8r-dev/stacks/cuelib/component/framework"
 	// "github.com/h8r-dev/stacks/cuelib/component/scm/github"
@@ -37,11 +38,15 @@ import (
 	}
 
 	// _echo: echo.#Run & {
-	//  msg: _var.gin.repoURL
+	//  msg: _read.alertManager
 	// }
 
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
 		input: kubeconfig: args.kubeconfig
+	}
+
+	_read: addon.#Read & {
+		input: kubeconfig: _transformKubeconfig.output.kubeconfig
 	}
 
 	_initRepositories: {

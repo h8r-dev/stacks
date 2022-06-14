@@ -5,7 +5,6 @@ import (
 	"universe.dagger.io/bash"
 
 	"github.com/h8r-dev/stacks/cuelib/internal/base"
-
 )
 
 #Config: {

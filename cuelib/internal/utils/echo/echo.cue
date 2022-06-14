@@ -17,7 +17,8 @@ import (
 	_deps: base.#Image
 
 	bash.#Run & {
-		input: _deps.output
+		input:  _deps.output
+		always: true
 		env: MESSAGE: msg
 		script: {
 			directory: _sh.output
