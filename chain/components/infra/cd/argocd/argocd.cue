@@ -1,52 +1,24 @@
 package argocd
 
 import (
-	"dagger.io/dagger"
 	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
+	"github.com/h8r-dev/stacks/chain/internal/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/stacks/chain/components/origin"
 	"dagger.io/dagger/core"
-	"universe.dagger.io/docker"
-	"strconv"
+	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Instance: {
 	input: #Input
-	src:   core.#Source & {
-		path: "."
-	}
-	// do:    kubectl.#Apply & {
-	//  url:        input.url
-	//  namespace:  input.namespace
-	//  kubeconfig: input.kubeconfig
-	//  waitFor:    input.waitFor
-	// }
-	do: bash.#Run & {
-		always:  true
-		"input": input.image
-		env: {
-			NAMESPACE:          input.namespace
-			VERSION:            input.version
-			OUTPUT_PATH:        input.helmName
-			NETWORK_TYPE:       input.networkType
-			CHART_URL_INTERNAL: origin.#Origin.argocd.internal.url
-			CHART_URL_GLOBAL:   origin.#Origin.argocd.global.url
-		}
-		mounts: kubeconfig: {
-			dest:     "/root/.kube/config"
-			type:     "secret"
-			contents: input.kubeconfig
-		}
-		workdir: "/tmp"
-		script: {
-			directory: src.output
-			filename:  "create.sh"
-		}
+	do:    kubectl.#Apply & {
+		url:        input.url
+		namespace:  input.namespace
+		kubeconfig: input.kubeconfig
+		waitFor:    input.waitFor
 	}
 	// patch argocd http
-	_patch: #Patch & {
-		namespace:  input.namespace
+	_patch: argocd.#Patch & {
 		kubeconfig: input.kubeconfig
 		"input":    input.image
 		waitFor:    do.success
@@ -61,7 +33,7 @@ import (
 		namespace:          input.namespace
 		hostName:           input.domain.infra.argocd
 		path:               "/"
-		backendServiceName: "argo-argocd-server"
+		backendServiceName: "argocd-server"
 		"ingressVersion":   ingressVersion.content
 	}
 	applyIngressYaml: kubectl.#Manifest & {
@@ -75,37 +47,38 @@ import (
 	}
 }
 
-#Patch: {
-	kubeconfig: dagger.#Secret
-	input:      docker.#Image
-	namespace:  string | *"argocd"
-	waitFor:    bool
-	do:         bash.#Run & {
-		always:  true
-		"input": input
-		mounts: "kubeconfig": {
-			dest:     "/kubeconfig"
-			contents: kubeconfig
+#Init: {
+	input: #Input
+	do: {
+		src: core.#Source & {
+			path: "."
 		}
-		env: {
-			KUBECONFIG: "/kubeconfig"
-			NAMESPACE:  namespace
-			WAIT_FOR:   strconv.FormatBool(waitFor)
+		createApps: bash.#Run & {
+			env: {
+				KUBECONFIG:    "/etc/kubernetes/config"
+				ARGO_SERVER:   basefactory.#DefaultInternalDomain.infra.argocd
+				ARGO_URL:      input.domain.infra.argocd
+				ARGO_USERNAME: "admin"
+				if input.set != null {
+					HELM_SET: input.set
+				}
+				APP_NAMESPACE: input.domain.application.productionNamespace
+				APP_SERVER:    "https://kubernetes.default.svc"
+			}
+			mounts: kubeconfig: {
+				dest:     "/etc/kubernetes/config"
+				contents: input.kubeconfig
+			}
+			"input": input.image
+			workdir: "/scaffold"
+			script: {
+				directory: src.output
+				filename:  "create-apps.sh"
+			}
 		}
-		script: contents: #"""
-			# patch deployment cause ingress redirct: https://github.com/argoproj/argo-cd/issues/2953
-			kubectl patch deployment argo-argocd-server --patch '{"spec": {"template": {"spec": {"containers": [{"name": "server","command": ["argocd-server", "--insecure"]}]}}}}' -n $NAMESPACE
-			kubectl patch statefulset argo-argocd-application-controller --patch '{"spec": {"template": {"spec": {"containers": [{"name": "application-controller","command": ["argocd-application-controller", "--app-resync", "30"]}]}}}}' -n $NAMESPACE
-			kubectl wait --for=condition=Available deployment argo-argocd-server -n $NAMESPACE --timeout 600s
-			kubectl rollout status --watch --timeout=600s statefulset/argo-argocd-application-controller -n $NAMESPACE
-			kubectl rollout status --watch --timeout=600s deployment/argo-argocd-server -n $NAMESPACE
-			secret="$(kubectl -n $NAMESPACE get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo)"
-			mkdir -p /infra/argocd
-			printf -- $secret > /infra/argocd/secret
-			"""#
-		export: files: "/infra/argocd/secret": string
 	}
-	output:  do.output
-	secret:  do.export.files."/infra/argocd/secret"
-	success: do.success
+	output: #Output & {
+		image:   do.createApps.output
+		success: do.createApps.success
+	}
 }
