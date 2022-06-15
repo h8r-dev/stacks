@@ -1,0 +1,9 @@
+name: wip-gin-next
+version: 0.1.0
+owner:
+  name: Heighliner
+  contact: wei.wang@h8r.io
+description: This stack is work in progress
+icon: https://raw.githubusercontent.com/gin-gonic/logo/master/color.png
+url: https://gin-gonic.com/
+tags: ["go", "next", "microservice", "redis", "mysql"]
