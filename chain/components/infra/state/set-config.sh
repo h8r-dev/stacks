@@ -52,14 +52,14 @@ yq -i '
 #------------------------------------
 # Alert Manager
 #------------------------------------
-export ALERTMANAGER_URL="prometheus-kube-prometheus-alertmanager.${NAMESPACE}.svc"
+export ALERTMANAGER_URL="prometheus-kube-prometheus-alertmanager.${NAMESPACE}.svc:9093"
 yq -i '
-  .alert.enabled = true |
-  .alert.namespace = env(NAMESPACE) |
-  .alert.url = env(ALERTMANAGER_URL) |
-  .alert.ingress = "http://alert.h8r.site" |
-  .alert.credentials.username = "admin" |
-  .alert.credentials.password = "prom-operator"
+  .alertManager.enabled = true |
+  .alertManager.namespace = env(NAMESPACE) |
+  .alertManager.url = env(ALERTMANAGER_URL) |
+  .alertManager.ingress = "http://alert.h8r.site" |
+  .alertManager.credentials.username = "admin" |
+  .alertManager.credentials.password = "prom-operator"
 ' config.yaml
 
 #------------------------------------
@@ -67,27 +67,26 @@ yq -i '
 #------------------------------------
 yq -i '
   .loki.enabled = true |
-  .loki.namespace = env(NAMESPACE) |
+  .loki.namespace = env(NAMESPACE)
 ' config.yaml
 
 #------------------------------------
 # Sealed secrets
 #------------------------------------
-export TLS_CERT="$(cat /tmp/tls-cert.pem)"
-export TLS_KEY="$(cat /tmp/tls-key.pem)"
+export TLS_CERT="tls-cert"
+export TLS_KEY="tls-private-key"
 yq -i '
   .sealedSecrets.enabled = true |
-  .loki.namespace = env(NAMESPACE) |
-  .loki.tlscrt = env(TLS_CERT) |
-  .loki.tlskey = env(TLS_KEY)
+  .sealedSecrets.namespace = env(NAMESPACE) |
+  .sealedSecrets.tlscrt = env(TLS_CERT) |
+  .sealedSecrets.tlskey = env(TLS_KEY)
 ' config.yaml
 
-
-
-
-
+echo "Updated ConfigMap..."
 cat config.yaml
+
 # Create configmap
 kubectl -n $NAMESPACE \
   create configmap heighliner-infra-config \
-  --from-file=infra=config.yaml
+  --from-file=infra=config.yaml \
+  -o yaml --dry-run=client | kubectl -n $NAMESPACE apply -f -
