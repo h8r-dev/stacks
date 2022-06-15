@@ -45,7 +45,7 @@ config_ingress_settings() {
     .alertmanager.ingress.ingressClassName = "'$INGRESS_CLASSNAME'" |
     .alertmanager.ingress.annotations += {
         "nginx.ingress.kubernetes.io/auth-realm": "Authentication Required",
-        "nginx.ingress.kubernetes.io/auth-secret": "prometheus-stack/basic-auth",
+        "nginx.ingress.kubernetes.io/auth-secret": "prometheus-stack/'$CHART_NAME'-basic-auth",
         "nginx.ingress.kubernetes.io/auth-type": "basic"
     }
   ' $CHART_DIR/values.yaml
