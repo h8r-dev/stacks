@@ -45,7 +45,7 @@ config_ingress_settings() {
     .alertmanager.ingress.ingressClassName = "'$INGRESS_CLASSNAME'" |
     .alertmanager.ingress.annotations += {
         "nginx.ingress.kubernetes.io/auth-realm": "Authentication Required",
-        "nginx.ingress.kubernetes.io/auth-secret": "prometheus-stack/basic-auth",
+        "nginx.ingress.kubernetes.io/auth-secret": "'$NAMESPACE'/'$CHART_NAME'-basic-auth",
         "nginx.ingress.kubernetes.io/auth-type": "basic"
     }
   ' $CHART_DIR/values.yaml
@@ -57,7 +57,7 @@ config_ingress_settings() {
     .prometheus.ingress.hosts[0] = "'$PROMETHEUS_DOMAIN'" |
     .prometheus.ingress.annotations += {
         "nginx.ingress.kubernetes.io/auth-realm": "Authentication Required",
-        "nginx.ingress.kubernetes.io/auth-secret": "prometheus-stack/basic-auth",
+        "nginx.ingress.kubernetes.io/auth-secret": "'$NAMESPACE'/'$CHART_NAME'-basic-auth",
         "nginx.ingress.kubernetes.io/auth-type": "basic"
     }
   ' $CHART_DIR/values.yaml
@@ -69,13 +69,13 @@ config_ingress_settings() {
 # password: heighliner123!
 #---------------------------------------------------------
 config_default_password() {
-  printf 'admin:$apr1$rviPk66W$HepYtRwZBa.Uvmi/pqK2N1' > auth.txt
+  printf 'admin:$apr1$rviPk66W$HepYtRwZBa.Uvmi/pqK2N1' > auth
   dir=$CHART_DIR/templates/basic-auth
   mkdir -p $dir
 
   secret_name=$CHART_NAME-basic-auth
   kubectl create secret generic $secret_name \
-    --from-file auth.txt \
+    --from-file auth \
     --dry-run=client \
     -o yaml > $dir/basic-auth.yaml
 }

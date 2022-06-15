@@ -29,12 +29,6 @@ data:
     loki:
       enabled: false
       namespace: default
-      url: xxxx
-      ingress: http://prometheus.h8r.site/
-      credentials:
-        type: basic
-        username: xxx
-        password: xxxx
       annotations: |
         xxx           
     argocd:

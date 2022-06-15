@@ -13,12 +13,12 @@ package origin
 	}
 	argocd: {
 		global: {
-			chart: "argo-cd"
-			url:   "https://argoproj.github.io/argo-helm"
+			version: "v2.3.3"
+			url:     "https://raw.githubusercontent.com/argoproj/argo-cd/\(version)/manifests/install.yaml"
 		}
 		internal: {
-			chart: "argo-cd"
-			url:   "https://argoproj.github.io/argo-helm"
+			version: "v2.3.3"
+			url:     "https://raw.githubusercontent.com/argoproj/argo-cd/\(version)/manifests/install.yaml"
 		}
 	}
 	prometheus: {
