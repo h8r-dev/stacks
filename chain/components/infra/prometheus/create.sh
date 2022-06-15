@@ -69,13 +69,13 @@ config_ingress_settings() {
 # password: heighliner123!
 #---------------------------------------------------------
 config_default_password() {
-  printf 'admin:$apr1$rviPk66W$HepYtRwZBa.Uvmi/pqK2N1' > auth.txt
+  printf 'admin:$apr1$rviPk66W$HepYtRwZBa.Uvmi/pqK2N1' > auth
   dir=$CHART_DIR/templates/basic-auth
   mkdir -p $dir
 
   secret_name=$CHART_NAME-basic-auth
   kubectl create secret generic $secret_name \
-    --from-file auth.txt \
+    --from-file auth \
     --dry-run=client \
     -o yaml > $dir/basic-auth.yaml
 }
