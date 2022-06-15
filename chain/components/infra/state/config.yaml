@@ -1,0 +1,65 @@
+prometheus:
+  enabled: false
+  namespace: heighliner-infra
+  url: ""
+  ingress: http://prometheus.h8r.site/
+  credentials:
+    type: basic
+    username: ""
+    password: ""
+  annotations: ""
+grafana:
+  enabled: false
+  namespace: heighliner-infra
+  url: ""
+  ingress: http://prometheus.h8r.site/
+  credentials:
+    type: basic
+    username: ""
+    password: ""
+  annotations: ""   
+loki:
+  enabled: false
+  namespace: heighliner-infra
+  url: ""
+  ingress: http://prometheus.h8r.site/
+  credentials:
+    type: basic
+    username: ""
+    password: ""
+  annotations: ""          
+argocd:
+  enabled: false
+  namespace: heighliner-infra
+  url: ""
+  ingress: http://prometheus.h8r.site/
+  credentials:
+    type: basic
+    username: ""
+    password: ""
+  annotations: ""           
+sealedSecrets:
+  enabled: false
+  namespace: heighliner-infra
+  tlscrt: ""
+  tlskey: ""
+alertManager:
+  enabled: false
+  namespace: heighliner-infra
+  url: ""
+  ingress: http://prometheus.h8r.site/
+  credentials:
+    type: basic
+    username: ""
+    password: ""
+  annotations: "" 
+dapr:
+  enabled: false
+  namespace: heighliner-infra
+  url: ""
+  ingress: http://prometheus.h8r.site/
+  credentials:
+    type: basic
+    username: ""
+    password: ""
+  annotations: ""

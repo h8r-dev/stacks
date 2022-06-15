@@ -2,6 +2,7 @@ package main
 
 import (
 	"dagger.io/dagger"
+	"universe.dagger.io/bash"
 
 	// Utility tools
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
@@ -57,14 +58,8 @@ import (
 		image:       _baseImage.output
 	}
 
-	initState: state.#Store & {
-		waitFor:    _createNamespace.success
-		namespace:  _createNamespace.value.contents
-		kubeconfig: _kubeconfig
-	}
-
 	// Merge into all infra component installation.
-	installCD: argocd.#Instance & {
+	_installCD: argocd.#Instance & {
 		input: argocd.#Input & {
 			waitFor:       _createNamespace.success
 			namespace:     _createNamespace.value.contents
@@ -74,7 +69,7 @@ import (
 		}
 	}
 
-	install: {
+	_install: {
 		for index, component in install_list {
 			"\(component)": infra_copmonents[component].#Instance & {
 				input: {
@@ -88,6 +83,24 @@ import (
 			}
 		}
 	}
-}
 
-#StoreStateInConfigmap: kubeconfig: dagger.#Secret
+	_waitInstall: {
+		bash.#Run & {
+			input: _baseImage.output
+			env: {
+				for component in install_list {
+					"\(component)": "\(_install[(component)].output.success)"
+				}
+				argocd: "\(_installCD.output.success)"
+			}
+			script: contents: "echo 'wait for install'"
+		}
+	}
+
+	_setInfraConfig: {
+		state.#SetConfigMap & {
+			waitFor:    "\(_waitInstall.success)"
+			kubeconfig: _kubeconfig
+		}
+	}
+}
