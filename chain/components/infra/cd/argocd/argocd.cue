@@ -3,7 +3,6 @@ package argocd
 import (
 	"dagger.io/dagger"
 	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
-	"github.com/h8r-dev/stacks/chain/internal/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/components/origin"
@@ -46,7 +45,7 @@ import (
 		}
 	}
 	// patch argocd http
-	_patch: argocd.#Patch & {
+	_patch: #Patch & {
 		namespace:  input.namespace
 		kubeconfig: input.kubeconfig
 		"input":    input.image
