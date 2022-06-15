@@ -1,0 +1,21 @@
+parameters:
+  - title: kubeConfig
+    description: Path to your kubeconfig file
+    key: KUBECONFIG
+    type: "path"
+    default: ~/.kube/config
+    required: true
+  - title: githubToken
+    description: Your github access token
+    key: GITHUB_TOKEN
+    type: "secret"
+    required: true
+  - title: organization
+    description: Which github organization do you want to use(Can be set as personal github id)?
+    key: ORGANIZATION
+    required: true
+  - title: application domain
+    description: Which domain do you want to use?
+    key: APP_DOMAIN
+    required: false
+    default: "h8r.site"
