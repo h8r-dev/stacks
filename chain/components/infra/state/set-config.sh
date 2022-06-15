@@ -58,8 +58,8 @@ yq -i '
   .alertManager.namespace = env(NAMESPACE) |
   .alertManager.url = env(ALERTMANAGER_URL) |
   .alertManager.ingress = "http://alert.h8r.site" |
-  .alertManager.credentials.username = "admin" |
-  .alertManager.credentials.password = "prom-operator"
+  .alertManager.credentials.username = env(DEFAULT_USERNAME) |
+  .alertManager.credentials.password = env(DEFAULT_PASSWORD)
 ' config.yaml
 
 #------------------------------------
