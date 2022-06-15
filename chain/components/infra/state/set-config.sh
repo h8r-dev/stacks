@@ -1,14 +1,93 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
-# argocd
-echo "set argocd config"
-# argocd_password=$(kubectl -n "${NAMESPACE}" get secret -n heighliner-infra argocd-initial-admin-secret -o=jsonpath='{.data.password}'|base64 -d)
-# argocd_url="argo-argocd-server.${NAMESPACE}.svc"
-argocd_password=$(kubectl -n argocd get secret argocd-initial-admin-secret -o=jsonpath='{.data.password}'|base64 -d)
-argocd_url="argocd-server.argocd.svc"
+echo "Storing infra component state into ConfigMap"
 
-yq -i '.argocd.url = "'"$argocd_url"'"' config.yaml
-yq -i '.argocd.credentials.username = "admin"' config.yaml
-yq -i '.argocd.credentials.password = "'"$argocd_password"'"' config.yaml
+export DEFAULT_USERNAME=admin
+export DEFAULT_PASSWORD=heighliner123!
 
-kubectl -n "${NAMESPACE}" create configmap heighliner-infra-config --from-file=infra=config.yaml
+#------------------------------------
+# Argocd
+#------------------------------------
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 -d > /tmp/admin-password.txt
+
+export ARGOCD_PASSWORD=$(cat /tmp/admin-password.txt)
+export ARGOCD_URL="argocd-server.argocd.svc"
+
+yq -i '
+  .argocd.enabled = true |
+  .argocd.url = env(ARGOCD_URL) |
+  .argocd.namespace = "argocd" |
+  .argocd.ingress = "http://argocd.h8r.site" |
+  .argocd.credentials.username = "admin" |
+  .argocd.credentials.password = env(ARGOCD_PASSWORD)
+' config.yaml
+
+#------------------------------------
+# Prometheus
+#------------------------------------
+export PROMETHEUS_URL="prometheus-kube-prometheus-prometheus.${NAMESPACE}.svc:9090"
+yq -i '
+  .prometheus.enabled = true |
+  .prometheus.namespace = env(NAMESPACE) |
+  .prometheus.url = env(PROMETHEUS_URL) |
+  .prometheus.ingress = "http://prometheus.h8r.site" |
+  .prometheus.credentials.username = env(DEFAULT_USERNAME) |
+  .prometheus.credentials.password = env(DEFAULT_PASSWORD)
+' config.yaml
+
+#------------------------------------
+# Grafana
+#------------------------------------
+export GRAFANA_URL="prometheus-grafana.${NAMESPACE}.svc"
+yq -i '
+  .grafana.enabled = true |
+  .grafana.namespace = env(NAMESPACE) |
+  .grafana.url = env(GRAFANA_URL) |
+  .grafana.ingress = "http://grafana.h8r.site" |
+  .grafana.credentials.username = "admin" |
+  .grafana.credentials.password = "prom-operator"
+' config.yaml
+
+#------------------------------------
+# Alert Manager
+#------------------------------------
+export ALERTMANAGER_URL="prometheus-kube-prometheus-alertmanager.${NAMESPACE}.svc"
+yq -i '
+  .alert.enabled = true |
+  .alert.namespace = env(NAMESPACE) |
+  .alert.url = env(ALERTMANAGER_URL) |
+  .alert.ingress = "http://alert.h8r.site" |
+  .alert.credentials.username = "admin" |
+  .alert.credentials.password = "prom-operator"
+' config.yaml
+
+#------------------------------------
+# Loki
+#------------------------------------
+yq -i '
+  .loki.enabled = true |
+  .loki.namespace = env(NAMESPACE) |
+' config.yaml
+
+#------------------------------------
+# Sealed secrets
+#------------------------------------
+export TLS_CERT="$(cat /tmp/tls-cert.pem)"
+export TLS_KEY="$(cat /tmp/tls-key.pem)"
+yq -i '
+  .sealedSecrets.enabled = true |
+  .loki.namespace = env(NAMESPACE) |
+  .loki.tlscrt = env(TLS_CERT) |
+  .loki.tlskey = env(TLS_KEY)
+' config.yaml
+
+
+
+
+
+cat config.yaml
+# Create configmap
+kubectl -n $NAMESPACE \
+  create configmap heighliner-infra-config \
+  --from-file=infra=config.yaml
