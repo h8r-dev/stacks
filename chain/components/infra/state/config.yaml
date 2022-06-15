@@ -17,17 +17,11 @@ grafana:
     type: basic
     username: ""
     password: ""
-  annotations: ""   
+  annotations: ""
 loki:
   enabled: false
   namespace: heighliner-infra
-  url: ""
-  ingress: http://prometheus.h8r.site/
-  credentials:
-    type: basic
-    username: ""
-    password: ""
-  annotations: ""          
+  annotations: ""
 argocd:
   enabled: false
   namespace: heighliner-infra
@@ -37,12 +31,13 @@ argocd:
     type: basic
     username: ""
     password: ""
-  annotations: ""           
+  annotations: ""
 sealedSecrets:
   enabled: false
   namespace: heighliner-infra
   tlscrt: ""
   tlskey: ""
+  annotations: ""
 alertManager:
   enabled: false
   namespace: heighliner-infra
@@ -52,7 +47,7 @@ alertManager:
     type: basic
     username: ""
     password: ""
-  annotations: "" 
+  annotations: ""
 dapr:
   enabled: false
   namespace: heighliner-infra
