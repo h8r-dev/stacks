@@ -5,7 +5,7 @@ import (
 )
 
 // Please write output info into /hln/output.yaml
-#StoreInFile: {
+#Output: {
 	input: _
 
 	run: docker.#Run & {
