@@ -1,6 +1,7 @@
 package argocd
 
 import (
+	"dagger.io/dagger"
 	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
 	"github.com/h8r-dev/stacks/chain/internal/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
