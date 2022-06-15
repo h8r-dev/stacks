@@ -43,6 +43,7 @@ jobs:
           coscmd config -a ${{ secrets.TENCENT_SECRET_ID }} -s ${{ secrets.TENCENT_SECRET_KEY }} -b h8r-stack-1309519128 -r ap-hongkong --retry 5
           make tar
           make update-index
+          make pack-infra
           cd tars
           ls
           coscmd upload -r --delete -y . .

@@ -10,21 +10,6 @@ import (
 
 	input: #Input
 
-	// _install: provider[input.provider].#Instance & {
-	//  "input": provider[input.provider].#Input & {
-	//   kubeconfig: input.kubeconfig
-	//   tools:
-	//   [
-	//    {
-	//     name:    input.provider
-	//     version: "v2.3.3"
-	//     domain:  input.domain
-	//    },
-	//   ]
-	//   image: input.repositorys
-	//  }
-	// }
-
 	_install: provider[input.provider].#Instance & {
 		"input": provider[input.provider].#Input & {
 			kubeconfig: input.kubeconfig

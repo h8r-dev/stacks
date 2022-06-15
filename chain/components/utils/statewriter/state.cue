@@ -12,5 +12,6 @@ import (
 		"input": input.image
 		export: files: "/hln/output.yaml": string
 	}
+
 	contents: run.export.files."/hln/output.yaml"
 }

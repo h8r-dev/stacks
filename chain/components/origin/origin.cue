@@ -1,14 +1,24 @@
 package origin
 
 #Origin: {
-	argocd: {
+	dashboard: {
 		global: {
-			version: "v2.3.3"
-			url:     "https://raw.githubusercontent.com/argoproj/argo-cd/\(version)/manifests/install.yaml"
+			chart: "heighliner-cloud"
+			url:   "https://h8r-helm.pkg.coding.net/release/helm"
 		}
 		internal: {
-			version: "v2.3.3"
-			url:     "https://raw.githubusercontent.com/argoproj/argo-cd/\(version)/manifests/install.yaml"
+			chart: "heighliner-cloud"
+			url:   "https://h8r-helm.pkg.coding.net/release/helm"
+		}
+	}
+	argocd: {
+		global: {
+			chart: "argo-cd"
+			url:   "https://argoproj.github.io/argo-helm"
+		}
+		internal: {
+			chart: "argo-cd"
+			url:   "https://argoproj.github.io/argo-helm"
 		}
 	}
 	prometheus: {
