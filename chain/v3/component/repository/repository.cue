@@ -29,7 +29,7 @@ import (
 				input: {
 					applicationName:  _args.appName
 					organization:     _args.scmOrganization
-					deployRepository: _var.deploy.repoName
+					deployRepository: input.vars.deploy.repoName
 					sourceCode:       _code.output.sourceCode
 				}
 			}
