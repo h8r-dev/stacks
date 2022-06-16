@@ -3,14 +3,11 @@ package stack
 import (
 	"dagger.io/dagger"
 
-	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 	"github.com/h8r-dev/stacks/chain/v3/internal/addon"
-	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
-	"github.com/h8r-dev/stacks/chain/v3/component/framework"
-	"github.com/h8r-dev/stacks/chain/v3/component/scm/github"
-	"github.com/h8r-dev/stacks/chain/v3/component/ci"
 	"github.com/h8r-dev/stacks/chain/v3/component/deploy"
-	// "github.com/h8r-dev/stacks/chain/v3/internal/utils/echo"
+	"github.com/h8r-dev/stacks/chain/v3/component/repository"
+	"github.com/h8r-dev/stacks/chain/v3/internal/var"
+	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 )
 
 #Install: {
@@ -37,10 +34,6 @@ import (
 		}
 	}
 
-	// _echo: echo.#Run & {
-	//  msg: _read.alertManager
-	// }
-
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
 		input: kubeconfig: args.kubeconfig
 	}
@@ -49,31 +42,15 @@ import (
 		input: kubeconfig: _transformKubeconfig.output.kubeconfig
 	}
 
-	_initRepositories: {
-		for idx, f in args.frameworks {
-			(f.name): {
-				_code: framework.#Init & {
-					name: f.name
-				}
-				_addWorkflow: ci.#AddWorkflow & {
-					input: {
-						applicationName:  args.name
-						organization:     args.organization
-						deployRepository: _var.deploy.repoName
-						sourceCode:       _code.output.sourceCode
-					}
-				}
-				_push: github.#Push & {
-					input: {
-						repositoryName:      _var[(f.name)].repoName
-						contents:            _addWorkflow.output.sourceCode
-						personalAccessToken: args.githubToken
-						organization:        args.organization
-						visibility:          args.repoVisibility
-						kubeconfig:          _transformKubeconfig.output.kubeconfig
-					}
-				}
-			}
+	_createRepos: repository.#Create & {
+		input: {
+			appName:         args.name
+			scmOrganization: args.organization
+			repoVisibility:  args.repoVisibility
+			githubToken:     args.githubToken
+			kubeconfig:      _transformKubeconfig.output.kubeconfig
+			vars:            _var
+			frameworks:      args.frameworks
 		}
 	}
 
