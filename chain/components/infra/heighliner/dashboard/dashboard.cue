@@ -23,8 +23,11 @@ import (
 		}
 		mounts: kubeconfig: {
 			dest:     "/root/.kube/config"
-			type:     "secret"
 			contents: input.kubeconfig
+		}
+		mounts: Okubeconfig: {
+			dest:     "/root/.kube/original-config"
+			contents: input.originalKubeconfig
 		}
 		workdir: "/tmp"
 		script: {

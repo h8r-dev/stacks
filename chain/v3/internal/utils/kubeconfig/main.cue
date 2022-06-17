@@ -37,16 +37,18 @@ import (
 			directory: _sh.output
 			filename:  "run.sh"
 		}
-		export: files: "/api_server": string
-	}
-
-	_getSecret: core.#NewSecret & {
-		input: _run.output.rootfs
-		path:  "/result"
+		export: {
+			secrets: {
+				"/new_kubeconfig":     dagger.#Secret
+				"/origina_kubeconfig": dagger.#Secret
+			}
+			files: "/api_server": string
+		}
 	}
 
 	output: {
-		kubeconfig: _getSecret.output
-		apiServer:  _run.export.files."/api_server"
+		kubeconfig:         _run.export.secrets."/new_kubeconfig"
+		originalKubeconfig: _run.export.secrets."/origina_kubeconfig"
+		apiServer:          _run.export.files."/api_server"
 	}
 }
