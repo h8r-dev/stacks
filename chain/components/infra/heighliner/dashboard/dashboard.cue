@@ -20,6 +20,7 @@ import (
 			NETWORK_TYPE:       input.networkType
 			CHART_URL_INTERNAL: origin.#Origin.dashboard.internal.url
 			CHART_URL_GLOBAL:   origin.#Origin.dashboard.global.url
+			WITHOUT_DASHBOARD:  input.withoutDashboard
 		}
 		mounts: kubeconfig: {
 			dest:     "/root/.kube/config"

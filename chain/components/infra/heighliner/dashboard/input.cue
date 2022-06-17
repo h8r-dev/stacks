@@ -16,4 +16,5 @@ import (
 	namespace:           string
 	waitFor:             bool | *true
 	domain:              basefactory.#DefaultDomain
+	withoutDashboard:    string
 }

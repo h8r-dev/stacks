@@ -25,7 +25,7 @@ import (
 // TODO: precheck resources that existed in the namespace.
 #Plan: {
 	kubeconfig:       dagger.#Secret
-	withoutDashborad: string
+	withoutDashboard: string | *"false"
 	networkType:      string
 	namespace:        string | *"heighliner-infra"
 	domain:           string
@@ -42,15 +42,7 @@ import (
 
 	// Select the infra components to install.
 	// install_list: ["argocd", "loki", "sealedSecrets", "prometheus", "dapr"]
-	default_install_list: ["loki", "sealedSecrets", "prometheus"]
-
-	{
-		withoutDashborad: "true"
-		install_list:     default_install_list
-	} | {
-		withoutDashborad: "false"
-		install_list:     default_install_list + ["dashboard"]
-	}
+	install_list: ["loki", "sealedSecrets", "prometheus", "dashboard"]
 
 	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
 		input: {
@@ -91,6 +83,7 @@ import (
 					kubeconfig:    _kubeconfig
 					if "\(component)" == "dashboard" {
 						originalKubeconfig: _originalKubeconfig
+						"withoutDashboard": withoutDashboard
 					}
 				}
 			}

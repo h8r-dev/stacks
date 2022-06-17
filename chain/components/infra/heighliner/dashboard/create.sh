@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ "${WITHOUT_DASHBOARD}" != "false" ]; then
+  echo "Skipping dashboard install"
+  exit 0
+fi
+
 KEY="GLOBAL"
 if [ "$NETWORK_TYPE" == "cn" ]; then
     KEY="INTERNAL"
@@ -11,7 +16,6 @@ kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-upg
 kubectl -n "$NAMESPACE" delete secret -l name="$RELEASE_NAME",status=pending-install
 
 ORIGINAL_KUBECONFIG=$(< /root/.kube/original-config base64)
-echo "ORIGINAL_KUBECONFIG: ${ORIGINAL_KUBECONFIG}"
 
 helm upgrade $RELEASE_NAME heighliner-cloud \
     -n $NAMESPACE \
