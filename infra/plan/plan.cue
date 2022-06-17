@@ -45,9 +45,7 @@ import (
 	install_list: ["loki", "sealedSecrets", "prometheus", "dashboard"]
 
 	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
-		input: {
-			"kubeconfig": kubeconfig
-		}
+		input: "kubeconfig": kubeconfig
 	}
 
 	_kubeconfig:         _internalKubeconfig.output.kubeconfig
