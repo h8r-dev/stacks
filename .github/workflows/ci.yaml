@@ -127,3 +127,9 @@ jobs:
           export PKGS="${APP_NAME}-backend,${APP_NAME}-frontend,${APP_NAME}"
           export REPOS="${PKGS},${APP_NAME}-deploy"
           gh-cleaner delete -r ${REPOS} -p ${PKGS} -u ${ORGANIZATION}
+      - name: Alert
+        if: always() && github.event_name == 'schedule'
+        uses: wangsijie/feishu-bot@v1
+        with:
+          uuid: af52c079-64e9-4872-aab6-4757364c70a3
+          text: "Daily test failed, please check Stack: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
