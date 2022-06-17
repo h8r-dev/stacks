@@ -32,8 +32,9 @@ dagger.#Plan & {
 
 		_createChart1: helm.#CreateChart & {
 			input: {
-				name:    "chart1"
-				appName: "test"
+				name:     "chart1"
+				imageURL: "chart1"
+				appName:  "test"
 				set: """
 					'.image.repository = "rep" | .image.tag = "tag"'
 					"""
@@ -42,9 +43,10 @@ dagger.#Plan & {
 
 		_createChart2: helm.#CreateChart & {
 			input: {
-				name:    "chart2"
-				appName: "test"
-				starter: "helm-starter/go/gin"
+				name:     "chart2"
+				imageURL: "chart1"
+				appName:  "test"
+				starter:  "helm-starter/go/gin"
 			}
 		}
 
@@ -59,25 +61,45 @@ dagger.#Plan & {
 			}
 		}
 
-		_createEncryptedSecret: helm.#EncryptSecret & {
-			input: {
-				name:       "test-chart"
-				chart:      _createParentChart.output.chart
-				username:   "test"
-				password:   client.env.PASSWORD
-				kubeconfig: _transformKubeconfig.output.kubeconfig
-			}
-		}
+		// _createEncryptedSecret: helm.#EncryptSecret & {
+		//  input: {
+		//   name:       "test-chart"
+		//   chart:      _createParentChart.output.chart
+		//   username:   "test"
+		//   password:   client.env.PASSWORD
+		//   kubeconfig: _transformKubeconfig.output.kubeconfig
+		//  }
+		// }
 
 		test: bash.#Run & {
 			input: _baseImage.output
 			script: contents: """
 				ls -laR /helm
-				cat /helm/test-chart/templates/sealed-image-pull-secret.yaml
 				"""
 			mounts: helm: {
 				dest:     "/helm"
-				contents: _createEncryptedSecret.output.chart
+				contents: _createParentChart.output.chart
+			}
+		}
+
+		testHelm: {
+			local: helm.#InstallOrUpgrade & {
+				input: {
+					name:       "test"
+					namespace:  "test"
+					path:       "/test-chart"
+					chart:      _createParentChart.output.chart
+					kubeconfig: _transformKubeconfig.output.kubeconfig
+				}
+			}
+			repo: helm.#InstallOrUpgrade & {
+				input: {
+					name:       "ng-test"
+					namespace:  "test"
+					repo:       "https://charts.bitnami.com/bitnami"
+					chart:      "nginx"
+					kubeconfig: _transformKubeconfig.output.kubeconfig
+				}
 			}
 		}
 	}
