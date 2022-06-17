@@ -11,16 +11,14 @@ import (
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 )
 
-#Input: {
-	name:       string
-	chart:      dagger.#FS
-	username:   string
-	password:   dagger.#Secret
-	kubeconfig: dagger.#Secret
-}
-
 #EncryptSecret: {
-	input: #Input
+	input: {
+		name:       string
+		chart:      dagger.#FS
+		username:   string
+		password:   dagger.#Secret
+		kubeconfig: dagger.#Secret
+	}
 
 	output: {
 		chart:   dagger.#FS
