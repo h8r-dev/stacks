@@ -34,9 +34,7 @@ import (
 		}
 	}
 
-	output: {
-		success: bool | *true
-	}
+	output: success: bool | *true
 
 	_deps: docker.#Build & {
 		steps: [
@@ -78,7 +76,5 @@ import (
 			}
 		}
 	}
-	output: {
-		success: _run.success
-	}
+	output: success: _run.success
 }
