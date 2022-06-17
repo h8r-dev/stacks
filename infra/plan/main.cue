@@ -12,15 +12,17 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			KUBECONFIG:   string
-			NETWORK_TYPE: string | *"default" // "default" or "cn"
-			DOMAIN:       string | *"h8r.site"
+			KUBECONFIG:            string
+			NETWORK_TYPE:          string | *"default" // "default" or "cn"
+			DOMAIN:                string | *"h8r.site"
+			HLN_WITHOUT_DASHBOARD: string | *"false"
 		}
 	}
 
-	actions: up: executePlan: plan: #Plan & {
-		domain:      client.env.DOMAIN
-		networkType: client.env.NETWORK_TYPE
-		kubeconfig:  client.commands.kubeconfig.stdout
+	actions: up: #Plan & {
+		domain:           client.env.DOMAIN
+		networkType:      client.env.NETWORK_TYPE
+		kubeconfig:       client.commands.kubeconfig.stdout
+		withoutDashboard: client.env.HLN_WITHOUT_DASHBOARD
 	}
 }

@@ -6,7 +6,7 @@ import (
 
 	// Utility tools
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
-	kubeconfigUtil "github.com/h8r-dev/stacks/chain/components/utils/kubeconfig"
+	kubeconfigUtil "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 	kubectlUtil "github.com/h8r-dev/stacks/chain/components/utils/kubectl"
 
 	// Infra components
@@ -24,10 +24,11 @@ import (
 
 // TODO: precheck resources that existed in the namespace.
 #Plan: {
-	kubeconfig:  dagger.#Secret
-	networkType: string
-	namespace:   string | *"heighliner-infra"
-	domain:      string
+	kubeconfig:       dagger.#Secret
+	withoutDashboard: string | *"false"
+	networkType:      string
+	namespace:        string | *"heighliner-infra"
+	domain:           string
 
 	infra_copmonents: {
 		"loki":          loki
@@ -44,13 +45,12 @@ import (
 	install_list: ["loki", "sealedSecrets", "prometheus", "dashboard"]
 
 	_internalKubeconfig: kubeconfigUtil.#TransformToInternal & {
-		input: kubeconfigUtil.#Input & {
-			"kubeconfig": kubeconfig
-		}
+		input: "kubeconfig": kubeconfig
 	}
 
-	_kubeconfig: _internalKubeconfig.output.kubeconfig
-	_baseImage:  base.#Image & {}
+	_kubeconfig:         _internalKubeconfig.output.kubeconfig
+	_originalKubeconfig: _internalKubeconfig.output.originalKubeconfig
+	_baseImage:          base.#Image & {}
 
 	_createNamespace: kubectlUtil.#CreateNamespace & {
 		"namespace": namespace
@@ -79,6 +79,10 @@ import (
 					image:         _baseImage.output
 					"networkType": networkType
 					kubeconfig:    _kubeconfig
+					if "\(component)" == "dashboard" {
+						originalKubeconfig: _originalKubeconfig
+						"withoutDashboard": withoutDashboard
+					}
 				}
 			}
 		}
