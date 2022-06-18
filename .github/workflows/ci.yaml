@@ -69,7 +69,6 @@ jobs:
           hln version
 
       - name: hln init
-        id: hln_init
         run: |
           hln init
 
@@ -78,6 +77,7 @@ jobs:
           make vendor
 
       - name: hln up
+        id: hln_up
         env:
           STACK: ${{ env.stack }}
           NETWORK_TYPE: ${{ env.network }}
