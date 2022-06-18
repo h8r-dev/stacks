@@ -33,6 +33,7 @@ yq -i '
   .image.pullPolicy = "IfNotPresent"
 ' "${NAME}/values.yaml"
 
+# nocalhost config
 if [ -f "${NAME}/conf/nocalhost.yaml" ] && [ -n "${GIT_URL}" ]; then
   echo "set nocalhost dev config for ${NAME}"
   yq -i '.nocalhost.gitUrl = "'"${GIT_URL}"'"' "${NAME}/values.yaml"

@@ -70,7 +70,7 @@ import (
 			filename:  "install-or-upgrade.sh"
 		}
 		if input.kubeconfig != _|_ {
-			mounts: kubeconfig: {
+			mounts: config: {
 				dest:     "/root/.kube/config"
 				contents: input.kubeconfig
 			}

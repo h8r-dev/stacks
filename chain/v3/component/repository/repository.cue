@@ -29,13 +29,13 @@ import (
 				input: {
 					applicationName:  _args.appName
 					organization:     _args.scmOrganization
-					deployRepository: input.vars.deploy.repoName
+					deployRepository: _args.vars.deploy.repoName
 					sourceCode:       _code.output.sourceCode
 				}
 			}
 			_push: github.#Push & {
 				input: {
-					repositoryName:      input.vars[(f.name)].repoName
+					repositoryName:      _args.vars[(f.name)].repoName
 					contents:            _addWorkflow.output.sourceCode
 					personalAccessToken: _args.githubToken
 					organization:        _args.scmOrganization

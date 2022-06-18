@@ -61,15 +61,15 @@ dagger.#Plan & {
 			}
 		}
 
-		// _createEncryptedSecret: helm.#EncryptSecret & {
-		//  input: {
-		//   name:       "test-chart"
-		//   chart:      _createParentChart.output.chart
-		//   username:   "test"
-		//   password:   client.env.PASSWORD
-		//   kubeconfig: _transformKubeconfig.output.kubeconfig
-		//  }
-		// }
+		_createEncryptedSecret: helm.#EncryptSecret & {
+			input: {
+				name:       "test-chart"
+				chart:      _createParentChart.output.chart
+				username:   "test"
+				password:   client.env.PASSWORD
+				kubeconfig: _transformKubeconfig.output.kubeconfig
+			}
+		}
 
 		test: bash.#Run & {
 			input: _baseImage.output
@@ -86,8 +86,9 @@ dagger.#Plan & {
 			local: helm.#InstallOrUpgrade & {
 				input: {
 					name:       "test"
-					namespace:  "test"
+					namespace:  "test2"
 					path:       "/test-chart"
+					set:        "global.nocalhost.enabled=true"
 					chart:      _createParentChart.output.chart
 					kubeconfig: _transformKubeconfig.output.kubeconfig
 				}
@@ -95,7 +96,7 @@ dagger.#Plan & {
 			repo: helm.#InstallOrUpgrade & {
 				input: {
 					name:       "ng-test"
-					namespace:  "test"
+					namespace:  "test2"
 					repo:       "https://charts.bitnami.com/bitnami"
 					chart:      "nginx"
 					kubeconfig: _transformKubeconfig.output.kubeconfig
