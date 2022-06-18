@@ -21,7 +21,7 @@ package var
 			type: _args.scmType
 			input: {
 				prefix:       _args.applicationName
-				suffix:       _frameworkType[(f.name)]
+				suffix:       frameworkType[(f.name)]
 				organization: _args.organization
 			}
 		}
@@ -50,7 +50,7 @@ _#repository: {
 	frameworkType: "\(input.suffix)"
 }
 
-_frameworkType: {
+frameworkType: {
 	gin:  "backend"
 	next: "frontend"
 }

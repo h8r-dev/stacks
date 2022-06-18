@@ -69,8 +69,13 @@ import (
 		}
 	}
 
+	// TODO: wait for resources are really created
 	_writeStates: state.#Write & {
-
+		input: {
+			kubeconfig: _transformKubeconfig.output.kubeconfig
+			frameworks: args.frameworks
+			vars:       _var
+		}
 	}
 
 	// _config: {

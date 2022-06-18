@@ -5,6 +5,7 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 	"github.com/h8r-dev/stacks/chain/v3/internal/state"
 	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 )
@@ -16,9 +17,39 @@ dagger.#Plan & {
 			args: [env.KUBECONFIG]
 			stdout: dagger.#Secret
 		}
-		env: KUBECONFIG: string
+		env: {
+			KUBECONFIG:   string
+			APP_NAME:     string
+			ORGANIZATION: string
+		}
 	}
 	actions: test: {
+
+		_var: var.#Generator & {
+			input: {
+				applicationName: client.env.APP_NAME
+				domain:          "h8r.site"
+				networkType:     "default"
+				organization:    client.env.ORGANIZATION
+				frameworks: [
+					{
+						name: "gin"
+					},
+					{
+						name: "next"
+					},
+				]
+				addons: [
+					{
+						name: "nocalhost"
+					},
+					{
+						name: "prometheus"
+					},
+				]
+			}
+		}
+
 		_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
 			input: kubeconfig: client.commands.kubeconfig.stdout
 		}
@@ -33,7 +64,11 @@ dagger.#Plan & {
 		}
 
 		_writeStates: state.#Write & {
-			input: kubeconfig: _kubeconfig
+			input: {
+				kubeconfig: _kubeconfig
+				frameworks: _var.input.frameworks
+				vars:       _var
+			}
 		}
 
 		bash.#Run & {
