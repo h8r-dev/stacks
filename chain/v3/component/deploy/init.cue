@@ -23,16 +23,18 @@ import (
 		frameworks: [...]
 	}
 
+	_args: input
+
 	_createHelmChart: {
-		for f in input.frameworks {
+		for f in _args.frameworks {
 			(f.name): helm.#CreateChart & {
-				"input": {
-					name:     input.vars[(f.name)].repoName
-					appName:  input.name
+				input: {
+					name:     _args.vars[(f.name)].repoName
+					appName:  _args.name
 					starter:  base.HelmStarter[(f.name)]
-					repoURL:  input.vars[(f.name)].repoURL
-					imageURL: input.vars[(f.name)].imageURL
-					if input.vars[(f.name)].frameworkType == "backend" {
+					repoURL:  _args.vars[(f.name)].repoURL
+					imageURL: _args.vars[(f.name)].imageURL
+					if _args.vars[(f.name)].frameworkType == "backend" {
 						ingressHostPath:        "/api"
 						rewriteIngressHostPath: true
 					}
@@ -41,48 +43,60 @@ import (
 		}
 	}
 
-	_subChartList: [ for f in input.frameworks {
+	_subChartList: [ for f in _args.frameworks {
 		_createHelmChart[(f.name)].output.chart
 	}]
 
 	_createParentChart: {
 		helm.#CreateParentChart & {
-			"input": {
-				name:      input.name
+			input: {
+				name:      _args.name
 				subcharts: _subChartList
 			}
 		}
 	}
 
 	_createEncryptedSecret: helm.#EncryptSecret & {
-		"input": {
-			name:       input.name
+		input: {
+			name:       _args.name
 			chart:      _createParentChart.output.chart
-			username:   input.organization
-			password:   input.githubToken
-			kubeconfig: input.kubeconfig
+			username:   _args.organization
+			password:   _args.githubToken
+			kubeconfig: _args.kubeconfig
 		}
 	}
 
 	_crateRepo: github.#Push & {
-		"input": {
-			repositoryName:      input.vars.deploy.repoName
+		input: {
+			repositoryName:      _args.vars.deploy.repoName
 			contents:            _createEncryptedSecret.output.chart
-			personalAccessToken: input.githubToken
-			organization:        input.organization
-			visibility:          input.repoVisibility
-			kubeconfig:          input.kubeconfig
+			personalAccessToken: _args.githubToken
+			organization:        _args.organization
+			visibility:          _args.repoVisibility
+			kubeconfig:          _args.kubeconfig
 		}
 	}
 
 	_createApp: argocd.#CreateApp & {
-		"input": {
-			name:               input.name
-			repositoryPassword: input.githubToken
-			repositoryURL:      input.vars.deploy.repoURL
+		input: {
+			name:               _args.name
+			repositoryPassword: _args.githubToken
+			repositoryURL:      _args.vars.deploy.repoURL
 			appPath:            "\(name)"
-			argoVar:            input.cdVar
+			argoVar:            _args.cdVar
 			waitFor:            _crateRepo.output.success
+		}
+	}
+
+	// TODO: get namespace from env
+	_createDevEnvironment: helm.#InstallOrUpgrade & {
+		input: {
+			name:       _args.name
+			namespace:  "dev"
+			path:       "/" + _args.name
+			set:        "global.nocalhost.enabled=true"
+			chart:      _createEncryptedSecret.output.chart
+			kubeconfig: _args.kubeconfig
 		}
 	}
 }
