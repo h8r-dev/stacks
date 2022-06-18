@@ -15,6 +15,7 @@ helm upgrade $RELEASE_NAME loki-stack \
     --repo `eval echo '$'"CHART_URL_$KEY"`\
     --version $VERSION \
     --install \
+    --force \
     --timeout 10m \
     --wait
 

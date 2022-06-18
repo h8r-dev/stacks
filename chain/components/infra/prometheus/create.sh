@@ -117,6 +117,7 @@ install() {
     -n $NAMESPACE \
     --install \
     --timeout 10m \
+    --force \
     --wait
 }
 

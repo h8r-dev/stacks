@@ -19,6 +19,7 @@ helm upgrade $RELEASE_NAME $CHART_NAME \
     --version "${VERSION}" \
     --install \
     --timeout 10m \
+    --force \
     --wait
 
 echo "Install sealed-secrets helm chart Done."
