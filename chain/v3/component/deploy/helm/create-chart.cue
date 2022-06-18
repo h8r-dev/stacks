@@ -16,7 +16,7 @@ import (
 		set?: string | *""
 		// Helm starter
 		starter?:               string | *""
-		domain:                 base.#DefaultDomain
+		domain:                 string | *"h8r.site"
 		gitOrganization?:       string
 		appName:                string
 		ingressHostPath:        string | *"/"
@@ -55,7 +55,7 @@ import (
 				GIT_ORGANIZATION: input.gitOrganization
 			}
 			APP_NAME:                  input.appName
-			APPLICATION_DOMAIN:        input.domain.application.domain
+			APPLICATION_DOMAIN:        input.domain
 			INGRESS_HOST_PATH:         input.ingressHostPath
 			REWRITE_INGRESS_HOST_PATH: "\(input.rewriteIngressHostPath)"
 			if input.repoURL != _|_ {
