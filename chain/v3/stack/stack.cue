@@ -69,7 +69,7 @@ import (
 	}
 
 	_config: {
-		for idx, f in args.frameworks {
+		for f in args.frameworks {
 			(f.name): framework.#Config & {
 				name:   f.name
 				addons: args.addons
