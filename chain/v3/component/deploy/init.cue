@@ -31,6 +31,7 @@ import (
 				input: {
 					name:     _args.vars[(f.name)].repoName
 					appName:  _args.name
+					domain:   _args.domain
 					starter:  base.HelmStarter[(f.name)]
 					repoURL:  _args.vars[(f.name)].repoURL
 					imageURL: _args.vars[(f.name)].imageURL
