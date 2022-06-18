@@ -18,6 +18,7 @@ import (
 		vars:            var.#Generator
 		frameworks: [...]
 	}
+
 	_args: input
 
 	for f in input.frameworks {

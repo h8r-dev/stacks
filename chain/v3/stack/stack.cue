@@ -7,6 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v3/component/deploy"
 	"github.com/h8r-dev/stacks/chain/v3/component/repository"
 	"github.com/h8r-dev/stacks/chain/v3/internal/var"
+	"github.com/h8r-dev/stacks/chain/v3/internal/state"
 	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 )
 
@@ -66,6 +67,10 @@ import (
 			vars:           _var
 			cdVar:          _infra.argoCD
 		}
+	}
+
+	_writeStates: state.#Write & {
+
 	}
 
 	// _config: {
