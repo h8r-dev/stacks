@@ -24,6 +24,7 @@ helm upgrade $RELEASE_NAME heighliner-cloud \
     --install \
     --timeout 10m \
     --force \
+    --cleanup-on-fail \
     --set "heighliner-cloud-backend.initCluster.kubeconfig=${ORIGINAL_KUBECONFIG}" \
     --wait
 

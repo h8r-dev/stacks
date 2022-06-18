@@ -118,6 +118,7 @@ install() {
     --install \
     --timeout 10m \
     --force \
+    --cleanup-on-fail \
     --wait
 }
 
