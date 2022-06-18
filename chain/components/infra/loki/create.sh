@@ -16,6 +16,7 @@ helm upgrade $RELEASE_NAME loki-stack \
     --version $VERSION \
     --install \
     --force \
+    --cleanup-on-fail \
     --timeout 10m \
     --wait
 
