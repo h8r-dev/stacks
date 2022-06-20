@@ -47,3 +47,22 @@ jobs:
           cd tars
           ls
           coscmd upload -r --delete -y . .
+      - name: Install tccli
+        run: |
+          sudo pip install tccli
+
+      - name: Config tccli
+        env:
+          SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          BUCKET: h8r-stack-1309519128
+          REGION: ap-hongkong
+        run: |
+          coscmd config -a $SECRET_ID -s $SECRET_KEY -b $BUCKET -r $REGION
+          tccli configure set secretId $SECRET_ID
+          tccli configure set secretKey $SECRET_KEY
+          tccli configure set region $REGION
+
+      - name: Flush CDN
+        run: |
+          tccli cdn PurgePathCache --cli-unfold-argument --Paths https://stack.h8r.io --FlushType flush
