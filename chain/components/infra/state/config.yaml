@@ -48,13 +48,13 @@ alertManager:
     username: ""
     password: ""
   annotations: ""
-dapr:
+dashboard:
   enabled: false
   namespace: heighliner-infra
   url: ""
-  ingress: http://prometheus.h8r.site/
+  ingress: http://dashboard.h8r.site/
   credentials:
     type: basic
-    username: ""
-    password: ""
+    username: "admin"
+    password: "123456"
   annotations: ""
