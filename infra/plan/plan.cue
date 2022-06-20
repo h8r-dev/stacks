@@ -20,6 +20,7 @@ import (
 
 	// State management
 	"github.com/h8r-dev/stacks/chain/components/infra/state"
+	"github.com/h8r-dev/stacks/chain/components/infra/crd"
 )
 
 // TODO: precheck resources that existed in the namespace.
@@ -106,5 +107,9 @@ import (
 			waitFor:    "\(_waitInstall.success)"
 			kubeconfig: _kubeconfig
 		}
+	}
+
+	_createCloudCRD: crd.#CreateCloudCRD & {
+		input: kubeconfig: _kubeconfig
 	}
 }
