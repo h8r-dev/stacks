@@ -110,8 +110,6 @@ import (
 	}
 
 	_createCloudCRD: crd.#CreateCloudCRD & {
-		input: {
-			kubeconfig: _kubeconfig
-		}
+		input: kubeconfig: _kubeconfig
 	}
 }

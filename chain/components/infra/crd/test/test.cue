@@ -24,9 +24,7 @@ dagger.#Plan & {
 		}
 
 		test: crd.#CreateCloudCRD & {
-			input: {
-				kubeconfig: _transformKubeconfig.output.kubeconfig
-			}
+			input: kubeconfig: _transformKubeconfig.output.kubeconfig
 		}
 	}
 }
