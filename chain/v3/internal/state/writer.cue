@@ -15,8 +15,9 @@ import (
 		domain:     string
 		kubeconfig: dagger.#Secret
 		frameworks: [...]
-		vars:    var.#Generator
-		waitFor: bool | *true
+		vars:      var.#Generator
+		namespace: string | *"heighliner"
+		waitFor:   bool | *true
 	}
 
 	_args: input
@@ -52,7 +53,7 @@ import (
 					workdir: "/workdir"
 					env: {
 						APP_NAME:     _args.vars.input.applicationName
-						NAMESPACE:    "heighliner-infra"
+						NAMESPACE:    "\(_args.namespace)"
 						REPO_NAME:    _args.vars[(f.name)].repoName
 						REPO_TYPE:    var.frameworkType[(f.name)]
 						REPO_URL:     _args.vars[(f.name)].repoURL
@@ -86,7 +87,7 @@ import (
 				workdir: "/workdir"
 				env: {
 					APP_NAME:     _args.vars.input.applicationName
-					NAMESPACE:    "heighliner-infra"
+					NAMESPACE:    "\(_args.namespace)"
 					REPO_NAME:    _args.vars.deploy.repoName
 					REPO_TYPE:    "deploy"
 					REPO_URL:     _args.vars.deploy.repoURL
@@ -120,7 +121,7 @@ import (
 			workdir: "/workdir"
 			env: {
 				APP_NAME:      _args.vars.input.applicationName
-				NAMESPACE:     "heighliner-infra"
+				NAMESPACE:     "\(_args.namespace)"
 				STACK_NAME:    "gin-next"
 				STACK_VERSION: "0.0.1"
 				WAIT_FOR:      "\(_args.waitFor)"
@@ -150,7 +151,7 @@ import (
 			workdir: "/workdir"
 			env: {
 				APP_NAME:             _args.vars.input.applicationName
-				NAMESPACE:            "heighliner-infra"
+				NAMESPACE:            "\(_args.namespace)"
 				DEVSPACE_NAME:        "dev"
 				DEVSPACE_NAMEPSACE:   "dev"
 				PREVIEW_URL:          "http://dev." + _args.vars.input.applicationName + "." + _args.domain
