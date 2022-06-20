@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-set -x
-
 REPO_FILE=/repository.yaml
+
 yq -i '
     .metadata = {
         "name": "'${APP_NAME}-${REPO_NAME}'",
@@ -22,4 +21,5 @@ yq -i '
         }
     }
     ' ${REPO_FILE}
-cat ${REPO_FILE}
+
+# cat ${REPO_FILE}
