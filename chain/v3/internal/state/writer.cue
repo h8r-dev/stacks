@@ -58,6 +58,7 @@ import (
 						REPO_URL:     _args.vars[(f.name)].repoURL
 						PROVIDER:     "github"
 						ORGANIZATION: _args.vars.input.organization
+						WAIT_FOR:     "\(_args.waitFor)"
 					}
 					mounts: kubeconfig: {
 						dest:     "/root/.kube/config"
