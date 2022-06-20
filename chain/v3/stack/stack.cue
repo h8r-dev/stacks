@@ -65,6 +65,7 @@ import (
 			frameworks:     args.frameworks
 			vars:           _var
 			cdVar:          _infra.argoCD
+			waitFor:        _createRepos.output.success
 		}
 	}
 

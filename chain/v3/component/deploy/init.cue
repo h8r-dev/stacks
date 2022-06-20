@@ -17,6 +17,7 @@ import (
 		domain:         string
 		repoVisibility: string
 		organization:   string
+		waitFor:        bool | *true
 		githubToken:    dagger.#Secret
 		kubeconfig:     dagger.#Secret
 		vars:           var.#Generator
@@ -86,7 +87,7 @@ import (
 			repositoryURL:      _args.vars.deploy.repoURL
 			appPath:            "\(name)"
 			argoVar:            _args.cdVar
-			waitFor:            _crateRepo.output.success
+			waitFor:            _crateRepo.output.success && _args.waitFor
 		}
 	}
 
@@ -99,6 +100,7 @@ import (
 			set:        "global.nocalhost.enabled=true"
 			chart:      _createEncryptedSecret.output.chart
 			kubeconfig: _args.kubeconfig
+			waitFor:    _createApp.output.success
 		}
 	}
 

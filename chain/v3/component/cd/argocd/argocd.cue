@@ -50,4 +50,5 @@ import (
 			filename:  "create-app.sh"
 		}
 	}
+	output: success: _run.success
 }
