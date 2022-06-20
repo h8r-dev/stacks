@@ -12,9 +12,11 @@ import (
 
 #Write: {
 	input: {
+		domain:     string
 		kubeconfig: dagger.#Secret
 		frameworks: [...]
-		vars: var.#Generator
+		vars:    var.#Generator
+		waitFor: bool | *true
 	}
 
 	_args: input
@@ -89,6 +91,7 @@ import (
 					REPO_URL:     _args.vars.deploy.repoURL
 					PROVIDER:     "github"
 					ORGANIZATION: _args.vars.input.organization
+					WAIT_FOR:     "\(_args.waitFor)"
 				}
 				script: {
 					directory: _modifyRepoSh.output
@@ -119,6 +122,7 @@ import (
 				NAMESPACE:     "heighliner-infra"
 				STACK_NAME:    "gin-next"
 				STACK_VERSION: "0.0.1"
+				WAIT_FOR:      "\(_args.waitFor)"
 			}
 			script: {
 				directory: _modifyAppSh.output
@@ -148,13 +152,14 @@ import (
 				NAMESPACE:            "heighliner-infra"
 				DEVSPACE_NAME:        "dev"
 				DEVSPACE_NAMEPSACE:   "dev"
-				PREVIEW_URL:          "https://preview.h8r.io"
+				PREVIEW_URL:          "http://dev." + _args.vars.input.applicationName + "." + _args.domain
 				CHART_VERSION:        "0.0.1"
 				CHART_URL:            _args.vars.deploy.repoURL
 				CHART_TYPE:           "github"
-				CHART_PATH:           "/"
+				CHART_PATH:           "/" + _args.vars.input.applicationName
 				CHART_VALUES_FILE:    "values.yaml"
 				CHART_DEFAULT_BRANCH: "main"
+				WAIT_FOR:             "\(_args.waitFor)"
 			}
 			script: {
 				directory: _modifyEnvSh.output

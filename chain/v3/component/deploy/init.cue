@@ -8,6 +8,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v3/component/deploy/helm"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 	"github.com/h8r-dev/stacks/chain/v3/internal/var"
+	"github.com/h8r-dev/stacks/chain/v3/internal/state"
 )
 
 #Init: {
@@ -98,6 +99,17 @@ import (
 			set:        "global.nocalhost.enabled=true"
 			chart:      _createEncryptedSecret.output.chart
 			kubeconfig: _args.kubeconfig
+		}
+	}
+
+	// TODO: wait for resources are really created
+	_writeStates: state.#Write & {
+		input: {
+			domain:     _args.domain
+			kubeconfig: _args.kubeconfig
+			frameworks: _args.frameworks
+			vars:       _args.vars
+			waitFor:    _createDevEnvironment.output.success
 		}
 	}
 }
