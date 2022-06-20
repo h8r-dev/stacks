@@ -53,8 +53,8 @@ jobs:
 
       - name: Config tccli
         env:
-          SECRET_ID: ${{ secrets.TCLOUD_API_ID }}
-          SECRET_KEY: ${{ secrets.TCLOUD_API_KEY }}
+          SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
           BUCKET: h8r-stack-1309519128
           REGION: ap-hongkong
         run: |
