@@ -26,6 +26,7 @@ helm upgrade $RELEASE_NAME heighliner-cloud \
     --force \
     --cleanup-on-fail \
     --set "heighliner-cloud-backend.initCluster.kubeconfig=${ORIGINAL_KUBECONFIG}" \
+    --set "heighliner-cloud-frontend.ingress.hosts[0].host=${DOMAIN},heighliner-cloud-frontend.ingress.hosts[0].paths[0].path=/,heighliner-cloud-frontend.ingress.hosts[0].paths[0].pathType=ImplementationSpecific" --set "heighliner-cloud-backend.ingress.hosts[0].host=${DOMAIN},heighliner-cloud-backend.ingress.hosts[0].paths[0].path=\"/api(/|$)(.*)\",heighliner-cloud-backend.ingress.hosts[0].paths[0].pathType=ImplementationSpecific" \
     --wait
 
 echo "Install heighliner-dashboard helm chart Done."

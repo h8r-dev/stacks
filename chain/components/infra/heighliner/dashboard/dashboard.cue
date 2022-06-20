@@ -21,6 +21,7 @@ import (
 			CHART_URL_INTERNAL: origin.#Origin.dashboard.internal.url
 			CHART_URL_GLOBAL:   origin.#Origin.dashboard.global.url
 			WITHOUT_DASHBOARD:  input.withoutDashboard
+			DOMAIN:             input.domain.infra.dashboard
 		}
 		mounts: kubeconfig: {
 			dest:     "/root/.kube/config"

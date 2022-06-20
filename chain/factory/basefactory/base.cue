@@ -47,6 +47,7 @@ package basefactory
 		grafana:      "grafana." + domain
 		nocalhost:    "nocalhost." + domain
 		dapr:         "dapr." + domain
+		dashboard:    "dashboard." + domain
 	}
 }
 
