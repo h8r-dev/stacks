@@ -2,9 +2,9 @@ package cloudflare
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/bash"
-	"universe.dagger.io/alpine"
 	"encoding/json"
+	"universe.dagger.io/alpine"
+	"universe.dagger.io/bash"
 )
 
 #CreateDNSRecord: {

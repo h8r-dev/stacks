@@ -1,9 +1,9 @@
 package grafana
 
 import (
-	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"strconv"
+	"universe.dagger.io/bash"
 )
 
 #CreateIngressDashboard: {

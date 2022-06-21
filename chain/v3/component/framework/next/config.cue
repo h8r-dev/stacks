@@ -2,9 +2,8 @@ package next
 
 import (
 	"dagger.io/dagger/core"
-	"universe.dagger.io/bash"
-
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	"universe.dagger.io/bash"
 )
 
 #Config: {

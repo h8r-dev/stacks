@@ -2,9 +2,9 @@ package grafana
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"strconv"
+	"universe.dagger.io/bash"
 )
 
 #GetGrafanaSecret: {

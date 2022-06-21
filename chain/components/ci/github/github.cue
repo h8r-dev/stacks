@@ -1,9 +1,9 @@
 package github
 
 import (
-	"universe.dagger.io/docker"
-	"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
+	"universe.dagger.io/bash"
+	"universe.dagger.io/docker"
 )
 
 #Instance: {

@@ -3,8 +3,8 @@ package gomplate
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"github.com/h8r-dev/stacks/chain/internal/utils/template"
 	"encoding/yaml"
+	"github.com/h8r-dev/stacks/chain/internal/utils/template"
 )
 
 // for test

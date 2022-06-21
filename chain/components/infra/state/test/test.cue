@@ -2,9 +2,8 @@ package test
 
 import (
 	"dagger.io/dagger"
-
-	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 	"github.com/h8r-dev/stacks/chain/components/infra/state"
+	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 )
 
 dagger.#Plan & {

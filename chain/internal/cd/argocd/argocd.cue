@@ -3,13 +3,13 @@ package argocd
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
+	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
+	"github.com/h8r-dev/stacks/chain/internal/h8r/h8r"
+	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
+	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"strconv"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
-	"github.com/h8r-dev/stacks/chain/internal/utils/base"
-	"github.com/h8r-dev/stacks/chain/internal/h8r/h8r"
-	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
 )
 
 #Install: {

@@ -2,8 +2,8 @@ package dashboard
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/docker"
 	"github.com/h8r-dev/stacks/chain/factory/basefactory"
+	"universe.dagger.io/docker"
 )
 
 #Input: {

@@ -1,12 +1,12 @@
 package github
 
 import (
-	"universe.dagger.io/bash"
-	"universe.dagger.io/docker"
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"strings"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	"strings"
+	"universe.dagger.io/bash"
+	"universe.dagger.io/docker"
 )
 
 #Input: {

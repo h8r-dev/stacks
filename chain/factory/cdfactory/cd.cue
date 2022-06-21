@@ -1,8 +1,8 @@
 package cdfactory
 
 import (
-	//"github.com/h8r-dev/stacks/chain/factory/ingressfactory"
 	"github.com/h8r-dev/stacks/chain/components/cd/argocd"
+	//"github.com/h8r-dev/stacks/chain/factory/ingressfactory"
 )
 
 #Instance: {

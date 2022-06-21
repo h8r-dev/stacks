@@ -2,8 +2,8 @@ package status
 
 import (
 	"dagger.io/dagger"
-	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/internal/utils/status"
+	"universe.dagger.io/bash"
 )
 
 dagger.#Plan & {

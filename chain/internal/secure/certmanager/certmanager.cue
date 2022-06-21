@@ -1,14 +1,13 @@
 package certmanager
 
 import (
+	"dagger.io/dagger"
+	"encoding/json"
 	"github.com/h8r-dev/stacks/chain/internal/deploy/helm"
+	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
+	"strconv"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
-	"encoding/json"
-	"strconv"
-
 )
 
 #InstallCertManager: {

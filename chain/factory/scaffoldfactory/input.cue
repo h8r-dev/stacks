@@ -1,8 +1,8 @@
 package scaffoldfactory
 
 import (
-	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 	"dagger.io/dagger"
+	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Input: {

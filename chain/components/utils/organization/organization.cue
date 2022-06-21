@@ -3,8 +3,8 @@ package organization
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
+	"universe.dagger.io/bash"
 )
 
 #Github: {

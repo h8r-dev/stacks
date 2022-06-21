@@ -3,8 +3,8 @@ package fs
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"universe.dagger.io/alpine"
 	"github.com/h8r-dev/stacks/chain/internal/utils/fs"
+	"universe.dagger.io/alpine"
 )
 
 dagger.#Plan & {

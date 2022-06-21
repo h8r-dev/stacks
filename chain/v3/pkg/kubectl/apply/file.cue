@@ -3,9 +3,9 @@ package apply
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
+	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 )
 
 #File: {

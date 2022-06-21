@@ -1,8 +1,8 @@
 package nocalhost
 
 import (
-	"universe.dagger.io/docker"
 	"github.com/h8r-dev/stacks/chain/factory/basefactory"
+	"universe.dagger.io/docker"
 )
 
 #Input: {

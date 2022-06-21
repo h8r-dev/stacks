@@ -3,11 +3,11 @@ package state
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
+	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	"github.com/h8r-dev/stacks/chain/v3/internal/var"
+	"github.com/h8r-dev/stacks/chain/v3/pkg/kubectl/apply"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/chain/v3/internal/base"
-	"github.com/h8r-dev/stacks/chain/v3/pkg/kubectl/apply"
-	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 )
 
 #Write: {

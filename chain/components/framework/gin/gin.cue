@@ -1,8 +1,8 @@
 package gin
 
 import (
-	"universe.dagger.io/docker"
 	"dagger.io/dagger/core"
+	"universe.dagger.io/docker"
 )
 
 #Instance: {
