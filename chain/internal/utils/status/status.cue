@@ -1,8 +1,8 @@
 package status
 
 import (
-	"dagger.io/dagger"
 	"strconv"
+	"dagger.io/dagger"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 )

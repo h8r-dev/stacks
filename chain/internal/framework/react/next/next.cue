@@ -1,8 +1,8 @@
 package next
 
 import (
-	"dagger.io/dagger/core"
 	"strconv"
+	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 )

@@ -1,8 +1,8 @@
 package grafana
 
 import (
-	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"strconv"
+	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"universe.dagger.io/bash"
 )
 

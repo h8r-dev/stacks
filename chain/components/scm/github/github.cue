@@ -1,8 +1,8 @@
 package github
 
 import (
-	"dagger.io/dagger/core"
 	"strings"
+	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 )

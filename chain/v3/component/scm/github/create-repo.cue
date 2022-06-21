@@ -2,9 +2,9 @@ package github
 
 import (
 	"dagger.io/dagger"
+	"strings"
 	"dagger.io/dagger/core"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
-	"strings"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 )

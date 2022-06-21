@@ -1,11 +1,11 @@
 package ingress
 
 import (
+	"encoding/yaml"
+	"strings"
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"encoding/yaml"
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
-	"strings"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
 )

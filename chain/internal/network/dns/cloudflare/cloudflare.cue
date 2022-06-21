@@ -1,8 +1,8 @@
 package cloudflare
 
 import (
-	"dagger.io/dagger"
 	"encoding/json"
+	"dagger.io/dagger"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 )
