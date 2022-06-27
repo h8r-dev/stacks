@@ -8,7 +8,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v3/component/deploy/helm"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 	"github.com/h8r-dev/stacks/chain/v3/internal/var"
-	"github.com/h8r-dev/stacks/chain/v3/internal/state"
+	//"github.com/h8r-dev/stacks/chain/v3/internal/state"
 )
 
 #Init: {
@@ -91,27 +91,30 @@ import (
 		}
 	}
 
-	// TODO: get namespace from env
-	_createDevEnvironment: helm.#InstallOrUpgrade & {
-		input: {
-			name:       _args.name
-			namespace:  "dev"
-			path:       "/" + _args.name
-			set:        "global.nocalhost.enabled=true"
-			chart:      _createEncryptedSecret.output.chart
-			kubeconfig: _args.kubeconfig
-			waitFor:    _createApp.output.success
-		}
-	}
+	// // TODO: get namespace from env
+	// _createDevEnvironment: helm.#InstallOrUpgrade & {
+	//  input: {
+	//   name:       _args.name
+	//   namespace:  "dev"
+	//   path:       "/" + _args.name
+	//   set:        "global.nocalhost.enabled=true"
+	//   chart:      _createEncryptedSecret.output.chart
+	//   kubeconfig: _args.kubeconfig
+	//   waitFor:    _createApp.output.success
+	//  }
+	// }
 
-	// TODO: wait for resources are really created
-	_writeStates: state.#Write & {
-		input: {
-			domain:     _args.domain
-			kubeconfig: _args.kubeconfig
-			frameworks: _args.frameworks
-			vars:       _args.vars
-			waitFor:    _createDevEnvironment.output.success
-		}
-	}
+	// // TODO: wait for resources are really created
+	// _writeStates: state.#Write & {
+	//  input: {
+	//   domain:     _args.domain
+	//   kubeconfig: _args.kubeconfig
+	//   frameworks: _args.frameworks
+	//   vars:       _args.vars
+	//   waitFor:    _createDevEnvironment.output.success
+	//  }
+	// }
+
+	//output: success: _createDevEnvironment.output.success
+	output: success: _createApp.output.success
 }

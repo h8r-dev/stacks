@@ -33,4 +33,12 @@ dagger.#Plan & {
 			personalAccessToken: client.env.GITHUB_TOKEN
 		}
 	}
+
+	actions: testpull: github.#Pull & {
+		input: github.#Input & {
+			repositoryName:      "hello-world-30-deploy"
+			organization:        client.env.ORGANIZATION
+			personalAccessToken: client.env.GITHUB_TOKEN
+		}
+	}
 }

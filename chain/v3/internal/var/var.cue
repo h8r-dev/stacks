@@ -51,6 +51,11 @@ _#repository: {
 }
 
 frameworkType: {
-	gin:  "backend"
-	next: "frontend"
+	gin:    "backend"
+	next:   "frontend"
+	spring: "backend"
+	vue:    "frontend"
+	remix:  "frontend"
+	dotnet: "backend"
+	react:  "frontend"
 }

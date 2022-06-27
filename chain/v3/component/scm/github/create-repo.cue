@@ -77,3 +77,31 @@ import (
 		}
 	}
 }
+
+#Pull: {
+	input: #Input
+
+	_sh: core.#Source & {
+		path: "."
+		include: ["pull-github-repo.sh"]
+	}
+
+	_pull: bash.#Run & {
+		"input": base.#Image
+		workdir: "/workdir"
+		env: {
+			REPOSITORY_NAME:     input.repositoryName
+			GITHUB_TOKEN:        input.personalAccessToken
+			GITHUB_ORGANIZATION: input.organization
+			GIT_USER_NAME:       input.gitUserName
+			GIT_USER_EMAIL:      input.gitUserEmail
+		}
+		script: {
+			directory: _sh.output
+			filename:  "pull-github-repo.sh"
+		}
+		export: directories: "/workdir": _
+	}
+
+	output: repo: _pull.export.directories."/workdir"
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v3/component/repository"
 	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/v3/component/env"
 )
 
 #Install: {
@@ -17,6 +18,7 @@ import (
 		networkType:    string
 		repoVisibility: string
 		organization:   string
+		envName:        string
 		githubToken:    dagger.#Secret
 		kubeconfig:     dagger.#Secret
 		frameworks: [...]
@@ -66,6 +68,21 @@ import (
 			vars:           _var
 			cdVar:          _infra.argoCD
 			waitFor:        _createRepos.output.success
+		}
+	}
+
+	_createEnv: env.#Create & {
+		input: {
+			appName:         args.name
+			domain:          args.domain
+			envName:         args.envName
+			scmOrganization: args.organization
+			githubToken:     args.githubToken
+			kubeconfig:      _transformKubeconfig.output.kubeconfig
+			vars:            _var
+			frameworks:      args.frameworks
+			waitFor:         _deployApp.output.success
+			kubeconfig:      _transformKubeconfig.output.kubeconfig
 		}
 	}
 

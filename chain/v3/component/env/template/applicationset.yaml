@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ""
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: "" #https://github.com/lyzhang1999/hello-world-30-deploy.git
+      revision: HEAD
+      files:
+      - path: "" #hello-world-30/env/*/values.yaml
+  template:
+    metadata:
+      name: "" #{{path.basename}}-hello-world-30
+    spec:
+      project: default
+      source:
+        repoURL: "" #https://github.com/lyzhang1999/hello-world-30-deploy.git
+        targetRevision: HEAD
+        path: "" #hello-world-30
+        helm:
+          valueFiles:
+          - "env/{{path.basename}}/values.yaml"
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '' #hello-world-30-{{path.basename}}
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=true
