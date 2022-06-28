@@ -3,7 +3,7 @@ module github.com/h8r-dev/stacks/gin_next_stack_test/test
 go 1.18
 
 require (
-	github.com/google/go-github/v43 v43.0.0
+	github.com/google/go-github/v45 v45.2.0
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.19.0
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
