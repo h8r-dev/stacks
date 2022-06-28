@@ -154,7 +154,7 @@ import (
 				NAMESPACE:            "\(_args.namespace)"
 				DEVSPACE_NAME:        "dev"
 				DEVSPACE_NAMEPSACE:   "dev"
-				PREVIEW_URL:          "http://dev." + _args.vars.input.applicationName + "." + _args.domain
+				PREVIEW_URL:          "http://dev-" + _args.domain
 				CHART_VERSION:        "0.0.1"
 				CHART_URL:            _args.vars.deploy.repoURL
 				CHART_TYPE:           "github"
