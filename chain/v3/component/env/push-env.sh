@@ -9,7 +9,7 @@ do
     REPOSITORY_NAME=$(echo $file | tr -d '/')
     cd /helm/$file
     git remote set-url origin "https://$GITHUB_TOKEN@github.com/$GITHUB_ORGANIZATION/$REPOSITORY_NAME"
-    if [[ "$file" == *"deploy"* ]];then
+    if [[ "$file" == *"deploy"* ]]; then
         deployRepo="https://github.com/$GITHUB_ORGANIZATION/$REPOSITORY_NAME"
         # values.yaml already exists, skip push
         # if [ -e $APP_NAME/env/$ENV_NAME/values.yaml ]

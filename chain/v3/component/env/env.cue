@@ -34,7 +34,7 @@ import (
 				if idx > 0 {
 					_output: _addValuesFile["\(idx-1)"].output.repo // use pre fs
 				}
-				"input": {
+				input: {
 					repositoryName:      _args.vars[(f.name)].repoName
 					personalAccessToken: _args.githubToken
 					organization:        _args.scmOrganization

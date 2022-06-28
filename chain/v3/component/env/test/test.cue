@@ -7,16 +7,14 @@ import (
 )
 
 dagger.#Plan & {
-	client: {
-		env: {
-			ORGANIZATION:    string
-			GITHUB_TOKEN:    dagger.#Secret
-			ENV_NAME:        string
-			APP_NAME:        string
-			APP_DOMAIN:      string | *"h8r.site"
-			NETWORK_TYPE:    string | *"default"
-			REPO_VISIBILITY: string | *"private"
-		}
+	client: env: {
+		ORGANIZATION:    string
+		GITHUB_TOKEN:    dagger.#Secret
+		ENV_NAME:        string
+		APP_NAME:        string
+		APP_DOMAIN:      string | *"h8r.site"
+		NETWORK_TYPE:    string | *"default"
+		REPO_VISIBILITY: string | *"private"
 	}
 	actions: test: {
 		args: {
