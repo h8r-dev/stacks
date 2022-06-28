@@ -14,7 +14,7 @@ if [ -n "$HELM_SET" ]; then
   eval "$set"
 fi
 # set domain
-domain=$APP_NAME.$APPLICATION_DOMAIN
+domain=$APPLICATION_DOMAIN
 path=$INGRESS_HOST_PATH
 if $REWRITE_INGRESS_HOST_PATH; then
   path=$path"(/|$)(.*)"
