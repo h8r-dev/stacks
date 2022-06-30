@@ -2,8 +2,8 @@ package next
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/framework/react/next"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/internal/framework/react/next"
 )
 
 dagger.#Plan & {

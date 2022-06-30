@@ -2,8 +2,8 @@ package kubeconfig
 
 import (
 	"dagger.io/dagger/core"
-	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 )
 
 // TransformToInternal transforms the given kubeconfig to internal cluster address

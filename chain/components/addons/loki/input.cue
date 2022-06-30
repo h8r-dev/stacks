@@ -1,8 +1,8 @@
 package loki
 
 import (
-	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 )
 
 #Input: {

@@ -3,8 +3,8 @@ package argocd
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
-	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 )
 
 #Input: {

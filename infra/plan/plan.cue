@@ -2,6 +2,7 @@ package main
 
 import (
 	"dagger.io/dagger"
+	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/components/infra/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/components/infra/crd"
 	"github.com/h8r-dev/stacks/chain/components/infra/dapr"
@@ -14,7 +15,6 @@ import (
 	kubectlUtil "github.com/h8r-dev/stacks/chain/components/utils/kubectl"
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	kubeconfigUtil "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
-	"universe.dagger.io/bash"
 )
 
 // TODO: precheck resources that existed in the namespace.

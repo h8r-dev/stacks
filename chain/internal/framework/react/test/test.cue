@@ -2,8 +2,8 @@ package react
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/framework/react"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/internal/framework/react"
 )
 
 // for test

@@ -2,10 +2,10 @@ package template
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/utils/fs"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/internal/utils/fs"
 )
 
 #RenderDir: {

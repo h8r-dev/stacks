@@ -2,8 +2,8 @@ package terraform
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/utils/terraform"
 	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/internal/utils/terraform"
 )
 
 dagger.#Plan & {

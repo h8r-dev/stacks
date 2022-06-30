@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"strconv"
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/deploy/helm"
-	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
+	"github.com/h8r-dev/stacks/chain/internal/deploy/helm"
+	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
 )
 
 #InstallCertManager: {

@@ -2,8 +2,8 @@ package nocalhost
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/internal/utils/base"
 )
 
 #GetToken: {

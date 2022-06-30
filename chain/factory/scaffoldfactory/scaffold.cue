@@ -1,6 +1,7 @@
 package scaffoldfactory
 
 import (
+	"universe.dagger.io/docker"
 	"github.com/h8r-dev/stacks/chain/components/addons/dapr"
 	nginxCloud "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/cloud"
 	nginxKind "github.com/h8r-dev/stacks/chain/components/addons/ingress/nginx/kind"
@@ -19,7 +20,6 @@ import (
 	"github.com/h8r-dev/stacks/chain/components/framework/vue"
 	githubRegistry "github.com/h8r-dev/stacks/chain/components/registry/github"
 	"github.com/h8r-dev/stacks/chain/internal/utils/base"
-	"universe.dagger.io/docker"
 )
 
 #Instance: {

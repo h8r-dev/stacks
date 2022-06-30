@@ -2,11 +2,11 @@ package argocd
 
 import (
 	"dagger.io/dagger/core"
+	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/factory/basefactory"
 	"github.com/h8r-dev/stacks/chain/internal/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/internal/deploy/kubectl"
 	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
-	"universe.dagger.io/bash"
 )
 
 #Instance: {

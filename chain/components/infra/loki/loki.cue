@@ -2,8 +2,8 @@ package loki
 
 import (
 	"dagger.io/dagger/core"
-	"github.com/h8r-dev/stacks/chain/components/origin"
 	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/components/origin"
 )
 
 #Instance: {

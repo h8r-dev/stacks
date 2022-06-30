@@ -2,9 +2,9 @@ package random
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/utils/random"
 	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/internal/utils/random"
 )
 
 dagger.#Plan & {
