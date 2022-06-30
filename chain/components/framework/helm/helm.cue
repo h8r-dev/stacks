@@ -2,8 +2,8 @@ package helm
 
 import (
 	"strconv"
-	"universe.dagger.io/bash"
 	"dagger.io/dagger/core"
+	"universe.dagger.io/bash"
 )
 
 #Instance: {

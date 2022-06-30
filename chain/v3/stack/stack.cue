@@ -2,12 +2,11 @@ package stack
 
 import (
 	"dagger.io/dagger"
-
-	"github.com/h8r-dev/stacks/chain/v3/internal/addon"
 	"github.com/h8r-dev/stacks/chain/v3/component/deploy"
 	"github.com/h8r-dev/stacks/chain/v3/component/repository"
-	"github.com/h8r-dev/stacks/chain/v3/internal/var"
+	"github.com/h8r-dev/stacks/chain/v3/internal/addon"
 	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 )
 
 #Install: {

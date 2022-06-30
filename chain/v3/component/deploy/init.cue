@@ -2,13 +2,12 @@ package deploy
 
 import (
 	"dagger.io/dagger"
-
 	"github.com/h8r-dev/stacks/chain/v3/component/cd/argocd"
-	"github.com/h8r-dev/stacks/chain/v3/component/scm/github"
 	"github.com/h8r-dev/stacks/chain/v3/component/deploy/helm"
+	"github.com/h8r-dev/stacks/chain/v3/component/scm/github"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
-	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 	"github.com/h8r-dev/stacks/chain/v3/internal/state"
+	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 )
 
 #Init: {

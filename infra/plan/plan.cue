@@ -3,24 +3,18 @@ package main
 import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
-
-	// Utility tools
-	"github.com/h8r-dev/stacks/chain/internal/utils/base"
-	kubeconfigUtil "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
-	kubectlUtil "github.com/h8r-dev/stacks/chain/components/utils/kubectl"
-
-	// Infra components
+	"github.com/h8r-dev/stacks/chain/components/infra/cd/argocd"
+	"github.com/h8r-dev/stacks/chain/components/infra/crd"
+	"github.com/h8r-dev/stacks/chain/components/infra/dapr"
+	"github.com/h8r-dev/stacks/chain/components/infra/heighliner/dashboard"
 	"github.com/h8r-dev/stacks/chain/components/infra/loki"
 	"github.com/h8r-dev/stacks/chain/components/infra/nocalhost"
-	"github.com/h8r-dev/stacks/chain/components/infra/dapr"
-	"github.com/h8r-dev/stacks/chain/components/infra/sealedSecrets"
 	"github.com/h8r-dev/stacks/chain/components/infra/prometheus"
-	"github.com/h8r-dev/stacks/chain/components/infra/cd/argocd"
-	"github.com/h8r-dev/stacks/chain/components/infra/heighliner/dashboard"
-
-	// State management
+	"github.com/h8r-dev/stacks/chain/components/infra/sealedSecrets"
 	"github.com/h8r-dev/stacks/chain/components/infra/state"
-	"github.com/h8r-dev/stacks/chain/components/infra/crd"
+	kubectlUtil "github.com/h8r-dev/stacks/chain/components/utils/kubectl"
+	"github.com/h8r-dev/stacks/chain/internal/utils/base"
+	kubeconfigUtil "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 )
 
 // TODO: precheck resources that existed in the namespace.

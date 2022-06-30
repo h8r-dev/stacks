@@ -5,8 +5,8 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
-	"github.com/h8r-dev/stacks/chain/v3/pkg/kubectl/apply"
 	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/v3/pkg/kubectl/apply"
 )
 
 dagger.#Plan & {

@@ -2,9 +2,9 @@ package template
 
 import (
 	"dagger.io/dagger"
+	"universe.dagger.io/alpine"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"universe.dagger.io/alpine"
 	"github.com/h8r-dev/stacks/chain/internal/utils/fs"
 )
 

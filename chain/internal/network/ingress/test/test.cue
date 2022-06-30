@@ -2,8 +2,8 @@ package ingress
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
 	"github.com/h8r-dev/stacks/chain/internal/deploy/helm"
+	"github.com/h8r-dev/stacks/chain/internal/network/ingress"
 )
 
 ingressNginxSetting: #"""

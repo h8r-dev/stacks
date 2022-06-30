@@ -4,8 +4,8 @@ import (
 	"dagger.io/dagger"
 	"github.com/h8r-dev/stacks/chain/v3/component/ci"
 	"github.com/h8r-dev/stacks/chain/v3/component/framework"
-	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 	"github.com/h8r-dev/stacks/chain/v3/component/scm/github"
+	"github.com/h8r-dev/stacks/chain/v3/internal/var"
 	"github.com/h8r-dev/stacks/chain/v3/pkg/wait"
 )
 

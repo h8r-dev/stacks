@@ -3,10 +3,9 @@ package test
 import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
-
-	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 	"github.com/h8r-dev/stacks/chain/v3/component/deploy/helm"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig"
 )
 
 dagger.#Plan & {

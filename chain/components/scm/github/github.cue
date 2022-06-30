@@ -1,10 +1,10 @@
 package github
 
 import (
+	"strings"
+	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"dagger.io/dagger/core"
-	"strings"
 )
 
 #Instance: {

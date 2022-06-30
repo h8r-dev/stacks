@@ -1,9 +1,9 @@
 package github
 
 import (
-	"universe.dagger.io/bash"
 	"strings"
 	"dagger.io/dagger/core"
+	"universe.dagger.io/bash"
 )
 
 #Instance: {

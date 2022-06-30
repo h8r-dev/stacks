@@ -1,8 +1,8 @@
 package github
 
 import (
-	"universe.dagger.io/docker"
 	"dagger.io/dagger"
+	"universe.dagger.io/docker"
 )
 
 #Input: {

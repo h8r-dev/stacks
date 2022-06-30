@@ -3,9 +3,8 @@ package test
 import (
 	"dagger.io/dagger"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/chain/v3/pkg/wait"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
-
+	"github.com/h8r-dev/stacks/chain/v3/pkg/wait"
 )
 
 dagger.#Plan & {

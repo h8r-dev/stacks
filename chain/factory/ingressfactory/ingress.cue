@@ -1,9 +1,9 @@
 package ingressfactory
 
 import (
-	nginxKind "github.com/h8r-dev/stacks/chain/components/ingress/nginx/kind"
-	nginxCloud "github.com/h8r-dev/stacks/chain/components/ingress/nginx/cloud"
 	"universe.dagger.io/docker"
+	nginxCloud "github.com/h8r-dev/stacks/chain/components/ingress/nginx/cloud"
+	nginxKind "github.com/h8r-dev/stacks/chain/components/ingress/nginx/kind"
 )
 
 #Instance: {
