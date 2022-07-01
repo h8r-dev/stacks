@@ -84,16 +84,6 @@ config_default_password() {
 # Config Misc settings.
 #---------------------------------------------------------
 config_misc() {
-  # add grafana loki datasource
-  yq -i '
-    .grafana.additionalDataSources[0] = {
-        "name": "loki",
-        "type": "loki",
-        "access": "proxy",
-        "url": "http://loki.loki:3100/"
-    }
-  ' $CHART_DIR/values.yaml
-
   # Config hln alert rules
   # convention: rules created by hln stack will have the label: "role: hln-rules"
   yq -i '
