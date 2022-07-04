@@ -14,6 +14,7 @@ import (
 		version:    string | *""
 		namespace:  string
 		set:        string | *""
+		values:     string | *""
 		waitFor:    bool | *true
 		wait:       bool | *false
 		kubeconfig: dagger.#Secret
@@ -58,6 +59,7 @@ import (
 			VERSION:   input.version
 			NAMESPACE: input.namespace
 			SET:       input.set
+			VALUES:    input.values
 			WAIT:      "\(input.wait)"
 			WAIT_FOR:  "\(input.waitFor)"
 			input._env
