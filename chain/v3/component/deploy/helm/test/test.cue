@@ -84,10 +84,14 @@ dagger.#Plan & {
 		testHelm: {
 			local: helm.#InstallOrUpgrade & {
 				input: {
-					name:       "test"
-					namespace:  "test2"
-					path:       "/test-chart"
-					set:        "global.nocalhost.enabled=true"
+					name:      "test"
+					namespace: "test2"
+					path:      "/test-chart"
+					values: """
+						global:
+						  nocalhost:
+						    enabled: true
+						"""
 					chart:      _createParentChart.output.chart
 					kubeconfig: _transformKubeconfig.output.kubeconfig
 				}

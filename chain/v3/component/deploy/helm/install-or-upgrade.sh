@@ -5,21 +5,32 @@ WAIT=${WAIT:-"false"}
 ATOMIC=${ATOMIC:-"false"}
 
 # set opts
+# --timeout
 OPTS="${OPTS} --timeout ${TIMEOUT}"
+# --namespace
 OPTS="${OPTS} --namespace ${NAMESPACE}"
+# --repo
 [ -n "${REPO}" ] && OPTS="${OPTS} --repo ${REPO}"
+# --set
 [ -n "${SET}" ] && OPTS="${OPTS} --set ${SET}"
-[ -n "${VERSION}" ] && OPTS="$OPTS --version ${VERSION}"
-[ "$WAIT" == "true" ] && OPTS="$OPTS --wait"
-[ "$ATOMIC" == "true" ] && OPTS="$OPTS --atomic"
-
+# --values
+if [ -n "${VALUES}" ]; then
+  printf %s "${VALUES}" > /tmp/helm_values.yaml
+  OPTS="${OPTS} --values /tmp/helm_values.yaml"
+fi
+# --version
+[ -n "${VERSION}" ] && OPTS="${OPTS} --version ${VERSION}"
+# --wait
+[ "$WAIT" == "true" ] && OPTS="${OPTS} --wait"
+# --atomic
+[ "$ATOMIC" == "true" ] && OPTS="${OPTS} --atomic"
 
 # set chart
 [ -n "${CHART_PATH}" ] && CHART=".${CHART_PATH}"
 
 # create namespace
 set +e
-kubectl create namespace "$NAMESPACE" > /dev/null 2>&1
+kubectl create namespace "${NAMESPACE}" > /dev/null 2>&1
 set -e
 
 # Try delete pending-upgrade helm release
@@ -28,6 +39,6 @@ kubectl -n "${NAMESPACE}" delete secret -l name="${NAME}",status=pending-upgrade
 kubectl -n "${NAMESPACE}" delete secret -l name="${NAME}",status=pending-install
 
 helm_exec="helm upgrade ${NAME} ${CHART} ${OPTS} --install --dependency-update"
-echo "$helm_exec"
+echo "${helm_exec}"
 $helm_exec
 
