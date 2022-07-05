@@ -18,6 +18,7 @@ import (
 		kubeconfig:      dagger.#Secret
 		vars:            var.#Generator
 		frameworks: [...]
+		initRepos: string
 	}
 
 	_args: input
@@ -38,6 +39,7 @@ import (
 				}
 				_push: github.#Push & {
 					input: {
+						initRepo:            _args.initRepos
 						repositoryName:      _args.vars[(f.name)].repoName
 						contents:            _addWorkflow.output.sourceCode
 						personalAccessToken: _args.githubToken

@@ -19,6 +19,7 @@ import (
 	gitInitBranch:       string | *"main"
 	gitUserName:         string | *"heighliner"
 	gitUserEmail:        string | *"heighliner@h8r.dev"
+	initRepo:            string | *"true"
 }
 
 #Push: {
@@ -66,6 +67,7 @@ import (
 			GIT_INIT_BRANCH: input.gitInitBranch
 			GIT_USER_NAME:   input.gitUserName
 			GIT_USER_EMAIL:  input.gitUserEmail
+			CONFIRM_PUSH:    input.initRepo
 		}
 		mounts: kubeconfig: {
 			dest:     "/root/.kube/config"

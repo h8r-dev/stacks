@@ -20,6 +20,8 @@ import (
 		kubeconfig:     dagger.#Secret
 		frameworks: [...]
 		addons: [...]
+		initRepos: string
+		services: [...]
 	}
 
 	_var: var.#Generator & {
@@ -43,6 +45,7 @@ import (
 
 	_createRepos: repository.#Create & {
 		input: {
+			initRepos:       args.initRepos
 			appName:         args.name
 			scmOrganization: args.organization
 			repoVisibility:  args.repoVisibility
@@ -62,6 +65,7 @@ import (
 			githubToken:    args.githubToken
 			kubeconfig:     _transformKubeconfig.output.kubeconfig
 			frameworks:     args.frameworks
+			services:       args.services
 			vars:           _var
 			cdVar:          _infra.argoCD
 			waitFor:        _createRepos.output.success

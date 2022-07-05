@@ -22,6 +22,7 @@ import (
 		vars:           var.#Generator
 		cdVar:          dagger.#Secret
 		frameworks: [...]
+		services: [...]
 	}
 
 	_args: input
@@ -43,11 +44,24 @@ import (
 				}
 			}
 		}
+		for s in _args.services {
+			(s.name): helm.#CreateMicroChart & {
+				input: {
+					name:     s.name
+					imageURL: s.url
+				}
+			}
+		}
 	}
 
-	_subChartList: [ for f in _args.frameworks {
-		_createHelmChart[(f.name)].output.chart
-	}]
+	_subChartList: [
+		for f in _args.frameworks {
+			_createHelmChart[(f.name)].output.chart
+		},
+		for s in _args.services {
+			_createHelmChart[(s.name)].output.chart
+		},
+	]
 
 	_createParentChart: {
 		helm.#CreateParentChart & {
