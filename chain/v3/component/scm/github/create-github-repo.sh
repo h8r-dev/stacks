@@ -4,8 +4,6 @@ echo ${CONFIRM_PUSH}
 if [ ! ${CONFIRM_PUSH} == "true" ]; then
 	exit 0
 fi
-ls -lah /workdir/source/test10/charts/
-exit 1
 
 SOURCECODE_DIR=/workdir/source
 TERRAFORM_DIR=/workdir/terraform

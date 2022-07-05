@@ -34,8 +34,12 @@ dagger.#Plan & {
 			kubeconfig:     client.commands.kubeconfig.stdout
 			services: [
 				{
-					name: "greet-service"
-					url:  "github.com"
+					name:       "backend"
+					repository: "test1-backend"
+				},
+				{
+					name:       "frontend"
+					repository: "test1-frontend"
 				},
 			]
 		}

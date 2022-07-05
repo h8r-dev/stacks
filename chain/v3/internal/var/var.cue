@@ -10,6 +10,7 @@ package var
 		scmType:         string | *"github"
 		frameworks: [...]
 		addons: [...]
+		services: [...]
 	}
 	_args: {
 		scmType:         input.scmType
@@ -27,6 +28,17 @@ package var
 		}
 	}
 
+	msvcs: {
+		for s in input.services {
+			(s.name): _#serviceRepository & {
+				type: _args.scmType
+				input: {
+					name:         s.repository
+					organization: _args.organization
+				}
+			}
+		}
+	}
 	deploy: _#repository & {
 		type: input.scmType
 		"input": {
@@ -48,6 +60,17 @@ _#repository: {
 	repoURL:       "https://github.com/\(input.organization)/\(repoName)"
 	imageURL:      "ghcr.io/\(input.organization)/\(repoName)"
 	frameworkType: "\(input.suffix)"
+}
+
+_#serviceRepository: {
+	type: "github"
+	input: {
+		name:         string
+		organization: string
+	}
+	repoName: input.name
+	repoURL:  "https://github.com/\(input.organization)/\(repoName)"
+	imageURL: "ghcr.io/\(input.organization)/\(repoName)"
 }
 
 frameworkType: {

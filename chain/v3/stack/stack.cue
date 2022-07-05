@@ -32,6 +32,7 @@ import (
 			organization:    args.organization
 			frameworks:      args.frameworks
 			addons:          args.addons
+			services:        args.services
 		}
 	}
 
