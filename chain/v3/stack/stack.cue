@@ -20,7 +20,7 @@ import (
 		kubeconfig:     dagger.#Secret
 		frameworks: [...]
 		addons: [...]
-		initRepos: string
+		initRepos: string | *"true"
 		services: [...]
 	}
 
@@ -54,6 +54,7 @@ import (
 			kubeconfig:      _transformKubeconfig.output.kubeconfig
 			vars:            _var
 			frameworks:      args.frameworks
+			services:        args.services
 		}
 	}
 
