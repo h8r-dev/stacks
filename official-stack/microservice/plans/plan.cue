@@ -12,9 +12,7 @@ dagger.#Plan & {
 			args: [env.KUBECONFIG]
 			stdout: dagger.#Secret
 		}
-		env: {
-			KUBECONFIG: string
-		}
+		env: KUBECONFIG: string
 	}
 	actions: up: stack.#Install & {
 		args: kubeconfig: client.commands.kubeconfig.stdout

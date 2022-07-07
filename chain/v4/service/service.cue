@@ -12,7 +12,6 @@ import (
 }
 
 #Config: {
-	...
 	name: string
 	{
 		scaffold: false
@@ -30,4 +29,5 @@ import (
 		}
 		// TODO use v3 codes
 	}
+	...
 }
