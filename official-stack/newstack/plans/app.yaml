@@ -1,4 +1,4 @@
-action:
+actions:
   up:
     args:
       middleware:
