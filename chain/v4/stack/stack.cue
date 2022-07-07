@@ -2,7 +2,9 @@ package stack
 
 import (
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/v3/internal/utils/echo"
+	"github.com/h8r-dev/stacks/chain/v4/service"
+	"github.com/h8r-dev/stacks/chain/v4/deploy"
+	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig" // FIXME this is v3 pkg
 )
 
 #Install: {
@@ -10,27 +12,16 @@ import (
 		kubeconfig: dagger.#Secret
 	}
 
-	_run: {
-		for s in args.application.service {
-			(s.name): #Service & {
-				scaffold: s.scaffold
-				name:     s.name
-			}
-		}
+	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
+		input: kubeconfig: args.kubeconfig
 	}
-}
+	_kubeconfig: _transformKubeconfig.output.kubeconfig
 
-#Service: {
-	name: string
-	{
-		scaffold: false
-		_echo:    echo.#Run & {
-			msg: "don't create repo for " + name
-		}
-	} | {
-		scaffold: true
-		_echo:    echo.#Run & {
-			msg: "create repo for " + name
-		}
+	_service: service.#Init & {
+		"args": args
+	}
+
+	_deploy: deploy.#Init & {
+		"args": args
 	}
 }
