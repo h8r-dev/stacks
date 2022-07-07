@@ -1,4 +1,6 @@
-action: up: args: {
+package plans
+
+actions: up: args: {
 	middleware: [{
 		name: "my_db" // 默认，不提供命名修改
 		type: "postgres"
