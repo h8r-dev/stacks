@@ -8,7 +8,6 @@ import (
 #Install: {
 	args: {
 		kubeconfig: dagger.#Secret
-		application: service: [...]
 	}
 
 	_run: {
