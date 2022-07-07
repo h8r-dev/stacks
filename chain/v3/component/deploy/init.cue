@@ -22,6 +22,7 @@ import (
 		vars:           var.#Generator
 		cdVar:          dagger.#Secret
 		frameworks: [...]
+		services: [...]
 	}
 
 	_args: input
@@ -43,11 +44,29 @@ import (
 				}
 			}
 		}
+		msvcs: {
+			for s in _args.services {
+				(s.name): helm.#CreateChart & {
+					input: {
+						name:            s.repository
+						appName:         _args.name
+						domain:          _args.domain
+						ingressHostPath: "/\(s.name)"
+						repoURL:         _args.vars.msvcs[(s.name)].repoURL
+						imageURL:        _args.vars.msvcs[(s.name)].imageURL
+					}
+				}
+			}
+		}
 	}
-
-	_subChartList: [ for f in _args.frameworks {
-		_createHelmChart[(f.name)].output.chart
-	}]
+	_subChartList: [
+		for f in _args.frameworks {
+			_createHelmChart[(f.name)].output.chart
+		},
+		for s in _args.services {
+			_createHelmChart.msvcs[(s.name)].output.chart
+		},
+	]
 
 	_createParentChart: {
 		helm.#CreateParentChart & {

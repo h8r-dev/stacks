@@ -14,9 +14,12 @@ import (
 		organization:     string
 		deployRepository: string
 		sourceCode:       dagger.#FS
+		fileName:         string | *"docker-publish.yaml"
 	}
 
 	output: sourceCode: _do.export.directories."/workdir/source"
+
+	_args: input
 
 	_loadWorkflows: core.#Source & {
 		path: "./template"
@@ -45,12 +48,6 @@ import (
 		include: ["add-workflow.sh"]
 	}
 
-	_args: {
-		organization:     input.organization
-		applicationName:  input.applicationName
-		deployRepository: input.deployRepository
-	}
-
 	_do: bash.#Run & {
 		always:  true
 		input:   _deps.output
@@ -61,6 +58,7 @@ import (
 			ORGANIZATION:    _args.organization
 			APP_NAME:        _args.applicationName
 			HELM_REPO:       _args.deployRepository
+			FILE_NAME:       _args.fileName
 		}
 		script: {
 			directory: _sh.output

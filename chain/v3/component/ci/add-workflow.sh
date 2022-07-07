@@ -5,10 +5,11 @@ WORKFLOW_DIR=$SOURCE_CODE_DIR/.github/workflows
 # Create github workflow dir
 mkdir -p $WORKFLOW_DIR
 
-# Copy docker-publish.yaml file into target dir
-mv $WORKFLOW_SRC/docker-publish.yaml $WORKFLOW_DIR/
+DOCKER_PUBLISH_FILE=${WORKFLOW_DIR}/${FILE_NAME}
 
-DOCKER_PUBLISH_FILE=$WORKFLOW_DIR/docker-publish.yaml
+# Copy docker-publish.yaml file into target dir
+mv $WORKFLOW_SRC/docker-publish.yaml ${DOCKER_PUBLISH_FILE}
+
 
 # Render docker-publish.yaml file with data provided
 yq -i '

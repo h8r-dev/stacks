@@ -2,6 +2,7 @@ package repository
 
 import (
 	"dagger.io/dagger"
+	"dagger.io/dagger/core"
 	"github.com/h8r-dev/stacks/chain/v3/component/ci"
 	"github.com/h8r-dev/stacks/chain/v3/component/framework"
 	"github.com/h8r-dev/stacks/chain/v3/component/scm/github"
@@ -18,6 +19,8 @@ import (
 		kubeconfig:      dagger.#Secret
 		vars:            var.#Generator
 		frameworks: [...]
+		initRepos: string
+		services: [...]
 	}
 
 	_args: input
@@ -38,6 +41,7 @@ import (
 				}
 				_push: github.#Push & {
 					input: {
+						initRepo:            _args.initRepos
 						repositoryName:      _args.vars[(f.name)].repoName
 						contents:            _addWorkflow.output.sourceCode
 						personalAccessToken: _args.githubToken
@@ -47,6 +51,36 @@ import (
 					}
 				}
 				output: success: _push.output.success
+			}
+		}
+	}
+
+	_addci: {
+		for s in _args.services {
+			(s.name): {
+				_code: core.#GitPull & {
+					remote:     _args.vars.msvcs[(s.name)].repoURL
+					ref:        "main"
+					keepGitDir: true
+					auth: authToken: _args.githubToken
+				}
+				_addWorkflow: ci.#AddWorkflow & {
+					input: {
+						applicationName:  _args.appName
+						organization:     _args.scmOrganization
+						deployRepository: _args.vars.deploy.repoName
+						sourceCode:       _code.output
+						fileName:         "\(_args.appName)-docker-publish.yaml"
+					}
+				}
+				_push: github.#GitPush & {
+					input: {
+						sourceCode:   _addWorkflow.output.sourceCode
+						repository:   s.repository
+						organization: _args.scmOrganization
+						githubToken:  _args.githubToken
+					}
+				}
 			}
 		}
 	}

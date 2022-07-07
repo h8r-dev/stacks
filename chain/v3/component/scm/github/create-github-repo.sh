@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+echo ${CONFIRM_PUSH}
+if [ ! ${CONFIRM_PUSH} == "true" ]; then
+	exit 0
+fi
+
 SOURCECODE_DIR=/workdir/source
 TERRAFORM_DIR=/workdir/terraform
 
