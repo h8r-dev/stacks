@@ -1,4 +1,4 @@
-package deploy
+package middleware
 
 import (
 	"github.com/h8r-dev/stacks/chain/v3/internal/utils/echo"
@@ -12,7 +12,6 @@ import (
 }
 
 #Config: {
-	...
 	{
 		type:  "postgres"
 		_echo: echo.#Run & {
@@ -24,4 +23,5 @@ import (
 			msg: "enable redis"
 		}
 	}
+	...
 }
