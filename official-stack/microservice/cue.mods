@@ -1,4 +1,4 @@
-module github.com/h8r-dev/stacks/official-stack/newstack
+module github.com/h8r-dev/stacks/official-stack/microservice
 
 cue v0.4.0
 
