@@ -4,30 +4,40 @@ import (
 	"universe.dagger.io/bash"
 	"github.com/h8r-dev/stacks/chain/v3/internal/utils/echo"
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
-	"github.com/h8r-dev/stacks/chain/v4/service/source"
+	"github.com/h8r-dev/stacks/chain/v4/service/code"
+	"github.com/h8r-dev/stacks/chain/v4/service/workflow"
 )
 
 #Init: {
 	args: _
 	for s in args.application.service {
-		(s.name): #Config & s
+		(s.name): #Config & s & {
+			appName:      args.application.name
+			organization: args.scm.organization
+		}
 	}
 }
 
 #Config: {
-	name: string
-	type: string
+	// TODO wrap args
+	appName:      string
+	organization: string
+
+	scaffold: bool
+	name:     string
+	type:     string
 	language: {
 		name:    string
 		version: string
 	}
 	framework: string
 
-	_deps: base.#Image
+	_isGenerated: scaffold
+	_deps:        base.#Image
 
 	{
-		scaffold: false
-		_echo:    echo.#Run & {
+		_isGenerated: false
+		_echo:        echo.#Run & {
 			msg: "don't create repo for " + name
 		}
 		// TODO Generate Dockerfile
@@ -35,24 +45,29 @@ import (
 		// TODO add files to the source code
 		// TODO commit changes and push back
 	} | {
-		scaffold: true
-		_init:    source.#Init & {"framework": framework}
+		_isGenerated: true
+		_code:        code.#Source & {"framework": framework}
 
-		_ls: bash.#Run & {
+		_check: bash.#Run & {
 			input:   _deps.output
 			workdir: "/workdir"
 			mounts: sourcecode: {
 				dest:     "/workdir"
 				type:     "fs"
-				contents: _init.output
+				contents: _code.output
 			}
 			script: contents: "ls -lah"
 		}
-
-		_echo: echo.#Run & {
-			msg: "create repo for " + name
-		}
-		// TODO use v3 codes
 	}
+
+	_workflow: {
+		_source: workflow.#Generate & {
+			"appName":      appName
+			"organization": organization
+			helmRepo:       "helm"
+		}
+	}
+
+	_assemble: echo.#Run & {msg: "assemble all these things"}
 	...
 }

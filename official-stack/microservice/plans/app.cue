@@ -16,12 +16,12 @@ actions: up: args: {
 		password: "password"
 		setting: storage: "10Gi"
 	}]
-	scm: [{
+	scm: {
 		name:         "github"
 		type:         "github"
 		token:        "ghp_xxxxxx"
 		organization: "h8r-dev"
-	}]
+	}
 	application: {
 		name: "forkmain"
 		service: [{
@@ -39,7 +39,7 @@ actions: up: args: {
 				run:   ""
 				debug: ""
 			}
-			scaffold: false
+			scaffold: true
 			setting: {
 				repoUrl: "https://github.com/h8r-dev/forkmain-backend"
 				extension: entryFile: "cmd/main.go"
@@ -71,7 +71,7 @@ actions: up: args: {
 		}, {
 			name:     "forkmain-frontend"
 			type:     "frontend"
-			scaffold: false
+			scaffold: true
 			language: {
 				name:    "typescript"
 				version: "1.8"

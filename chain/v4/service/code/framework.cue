@@ -1,11 +1,11 @@
-package source
+package code
 
 import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 )
 
-#Init: {
+#Source: {
 	output: dagger.#FS
 	{
 		framework:   "gin"
