@@ -60,12 +60,10 @@ import (
 		}
 	}
 
-	_workflow: {
-		_source: workflow.#Generate & {
-			"appName":      appName
-			"organization": organization
-			helmRepo:       "helm"
-		}
+	_workflow: _source: workflow.#Generate & {
+		"appName":      appName
+		"organization": organization
+		helmRepo:       "helm"
 	}
 
 	_assemble: echo.#Run & {msg: "assemble all these things"}
