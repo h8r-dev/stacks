@@ -2,7 +2,7 @@ actions:
   up:
     args:
       middleware:
-        - name: my_db # 默认，不提供命名修改
+        - name: my_db
           type: postgres
           url: my_db.default.svc
           username: admin
@@ -28,20 +28,20 @@ actions:
             type: backend
             language:
               name: golang
-              version: 1.8
+              version: "1.8"
             framework: gin
-            build: dockerfile # default
-            ci: github # 默认
-            command: # 预留
+            build: dockerfile
+            ci: github
+            command:
               build: ""
               run: ""
               debug: ""
-            scaffold: false # true 代表创建仓库，false 代表从已有仓库创建
+            scaffold: false
             setting:
               repoUrl: https://github.com/h8r-dev/forkmain-backend
               extension:
                 entryFile: "cmd/main.go"
-              expose: # 嵌套数组在 cue/shell 里面是否会很难处理？
+              expose:
                 - port: 80
                   paths:
                     - path: "/v1/api"
@@ -51,7 +51,7 @@ actions:
                   value: h8r.dev
                 - name: PASSWORD
                   value: my_secret
-                - name: FORKMAIN_MY_DB_USERNAME # auto inject
+                - name: FORKMAIN_MY_DB_USERNAME
                   value: admin
                 - name: FORKMAIN_MY_DB_PASSWORD
                   value: password
@@ -59,15 +59,15 @@ actions:
                   value: my_db.default.svc
           - name: forkmain-frontend
             type: frontend
-            scaffold: false # true 代表创建仓库，false 代表从以有的仓库创建
+            scaffold: false
             language:
               name: typescript
-              version: 1.8
+              version: "1.8"
             framework: nextjs
-            build: dockerfile # default
+            build: dockerfile
             ci: github
             setting:
-              expose: # 嵌套数组在 cue/shell 里面是否会很难处理？
+              expose:
                 - port: 80
                   paths:
                     - path: "/v1/api"
