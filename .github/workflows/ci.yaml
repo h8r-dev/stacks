@@ -2,13 +2,14 @@ name: CI
 
 on:
   pull_request:
+    types: [review_requested, ready_for_review]
     branches:
       - main
   pull_request_target:
     branches:
       - main
   schedule:
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 jobs:
