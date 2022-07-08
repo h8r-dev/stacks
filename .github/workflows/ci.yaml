@@ -2,7 +2,6 @@ name: CI
 
 on:
   pull_request:
-    types: [review_requested, ready_for_review]
     branches:
       - main
   pull_request_target:
@@ -17,8 +16,8 @@ jobs:
     # Run workflow pull_request if it is not a fork.
     # As pull_request_target if it is a fork.
     if: >-
-      ( github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.fork == true ) ||
-      ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false ) ||
+      ( github.event_name == 'pull_request_target' && ! github.event.pull_request.draft && github.event.pull_request.head.repo.fork == true ) ||
+      ( github.event_name == 'pull_request' && ! github.event.pull_request.draft && github.event.pull_request.head.repo.fork == false ) ||
       ( github.event_name == 'schedule' )
     strategy:
       fail-fast: false
