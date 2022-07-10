@@ -1,0 +1,59 @@
+definitions:
+  domain.ErrResponse:
+    properties:
+      err_msg:
+        type: string
+      msg:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a gin-sample API
+  license:
+    name: MIT
+    url: https://go-gin/blob/master/LICENSE
+  termsOfService: https://h8r.io
+  title: gin-sample API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+      summary: Health check
+      tags:
+      - common
+  /name:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The name of the server
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+      summary: Returns the name of the server
+      tags:
+      - common
+swagger: "2.0"

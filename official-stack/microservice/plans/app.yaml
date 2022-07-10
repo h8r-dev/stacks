@@ -17,10 +17,10 @@ actions:
           setting:
             storage: 10Gi
       scm:
-        - name: github
-          type: github
-          token: ghp_xxxxxx
-          organization: h8r-dev
+        name: github
+        type: github
+        token: ghp_xxxxxx
+        organization: h8r-dev
       application:
         name: forkmain
         service:
@@ -36,7 +36,7 @@ actions:
               build: ""
               run: ""
               debug: ""
-            scaffold: false
+            scaffold: true
             setting:
               repoUrl: https://github.com/h8r-dev/forkmain-backend
               extension:
@@ -59,7 +59,7 @@ actions:
                   value: my_db.default.svc
           - name: forkmain-frontend
             type: frontend
-            scaffold: false
+            scaffold: true
             language:
               name: typescript
               version: "1.8"
