@@ -132,5 +132,5 @@ jobs:
         if: failure() && github.event_name == 'schedule'
         uses: wangsijie/feishu-bot@v1
         with:
-          uuid: af52c079-64e9-4872-aab6-4757364c70a3
+          uuid: ${{ secrets.FEI_SHU_BOT_UUID }}
           text: "Daily test failed, please check Stack: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
