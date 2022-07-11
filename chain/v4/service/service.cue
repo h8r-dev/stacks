@@ -48,7 +48,9 @@ import (
 		// TODO commit changes and push back
 	} | {
 		_isGenerated: true
-		_code:        code.#Source & {"framework": service.framework}
+		_code:        code.#Source & {
+				framework: service.framework
+		}
 
 		_check: bash.#Run & {
 			input:   _deps.output
