@@ -72,6 +72,9 @@ actions:
                   value: my_db.default.svc
           - name: forkmain-frontend
             type: frontend
+            image:
+              repository: "ghcr.io/h8r-dev/forkmain-frontend/forkmain"
+              tag: ""
             scaffold: true
             language:
               name: typescript
@@ -80,6 +83,8 @@ actions:
             build: dockerfile
             ci: github
             setting:
+              repoUrl: https://github.com/h8r-dev/forkmain-frontend
+              extension: ""
               expose:
                 - port: 80
                   paths:

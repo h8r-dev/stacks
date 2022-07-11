@@ -86,8 +86,12 @@ actions: up: args: {
 				}]
 			}
 		}, {
-			name:     "forkmain-frontend"
-			type:     "frontend"
+			name: "forkmain-frontend"
+			type: "frontend"
+			image: {
+				repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
+				tag:        ""
+			}
 			scaffold: true
 			language: {
 				name:    "typescript"
@@ -97,6 +101,8 @@ actions: up: args: {
 			build:     "dockerfile"
 			ci:        "github"
 			setting: {
+				repoUrl:   "https://github.com/h8r-dev/forkmain-frontend"
+				extension: ""
 				expose: [{
 					port: 80
 					paths: [{
