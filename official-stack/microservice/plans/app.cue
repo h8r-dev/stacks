@@ -23,7 +23,8 @@ actions: up: args: {
 		organization: "h8r-dev"
 	}
 	application: {
-		name: "forkmain"
+		name:   "forkmain"
+		domain: "test.h8r.site"
 		service: [{
 			name: "forkmain-backend"
 			type: "backend"
