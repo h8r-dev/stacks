@@ -49,7 +49,7 @@ import (
 	} | {
 		_isGenerated: true
 		_code:        code.#Source & {
-				framework: service.framework
+			framework: service.framework
 		}
 
 		_check: bash.#Run & {
