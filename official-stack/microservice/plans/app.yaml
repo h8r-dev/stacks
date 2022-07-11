@@ -4,6 +4,8 @@ actions:
       middleware:
         - name: my_db
           type: postgres
+          service:
+            - "forkmain-backend"
           url: my_db.default.svc
           username: admin
           password: password
@@ -11,6 +13,8 @@ actions:
             storage: 10Gi
         - name: redis
           type: redis
+          service:
+            - "forkmain-backend"
           url: redis.default.svc
           username: admin
           password: password

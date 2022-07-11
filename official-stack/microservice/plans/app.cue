@@ -2,15 +2,21 @@ package plans
 
 actions: up: args: {
 	middleware: [{
-		name:     "my_db"
-		type:     "postgres"
+		name: "my_db"
+		type: "postgres"
+		service: [
+			"forkmain-backend",
+		]
 		url:      "my_db.default.svc"
 		username: "admin"
 		password: "password"
 		setting: storage: "10Gi"
 	}, {
-		name:     "redis"
-		type:     "redis"
+		name: "redis"
+		type: "redis"
+		service: [
+			"forkmain-backend",
+		]
 		url:      "redis.default.svc"
 		username: "admin"
 		password: "password"
