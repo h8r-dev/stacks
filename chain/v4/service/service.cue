@@ -11,7 +11,8 @@ import (
 #Init: {
 	args: _
 	for s in args.application.service {
-		(s.name): #Config & s & {
+		(s.name): #Config & {
+			service:      s
 			appName:      args.application.name
 			organization: args.scm.organization
 		}
@@ -19,26 +20,27 @@ import (
 }
 
 #Config: {
-	// TODO wrap args
 	appName:      string
 	organization: string
-
-	scaffold: bool
-	name:     string
-	type:     string
-	language: {
-		name:    string
-		version: string
+	service: {
+		scaffold: bool
+		name:     string
+		type:     string
+		language: {
+			name:    string
+			version: string
+		}
+		framework: string
+		...
 	}
-	framework: string
 
-	_isGenerated: scaffold
+	_isGenerated: service.scaffold
 	_deps:        base.#Image
 
 	{
 		_isGenerated: false
 		_echo:        echo.#Run & {
-			msg: "don't create repo for " + name
+			msg: "don't create repo for " + service.name
 		}
 		// TODO Generate Dockerfile
 		// TODO Generate github workflow
@@ -46,26 +48,37 @@ import (
 		// TODO commit changes and push back
 	} | {
 		_isGenerated: true
-		_code:        code.#Source & {"framework": framework}
+		_code:        code.#Source & {"framework": service.framework}
 
 		_check: bash.#Run & {
 			input:   _deps.output
 			workdir: "/workdir"
-			mounts: sourcecode: {
-				dest:     "/workdir"
-				type:     "fs"
-				contents: _code.output
+			// always:  true // FIXME debug
+			mounts: {
+				sourcecode: {
+					dest:     "/workdir/source"
+					type:     "fs"
+					contents: _code.output
+				}
+				workflow: {
+					dest:     "/workdir/workflow"
+					type:     "fs"
+					contents: _workflow.output
+				}
 			}
-			script: contents: "ls -lah"
+			script: contents: "ls workflow"
 		}
 	}
 
-	_workflow: _source: workflow.#Generate & {
-		"appName":      appName
-		"organization": organization
-		helmRepo:       "helm"
+	_workflow: {
+		output:  _source.output
+		_source: workflow.#Generate & {
+			"appName":      appName
+			"organization": organization
+			helmRepo:       appName + "-deploy"              // HACK this is a variable
+			wantedFileName: appName + "-docker-publish.yaml" // HACK this is a variable
+		}
 	}
 
 	_assemble: echo.#Run & {msg: "assemble all these things"}
-	...
 }
