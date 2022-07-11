@@ -28,12 +28,22 @@ actions: up: args: {
 		token:        "ghp_xxxxxx"
 		organization: "h8r-dev"
 	}
+	image: {
+		name:     "github"
+		registry: "ghcr.io"
+		username: "h8r-dev"
+		password: "password"
+	}
 	application: {
 		name:   "forkmain"
 		domain: "test.h8r.site"
 		service: [{
 			name: "forkmain-backend"
 			type: "backend"
+			image: {
+				repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
+				tag:        ""
+			}
 			language: {
 				name:    "golang"
 				version: "1.8"
