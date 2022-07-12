@@ -1,6 +1,6 @@
-package plans
+package test
 
-actions: up: args: {
+actions: test: args: {
 	middleware: [{
 		name: "my_db"
 		type: "postgres"
@@ -37,17 +37,9 @@ actions: up: args: {
 	application: {
 		name:   "forkmain"
 		domain: "test.h8r.site"
-		deploy: {
-			name: "forkmain-deploy"
-			url:  "https://github.com/lyzhang1999/forkmain-deploy"
-		}
 		service: [{
 			name: "forkmain-backend"
 			type: "backend"
-			repo: {
-				url:        "https://github.com/h8r-dev/forkmain-backend"
-				visibility: "private"
-			}
 			image: {
 				repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
 				tag:        ""
@@ -66,6 +58,7 @@ actions: up: args: {
 			}
 			scaffold: true
 			setting: {
+				repoUrl: "https://github.com/h8r-dev/forkmain-backend"
 				extension: entryFile: "cmd/main.go"
 				expose: [{
 					port: 80
@@ -95,12 +88,8 @@ actions: up: args: {
 		}, {
 			name: "forkmain-frontend"
 			type: "frontend"
-			repo: {
-				url:        "https://github.com/h8r-dev/forkmain-frontend"
-				visibility: "private"
-			}
 			image: {
-				repository: "ghcr.io/h8r-dev/forkmain-frontend/forkmain"
+				repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
 				tag:        ""
 			}
 			scaffold: true
@@ -112,6 +101,7 @@ actions: up: args: {
 			build:     "dockerfile"
 			ci:        "github"
 			setting: {
+				repoUrl:   "https://github.com/h8r-dev/forkmain-frontend"
 				extension: ""
 				expose: [{
 					port: 80
