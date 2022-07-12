@@ -13,8 +13,8 @@ dagger.#Plan & {
 			stdout: dagger.#Secret
 		}
 		env: {
-			KUBECONFIG:   string | *null
-			GITHUB_TOKEN: dagger.#Secret | *null
+			KUBECONFIG:   string
+			GITHUB_TOKEN: dagger.#Secret
 		}
 	}
 
