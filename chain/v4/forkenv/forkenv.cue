@@ -32,11 +32,13 @@ import (
 					repositoryName:   f.name
 					repositoryType:   f.type
 					repositoryUrl:    f.url
-					env:              f.env
 					deployRepository: args.deploy
 					forkenv:          args.forkenv
 					scm:              args.scm
 					application:      args.application
+					if f.env != _|_ {
+						env: f.env
+					}
 				}
 			}
 		}
@@ -66,7 +68,7 @@ import (
 		repositoryName:   string
 		repositoryType:   string
 		repositoryUrl:    string
-		env:              _
+		env:              _ | *null
 		deployRepository: _
 		forkenv:          _
 		scm:              _
@@ -87,12 +89,18 @@ import (
 		]
 	}
 
-	_yamlContents: yaml.Marshal(input.env)
-	_write:        core.#WriteFile & {
-		input:    dagger.#Scratch
-		path:     "/env.yaml"
-		contents: _yamlContents
+	_write: output: dagger.#FS | *null
+
+	if input.env != null {
+		_yamlContents: yaml.Marshal(input.env)
+		_write:        core.#WriteFile & {
+			input:    dagger.#Scratch
+			path:     "/env.yaml"
+			contents: _yamlContents
+		}
 	}
+
+	_writeYamlOutput: _write.output
 
 	_sh: core.#Source & {
 		path: "bash"
@@ -114,10 +122,12 @@ import (
 			DOMAIN:              input.forkenv.domain
 			APP_NAME:            input.application.name
 		}
-		mounts: yaml: core.#Mount & {
-			contents: _write.output
-			source:   "/env.yaml"
-			dest:     "/env.yaml"
+		if input.env != null {
+			mounts: yaml: core.#Mount & {
+				contents: _writeYamlOutput
+				source:   "/env.yaml"
+				dest:     "/env.yaml"
+			}
 		}
 		script: {
 			directory: _sh.output

@@ -6,10 +6,6 @@ actions: up: args: {
 		name: "hello-world36-backend"
 		type: "backend"
 		url:  "https://github.com/lyzhang1999/hello-world36-backend"
-		env: [{
-			name:  "KEY1"
-			value: "VALUE1"
-		}]
 	}, {
 		name: "hello-world36-frontend"
 		type: "frontend"
@@ -27,7 +23,7 @@ actions: up: args: {
 		url:  "https://github.com/lyzhang1999/hello-world36-deploy"
 	}
 	forkenv: {
-		name:   "fm-bug-fix8"
+		name:   "fm-bug-fix9"
 		from:   "main"
 		domain: "bug-fix.hello-world36.h8r.site"
 	}

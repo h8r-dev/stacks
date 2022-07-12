@@ -30,7 +30,9 @@ envName=$REPOSITORY_NAME yq -i '
 }
 ' env/$ENV_NAME/values.yaml
 
-# set env
-envName=$REPOSITORY_NAME yq -i '
-.[strenv(envName)].env |= load("../../../env.yaml")
-' env/$ENV_NAME/values.yaml
+# set env into values.yaml
+if [[ -f /env.yaml ]]; then
+    envName=$REPOSITORY_NAME yq -i '
+    .[strenv(envName)].env |= load("../../../env.yaml")
+    ' env/$ENV_NAME/values.yaml
+fi
