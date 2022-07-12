@@ -7,9 +7,19 @@ import (
 
 dagger.#Plan & {
 	client: {
-
+		commands: kubeconfig: {
+			name: "cat"
+			args: [env.KUBECONFIG]
+			stdout: dagger.#Secret
+		}
+		env: {
+			KUBECONFIG:   string
+			GITHUB_TOKEN: dagger.#Secret
+		}
 	}
-	actions: up: forkenv.#Fork & {
 
+	actions: up: forkenv.#Fork & {
+		args: kubeconfig:  client.commands.kubeconfig.stdout
+		args: githubToken: client.env.GITHUB_TOKEN
 	}
 }
