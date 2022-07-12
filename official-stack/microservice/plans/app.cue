@@ -37,6 +37,10 @@ actions: up: args: {
 	application: {
 		name:   "forkmain"
 		domain: "test.h8r.site"
+		deploy: {
+			name: "forkmain-deploy"
+			url:  "https://github.com/lyzhang1999/forkmain-deploy"
+		}
 		service: [{
 			name: "forkmain-backend"
 			type: "backend"
