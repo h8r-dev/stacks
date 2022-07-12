@@ -34,7 +34,7 @@ actions: up: args: {
 	scm: {
 		name:         "github"
 		type:         "github"
-		token:        "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"
+		token:        ""
 		organization: "lyzhang1999"
 	}
 }
