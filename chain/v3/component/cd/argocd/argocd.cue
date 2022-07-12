@@ -10,7 +10,7 @@ import (
 #Input: {
 	name:               string
 	argoVar:            dagger.#Secret
-	repositoryPassword: dagger.#Secret
+	repositoryPassword: dagger.#Secret | string
 	repositoryURL:      string
 	appPath:            string
 	waitFor:            bool | *true

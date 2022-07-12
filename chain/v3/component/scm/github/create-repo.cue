@@ -12,7 +12,7 @@ import (
 #Input: {
 	repositoryName:      string
 	contents:            dagger.#FS
-	personalAccessToken: dagger.#Secret
+	personalAccessToken: dagger.#Secret | string
 	organization:        string
 	visibility:          string
 	kubeconfig:          dagger.#Secret // Store terraform state on the cluster
