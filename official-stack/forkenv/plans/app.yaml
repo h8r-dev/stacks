@@ -20,3 +20,10 @@ actions:
       forkenv:
         name: bug-fix
         from: main
+        domain: bug-fix.hello-world36.h8r.site
+      scm:
+        name: github
+        type: github
+        # from env
+        token: ""
+        organization: h8r-dev
