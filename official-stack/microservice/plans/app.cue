@@ -40,6 +40,10 @@ actions: up: args: {
 		service: [{
 			name: "forkmain-backend"
 			type: "backend"
+			repo: {
+				url:        "https://github.com/h8r-dev/forkmain-backend"
+				visibility: "private"
+			}
 			image: {
 				repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
 				tag:        ""
@@ -58,7 +62,6 @@ actions: up: args: {
 			}
 			scaffold: true
 			setting: {
-				repoUrl: "https://github.com/h8r-dev/forkmain-backend"
 				extension: entryFile: "cmd/main.go"
 				expose: [{
 					port: 80
@@ -88,8 +91,12 @@ actions: up: args: {
 		}, {
 			name: "forkmain-frontend"
 			type: "frontend"
+			repo: {
+				url:        "https://github.com/h8r-dev/forkmain-frontend"
+				visibility: "private"
+			}
 			image: {
-				repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
+				repository: "ghcr.io/h8r-dev/forkmain-frontend/forkmain"
 				tag:        ""
 			}
 			scaffold: true
@@ -101,7 +108,6 @@ actions: up: args: {
 			build:     "dockerfile"
 			ci:        "github"
 			setting: {
-				repoUrl:   "https://github.com/h8r-dev/forkmain-frontend"
 				extension: ""
 				expose: [{
 					port: 80

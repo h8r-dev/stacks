@@ -36,6 +36,9 @@ actions:
         service:
           - name: forkmain-backend
             type: backend
+            repo:
+              url: https://github.com/h8r-dev/forkmain-backend
+              visibility: "private"
             image:
               repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
               tag: ""
@@ -51,7 +54,6 @@ actions:
               debug: ""
             scaffold: true
             setting:
-              repoUrl: https://github.com/h8r-dev/forkmain-backend
               extension:
                 entryFile: "cmd/main.go"
               expose:
@@ -72,6 +74,9 @@ actions:
                   value: my_db.default.svc
           - name: forkmain-frontend
             type: frontend
+            repo:
+              url: https://github.com/h8r-dev/forkmain-frontend
+              visibility: "private"
             image:
               repository: "ghcr.io/h8r-dev/forkmain-frontend/forkmain"
               tag: ""
@@ -83,7 +88,6 @@ actions:
             build: dockerfile
             ci: github
             setting:
-              repoUrl: https://github.com/h8r-dev/forkmain-frontend
               extension: ""
               expose:
                 - port: 80
