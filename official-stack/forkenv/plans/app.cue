@@ -23,13 +23,14 @@ actions: up: args: {
 		url:  "https://github.com/lyzhang1999/hello-world36-deploy"
 	}
 	forkenv: {
-		name:   "fm-bug-fix9"
+		name:   "fm-bug-fix10"
 		from:   "main"
 		domain: "bug-fix.hello-world36.h8r.site"
 	}
 	scm: {
-		name:         "github"
-		type:         "github"
+		name: "github"
+		type: "github"
+		// from env GITHUB_TOKEN
 		token:        ""
 		organization: "lyzhang1999"
 	}

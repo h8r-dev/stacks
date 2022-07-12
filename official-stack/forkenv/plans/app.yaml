@@ -24,5 +24,6 @@ actions:
       scm:
         name: github
         type: github
-        token: ghp_xxxxxx
+        # from env
+        token: ""
         organization: h8r-dev

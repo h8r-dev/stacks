@@ -12,10 +12,14 @@ dagger.#Plan & {
 			args: [env.KUBECONFIG]
 			stdout: dagger.#Secret
 		}
-		env: KUBECONFIG: string
+		env: {
+			KUBECONFIG:   string
+			GITHUB_TOKEN: dagger.#Secret
+		}
 	}
 
 	actions: up: forkenv.#Fork & {
-		args: kubeconfig: client.commands.kubeconfig.stdout
+		args: kubeconfig:  client.commands.kubeconfig.stdout
+		args: githubToken: client.env.GITHUB_TOKEN
 	}
 }

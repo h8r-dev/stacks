@@ -11,7 +11,9 @@ import (
 )
 
 #Fork: {
-	args: kubeconfig: dagger.#Secret
+	args: kubeconfig:  dagger.#Secret
+	args: githubToken: dagger.#Secret
+	args: scm: token: args.githubToken
 
 	// Need create env CRD for forkmain
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
