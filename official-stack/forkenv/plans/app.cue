@@ -1,29 +1,40 @@
 package plans
 
 actions: up: args: {
+	application: name: "hello-world36"
 	service: [{
-		name: "forkmain-backend"
+		name: "hello-world36-backend"
 		type: "backend"
-		url:  "https://github.com/lyzhang1999/forkmain-backend"
+		url:  "https://github.com/lyzhang1999/hello-world36-backend"
 		env: [{
-			name:  "KEY"
-			value: "VALUE"
+			name:  "KEY1"
+			value: "VALUE1"
 		}]
 	}, {
-		name: "forkmain-frontend"
+		name: "hello-world36-frontend"
 		type: "frontend"
-		url:  "https://github.com/lyzhang1999/forkmain-frontend"
+		url:  "https://github.com/lyzhang1999/hello-world36-frontend"
 		env: [{
-			name:  "KEY"
-			value: "VALUE"
+			name:  "KEY2"
+			value: "VALUE2"
+		}, {
+			name:  "KEY3"
+			value: "VALUE3"
 		}]
 	}]
 	deploy: {
-		name: "forkmain-deploy"
-		url:  "https://github.com/lyzhang1999/forkmain-deploy"
+		name: "hello-world36-deploy"
+		url:  "https://github.com/lyzhang1999/hello-world36-deploy"
 	}
 	forkenv: {
-		name: "bug-fix"
-		from: "main"
+		name:   "fm-bug-fix8"
+		from:   "main"
+		domain: "bug-fix.hello-world36.h8r.site"
+	}
+	scm: {
+		name:         "github"
+		type:         "github"
+		token:        "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"
+		organization: "lyzhang1999"
 	}
 }
