@@ -10,7 +10,7 @@ import (
 
 #Create: {
 	name:         string
-	token:        string
+	token:        string | dagger.#Secret
 	visibility:   string
 	organization: string
 
