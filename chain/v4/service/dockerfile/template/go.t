@@ -23,7 +23,6 @@ FROM gcr.io/distroless/base-debian11
 WORKDIR /
 
 COPY --from=build /app /app
-COPY --from=build /workdir/config.ini /
 
 EXPOSE 8080
 
