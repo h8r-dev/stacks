@@ -5,7 +5,7 @@ actions: up: args: {
 		name: "my_db"
 		type: "postgres"
 		service: [
-			"forkmain-backend",
+			"<app_name>-backend",
 		]
 		url:      "my_db.default.svc"
 		username: "admin"
@@ -15,7 +15,7 @@ actions: up: args: {
 		name: "redis"
 		type: "redis"
 		service: [
-			"forkmain-backend",
+			"<app_name>-backend",
 		]
 		url:      "redis.default.svc"
 		username: "admin"
@@ -26,30 +26,30 @@ actions: up: args: {
 		name:         "github"
 		type:         "github"
 		token:        "ghp_xxxxxx"
-		organization: "h8r-dev"
+		organization: "<git_org>"
 	}
 	image: {
 		name:     "github"
 		registry: "ghcr.io"
-		username: "h8r-dev"
+		username: "<git_org>"
 		password: "password"
 	}
 	application: {
-		name:   "forkmain"
-		domain: "test.h8r.site"
+		name:   "<app_name>"
+		domain: "<app_name>.h8r.site"
 		deploy: {
-			name: "forkmain-deploy"
-			url:  "https://github.com/lyzhang1999/forkmain-deploy"
+			name: "<app_name>-deploy"
+			url:  "https://github.com/<git_org>/<app_name>-deploy"
 		}
 		service: [{
-			name: "forkmain-backend"
+			name: "<app_name>-backend"
 			type: "backend"
 			repo: {
-				url:        "https://github.com/h8r-dev/forkmain-backend"
+				url:        "https://github.com/<git_org>/<app_name>-backend"
 				visibility: "private"
 			}
 			image: {
-				repository: "ghcr.io/h8r-dev/forkmain-backend/forkmain"
+				repository: "ghcr.io/<git_org>/<app_name>-backend"
 				tag:        ""
 			}
 			language: {
@@ -70,9 +70,7 @@ actions: up: args: {
 				expose: [{
 					port: 80
 					paths: [{
-						path: "/v1/api"
-					}, {
-						path: "/v2/api"
+						path: "/api"
 					}]
 				}]
 				env: [{
@@ -82,25 +80,25 @@ actions: up: args: {
 					name:  "PASSWORD"
 					value: "my_secret"
 				}, {
-					name:  "FORKMAIN_MY_DB_USERNAME"
+					name:  "MY_DB_USERNAME"
 					value: "admin"
 				}, {
-					name:  "FORKMAIN_MY_DB_PASSWORD"
+					name:  "MY_DB_PASSWORD"
 					value: "password"
 				}, {
-					name:  "FORKMAIN_MY_DB_URL"
+					name:  "MY_DB_URL"
 					value: "my_db.default.svc"
 				}]
 			}
 		}, {
-			name: "forkmain-frontend"
+			name: "<app_name>-frontend"
 			type: "frontend"
 			repo: {
-				url:        "https://github.com/h8r-dev/forkmain-frontend"
+				url:        "https://github.com/<git_org>/<app_name>-frontend"
 				visibility: "private"
 			}
 			image: {
-				repository: "ghcr.io/h8r-dev/forkmain-frontend/forkmain"
+				repository: "ghcr.io/<git_org>/<app_name>-frontend"
 				tag:        ""
 			}
 			scaffold: true
@@ -116,9 +114,7 @@ actions: up: args: {
 				expose: [{
 					port: 80
 					paths: [{
-						path: "/v1/api"
-					}, {
-						path: "/v2/api"
+						path: "/"
 					}]
 				}]
 				env: [{
