@@ -18,7 +18,7 @@ dagger.#Plan & {
 		}
 	}
 	actions: up: stack.#Install & {
-		args: {
+		args: internal: {
 			kubeconfig:    client.commands.kubeconfig.stdout
 			githubToken:   client.env.GITHUB_TOKEN
 			imagePassword: client.env.GITHUB_TOKEN
