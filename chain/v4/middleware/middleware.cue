@@ -1,9 +1,5 @@
 package middleware
 
-import (
-	"github.com/h8r-dev/stacks/chain/v3/internal/utils/echo"
-)
-
 #Init: {
 	args: _
 	for m in args.middleware {
@@ -13,15 +9,9 @@ import (
 
 #Config: {
 	{
-		type:  "postgres"
-		_echo: echo.#Run & {
-			msg: "enable postgres"
-		}
+		type: "postgres"
 	} | {
-		type:  "redis"
-		_echo: echo.#Run & {
-			msg: "enable redis"
-		}
+		type: "redis"
 	}
 	...
 }
