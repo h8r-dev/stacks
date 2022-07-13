@@ -24,3 +24,16 @@ mkdir -p .nocalhost
 touch .nocalhost/config.yaml
 yq -i '.configProperties.version = "v2"' .nocalhost/config.yaml
 yq -i '.application.helmValues += [{"key": "global.nocalhost.enabled","value": true}]' .nocalhost/config.yaml
+
+# set parent values
+for dir in "$APP_NAME/charts/"*; do
+  if [ -d "$dir" ]; then
+    value="$dir/values.yaml"
+    if [ -f "$value" ]; then
+    name="${dir##*/}"
+    echo echo "set $name values to parent chart"
+    yq -i '."'$name'" = load("'${value}'")' "$APP_NAME/values.yaml"
+    fi
+  fi
+done
+yq -i 'del(.. | select(has("global")).global)' "$APP_NAME/values.yaml"
