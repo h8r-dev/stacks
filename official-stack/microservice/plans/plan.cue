@@ -12,9 +12,15 @@ dagger.#Plan & {
 			args: [env.KUBECONFIG]
 			stdout: dagger.#Secret
 		}
-		env: KUBECONFIG: string
+		env: {
+			KUBECONFIG:   string
+			GITHUB_TOKEN: dagger.#Secret
+		}
 	}
 	actions: up: stack.#Install & {
-		args: kubeconfig: client.commands.kubeconfig.stdout
+		args: {
+			kubeconfig:  client.commands.kubeconfig.stdout
+			githubToken: client.env.GITHUB_TOKEN
+		}
 	}
 }

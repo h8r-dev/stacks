@@ -9,7 +9,10 @@ import (
 )
 
 #Install: {
-	args: kubeconfig: dagger.#Secret
+	args: {
+		kubeconfig:  dagger.#Secret
+		githubToken: dagger.#Secret
+	}
 
 	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
 		input: kubeconfig: args.kubeconfig
