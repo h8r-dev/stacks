@@ -41,6 +41,9 @@ import (
 					if f.env != _|_ {
 						env: f.env
 					}
+					if f.extra != _|_ {
+						extra: f.extra
+					}
 				}
 			}
 		}
@@ -71,6 +74,7 @@ import (
 		repositoryType:   string
 		repositoryUrl:    string
 		env:              _ | *null
+		extra:            _ | *null
 		deployRepository: _
 		forkenv:          _
 		scm:              _
@@ -91,8 +95,20 @@ import (
 		]
 	}
 
-	_write: output: dagger.#FS | *null
+	// wirte eatra
+	_writeExtra: output: dagger.#FS | *null
+	if input.extra != null {
+		_extraYamlContents: yaml.Marshal(input.extra)
+		_writeExtra:        core.#WriteFile & {
+			input:    dagger.#Scratch
+			path:     "/extra.yaml"
+			contents: _extraYamlContents
+		}
+	}
+	_writeExtraYamlOutput: _writeExtra.output
 
+	// write env
+	_write: output: dagger.#FS | *null
 	if input.env != null {
 		_yamlContents: yaml.Marshal(input.env)
 		_write:        core.#WriteFile & {
@@ -101,7 +117,6 @@ import (
 			contents: _yamlContents
 		}
 	}
-
 	_writeYamlOutput: _write.output
 
 	_sh: core.#Source & {
@@ -129,6 +144,13 @@ import (
 				contents: _writeYamlOutput
 				source:   "/env.yaml"
 				dest:     "/env.yaml"
+			}
+		}
+		if input.extra != null {
+			mounts: extra: core.#Mount & {
+				contents: _writeExtraYamlOutput
+				source:   "/extra.yaml"
+				dest:     "/extra.yaml"
 			}
 		}
 		script: {
