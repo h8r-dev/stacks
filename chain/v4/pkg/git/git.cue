@@ -35,31 +35,36 @@ import (
 	}
 }
 
-#Create: {
+#Push: {
 	name:         string
-	token:        string
-	visibility:   string
 	organization: string
+	token:        string | dagger.#Secret
+	input:        dagger.#FS
 
-	wait: _run.success
-
-	_deps: base.#Image
-	_sh:   core.#Source & {
+	_deps: docker.#Build & {
+		steps: [
+			base.#Image,
+			docker.#Copy & {
+				contents: input
+				dest:     "/workdir"
+			},
+		]
+	}
+	_sh: core.#Source & {
 		path: "."
-		include: ["create-repo.sh"]
+		include: ["push.sh"]
 	}
 	_run: bash.#Run & {
 		input:   _deps.output
 		workdir: "/workdir"
 		env: {
 			NAME:         name
-			GH_TOKEN:     token
-			VISIBILITY:   visibility
 			ORGANIZATION: organization
+			TOKEN:        token
 		}
 		script: {
 			directory: _sh.output
-			filename:  "create-repo.sh"
+			filename:  "push.sh"
 		}
 	}
 }
