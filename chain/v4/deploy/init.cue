@@ -54,7 +54,7 @@ import (
 			name:         args.application.name
 			chart:        _createParentChart.output.chart
 			username:     args.image.username
-			password:     args.image.password
+			password:     args.internal.imagePassword
 			"kubeconfig": kubeconfig
 		}
 	}
@@ -63,7 +63,7 @@ import (
 		input: {
 			repositoryName:      args.application.name + "-deploy" // FIXME
 			contents:            _createEncryptedSecret.output.chart
-			personalAccessToken: args.scm.token
+			personalAccessToken: args.internal.githubToken
 			organization:        args.scm.organization
 			visibility:          "private" // FIXME
 			"kubeconfig":        kubeconfig
@@ -73,7 +73,7 @@ import (
 	_createApp: v3argocd.#CreateApp & {
 		input: {
 			name:               args.application.name
-			repositoryPassword: args.scm.token
+			repositoryPassword: args.internal.githubToken
 			repositoryURL:      args.application.deploy.url
 			appPath:            "\(name)"
 			argoVar:            cdVar
@@ -85,6 +85,6 @@ import (
 		name:         args.application.name
 		repo:         args.application.deploy.url
 		"kubeconfig": kubeconfig
-		waitFor:      _createApp.output.subcharts
+		waitFor:      _createApp.output.success
 	}
 }
