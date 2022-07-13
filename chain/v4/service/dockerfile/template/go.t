@@ -5,7 +5,7 @@
 ##
 FROM golang:{{ (datasource "values").version }} AS build
 
-WORKDIR /app
+WORKDIR /workdir
 
 COPY go.mod ./
 COPY go.sum ./
@@ -18,7 +18,7 @@ RUN go build -o /app {{ (datasource "values").pkg }}
 ##
 ## Deploy
 ##
-FROM gcr.io/distroless/base-debian10
+FROM gcr.io/distroless/base-debian11
 
 WORKDIR /
 
