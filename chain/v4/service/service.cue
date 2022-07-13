@@ -22,7 +22,7 @@ import (
 			service:      s
 			appName:      args.application.name
 			organization: args.scm.organization
-			githubToken:  args.scm.token
+			githubToken:  args.internal.githubToken
 		}
 	}
 }
@@ -30,7 +30,7 @@ import (
 #Config: {
 	appName:      string
 	organization: string
-	githubToken:  string
+	githubToken:  dagger.#Secret
 	service: {
 		scaffold: bool
 		name:     string
