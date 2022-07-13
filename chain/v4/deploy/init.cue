@@ -18,12 +18,18 @@ import (
 		for s in args.application.service {
 			(s.name): chart.#Create & {
 				input: {
-					name:     s.name
-					appName:  args.application.name
-					domain:   args.application.domain
-					starter:  "helm-starter/go/gin"
+					name:    s.name
+					appName: args.application.name
+					domain:  args.application.domain
+					if s.framework == "gin" {
+						starter: "helm-starter/go/gin"
+					}
+					if s.framework == "nextjs" {
+						starter: "helm-starter/nodejs/nextjs"
+					}
 					repoURL:  s.repo.url
 					imageURL: s.image.repository
+					// FIXME: get info from ingress path
 					if s.type == "backend" {
 						ingressHostPath:        "/api"
 						rewriteIngressHostPath: true
