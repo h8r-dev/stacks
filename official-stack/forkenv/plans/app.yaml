@@ -5,9 +5,17 @@ actions:
         - name: forkmain-backend
           type: backend
           url: https://github.com/lyzhang1999/forkmain-backend
+          # set env
           env: 
             - name: KEY
               value: VALUE
+          # add any values key
+          extra:
+            env2:
+              - name: KEY2
+                value: VALUE2
+              - name: KEY3
+                value: VALUE3
         - name: forkmain-frontend
           type: frontend
           url: https://github.com/lyzhang1999/forkmain-frontend

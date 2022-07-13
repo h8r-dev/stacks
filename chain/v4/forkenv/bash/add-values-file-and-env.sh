@@ -36,3 +36,12 @@ if [[ -f /env.yaml ]]; then
     .[strenv(envName)].env |= load("../../../env.yaml")
     ' env/$ENV_NAME/values.yaml
 fi
+
+# set extra into values.yaml
+if [[ -f /extra.yaml ]]; then
+    envName=$REPOSITORY_NAME yq -i '
+    .[strenv(envName)] += load("../../../extra.yaml")
+    ' env/$ENV_NAME/values.yaml
+fi
+
+cat env/$ENV_NAME/values.yaml
