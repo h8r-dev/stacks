@@ -1,42 +1,43 @@
 package plans
 
 actions: up: args: {
-	application: name: "hello-world36"
+	application: name: "<app_name>"
 	service: [{
-		name: "hello-world36-backend"
+		name: "<app_name>-backend"
 		type: "backend"
-		url:  "https://github.com/lyzhang1999/hello-world36-backend"
-		extra: env2: [{
+		url:  "https://github.com/<git_org>/<app_name>-backend"
+		env: [{
 			name:  "KEY"
 			value: "VALUE"
-		}, {
-			name:  "KEY2"
-			value: "VALUE2"
 		}]
-	}, {
-		name: "hello-world36-frontend"
-		type: "frontend"
-		url:  "https://github.com/lyzhang1999/hello-world36-frontend"
-		env: [{
+		extra: env2: [{
 			name:  "KEY2"
 			value: "VALUE2"
 		}, {
 			name:  "KEY3"
 			value: "VALUE3"
 		}]
+	}, {
+		name: "<app_name>-frontend"
+		type: "frontend"
+		url:  "https://github.com/<git_org>/<app_name>-frontend"
+		env: [{
+			name:  "KEY"
+			value: "VALUE"
+		}]
 	}]
 	deploy: {
-		name: "hello-world36-deploy"
-		url:  "https://github.com/lyzhang1999/hello-world36-deploy"
+		name: "<app_name>-deploy"
+		url:  "https://github.com/<git_org>/<app_name>-deploy"
 	}
 	forkenv: {
-		name:   "fm-bug-fix13"
+		name:   "bug-fix"
 		from:   "main"
-		domain: "bug-fix.hello-world36.h8r.site"
+		domain: "bug-fix-<app_name>.h8r.site"
 	}
 	scm: {
 		name:         "github"
 		type:         "github"
-		organization: "lyzhang1999"
+		organization: "<git_org>"
 	}
 }
