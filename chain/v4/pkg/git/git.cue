@@ -21,6 +21,7 @@ import (
 	}
 	_run: bash.#Run & {
 		input:   _deps.output
+		always:  true
 		workdir: "/workdir"
 		env: {
 			REMOTE: remote
