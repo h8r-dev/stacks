@@ -38,8 +38,9 @@ actions: up: args: {
 		name:   "<app_name>"
 		domain: "<app_name>.h8r.site"
 		deploy: {
-			name: "<app_name>-deploy"
-			url:  "https://github.com/<git_org>/<app_name>-deploy"
+			name:       "<app_name>-deploy"
+			url:        "https://github.com/<git_org>/<app_name>-deploy"
+			visibility: "private"
 		}
 		service: [{
 			name: "<app_name>-backend"
@@ -70,7 +71,11 @@ actions: up: args: {
 				expose: [{
 					port: 80
 					paths: [{
-						path: "/api"
+						path:    "/api"
+						rewrite: true
+					}, {
+						path:    "/v2/api"
+						rewrite: false
 					}]
 				}]
 				env: [{
@@ -114,7 +119,8 @@ actions: up: args: {
 				expose: [{
 					port: 80
 					paths: [{
-						path: "/"
+						path:    "/"
+						rewrite: false
 					}]
 				}]
 				env: [{
