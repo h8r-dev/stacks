@@ -60,5 +60,3 @@ if [[ -f /extra.yaml ]]; then
     .[strenv(envName)] += load("../../../extra.yaml")
     ' env/$ENV_NAME/values.yaml
 fi
-
-cat env/$ENV_NAME/values.yaml
