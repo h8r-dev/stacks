@@ -26,6 +26,10 @@ done
 # Create env crd
 kubectl apply -f /crd
 
+# patch ApplicationSet
+timestamp=$(date +%s)
+kubectl annotate ApplicationSet $APP_NAME forkmain.dev/timestamp=$timestamp
+
 # Update Argocd applicationSet
 # Make sure applicationSet yaml was exist uncoment it after yicai done deploy issue
 

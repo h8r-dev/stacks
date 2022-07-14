@@ -22,18 +22,35 @@ COMMIT_TAG="$(git rev-parse --short HEAD | tr -d '\n')"
 cd /workdir/$DEPLOY_NAME/$APP_NAME
 
 # Add env values.yaml file and set values
-mkdir -p env/$ENV_NAME/ && touch env/$ENV_NAME/values.yaml
+#mkdir -p env/$ENV_NAME/ && touch env/$ENV_NAME/values.yaml
+mkdir -p env/$ENV_NAME/
+
+# copy values to env values
+if [[ ! -f env/$ENV_NAME/values.yaml ]]; then
+  cp values.yaml env/$ENV_NAME/values.yaml
+fi
+
+# envName=$REPOSITORY_NAME yq -i '
+# .[strenv(envName)] += {
+#     "image": {"tag": "'$COMMIT_TAG'"},
+#     "ingress": {"hosts": [{"host": "'$DOMAIN'", "paths": [{"path": "/", "pathType": "ImplementationSpecific"}]}]}
+# }
+# ' env/$ENV_NAME/values.yaml
+
+# patch image tag
 envName=$REPOSITORY_NAME yq -i '
-.[strenv(envName)] += {
-    "image": {"tag": "'$COMMIT_TAG'"},
-    "ingress": {"hosts": [{"host": "'$DOMAIN'", "paths": [{"path": "/", "pathType": "ImplementationSpecific"}]}]}
-}
+.[strenv(envName)].image.tag = "'$COMMIT_TAG'"
+' env/$ENV_NAME/values.yaml
+
+# patch ingress
+envName=$REPOSITORY_NAME yq -i '
+.[strenv(envName)].ingress.hosts[0].host = "'$DOMAIN'"
 ' env/$ENV_NAME/values.yaml
 
 # set env into values.yaml
 if [[ -f /env.yaml ]]; then
     envName=$REPOSITORY_NAME yq -i '
-    .[strenv(envName)].env |= load("../../../env.yaml")
+    .[strenv(envName)].env += load("../../../env.yaml")
     ' env/$ENV_NAME/values.yaml
 fi
 
@@ -43,5 +60,3 @@ if [[ -f /extra.yaml ]]; then
     .[strenv(envName)] += load("../../../extra.yaml")
     ' env/$ENV_NAME/values.yaml
 fi
-
-cat env/$ENV_NAME/values.yaml
