@@ -175,6 +175,7 @@ import (
 		kubeconfig:       dagger.#Secret
 	}
 
+	// heighliner env crd
 	_envCRD: #EnvCRD & {
 		"input": {
 			envName:      input.forkenv.name
@@ -185,13 +186,27 @@ import (
 			envAccessUrl: input.forkenv.domain
 		}
 	}
-
 	_yamlContents: yaml.Marshal(_envCRD.CRD)
-
-	_write: core.#WriteFile & {
+	_write:        core.#WriteFile & {
 		input:    dagger.#Scratch
 		path:     "/env.yaml"
 		contents: _yamlContents
+	}
+
+	// argocd application crd
+	_ApplicationCRD: #ApplicationCRD & {
+		"input": {
+			envName:  input.forkenv.name
+			appName:  input.appName
+			chartUrl: input.deployRepository.url
+			envPath:  "env/" + input.forkenv.name + "/values.yaml"
+		}
+	}
+	_applicationyamlContents: yaml.Marshal(_ApplicationCRD.CRD)
+	_writeApplicationYaml:    core.#WriteFile & {
+		input:    dagger.#Scratch
+		path:     "/application.yaml"
+		contents: _applicationyamlContents
 	}
 
 	_deps: docker.#Build & {
@@ -230,6 +245,11 @@ import (
 			source:   "/env.yaml"
 			dest:     "/crd/env.yaml"
 		}
+		mounts: argoAppYaml: core.#Mount & {
+			contents: _writeApplicationYaml.output
+			source:   "/application.yaml"
+			dest:     "/crd/application.yaml"
+		}
 		mounts: kubeconfig: {
 			dest:     "/kubeconfig"
 			contents: input.kubeconfig
@@ -238,6 +258,45 @@ import (
 	}
 
 	success: _run.success
+}
+
+#ApplicationCRD: {
+	input: {
+		envName:   string
+		appName:   string
+		chartUrl:  string
+		envPath:   string
+		namespace: string | *"argocd"
+		cluster:   string | *"https://kubernetes.default.svc"
+		project:   string | *"default"
+	}
+	CRD: {
+		apiVersion: "argoproj.io/v1alpha1"
+		kind:       "Application"
+		metadata: {
+			name:      input.appName + "-" + input.envName
+			namespace: "argocd"
+		}
+		spec: {
+			destination: {
+				namespace: input.appName + "-" + input.envName
+				server:    input.cluster
+			}
+			project: input.project
+			source: {
+				helm: valueFiles: [
+					input.envPath,
+				]
+				path:           input.appName
+				repoURL:        input.chartUrl
+				targetRevision: "HEAD"
+			}
+			syncPolicy: {
+				automated: {}
+				syncOptions: ["CreateNamespace=true"]
+			}
+		}
+	}
 }
 
 #EnvCRD: {
