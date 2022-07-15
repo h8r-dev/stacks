@@ -36,6 +36,7 @@ actions:
         deploy:
           name: <app_name>-deploy
           url: https://github.com/<git_org>/<app_name>-deploy
+          visibility: "private"
         service:
           - name: <app_name>-backend
             type: backend
@@ -63,6 +64,9 @@ actions:
                 - port: 80
                   paths:
                     - path: "/api"
+                      rewrite: true
+                    - path: "/v2/api"
+                      rewrite: false
               env:
                 - name: HOST
                   value: h8r.dev
@@ -95,6 +99,7 @@ actions:
                 - port: 80
                   paths:
                     - path: "/"
+                      rewrite: false
               env:
                 - name: HOST
                   value: h8r.dev
