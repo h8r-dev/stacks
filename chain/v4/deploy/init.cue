@@ -3,7 +3,6 @@ package deploy
 import (
 	"encoding/yaml"
 	"dagger.io/dagger"
-	"github.com/h8r-dev/stacks/chain/v4/cd/argocd"
 	"github.com/h8r-dev/stacks/chain/v4/deploy/chart"
 	"github.com/h8r-dev/stacks/chain/v3/component/scm/github"         // FIXME: this is v3 pkg
 	v3argocd "github.com/h8r-dev/stacks/chain/v3/component/cd/argocd" // FIXME: this is v3 pkg
@@ -85,12 +84,5 @@ import (
 			argoVar:            cdVar
 			waitFor:            _crateRepo.output.success
 		}
-	}
-
-	argocd.#ApplicationSet & {
-		name:         args.application.name
-		repo:         args.application.deploy.url
-		"kubeconfig": kubeconfig
-		waitFor:      _createApp.output.success
 	}
 }
