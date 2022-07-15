@@ -36,6 +36,7 @@ import (
 					repositoryUrl:    f.url
 					deployRepository: args.deploy
 					forkenv:          args.forkenv
+					fork:             f.fork
 					scm:              args.scm
 					application:      args.application
 					if f.env != _|_ {
@@ -77,6 +78,7 @@ import (
 		extra:            _ | *null
 		deployRepository: _
 		forkenv:          _
+		fork:             _
 		scm:              _
 		application:      _
 		gitUserName:      string | *"heighliner"
@@ -136,6 +138,7 @@ import (
 			GIT_USER_NAME:       input.gitUserName
 			GIT_USER_EMAIL:      input.gitUserEmail
 			ENV_NAME:            input.forkenv.name
+			FROM_BRANCH:         input.fork.from
 			DOMAIN:              input.forkenv.domain
 			APP_NAME:            input.application.name
 		}
@@ -199,6 +202,7 @@ import (
 			envName:  input.forkenv.name
 			appName:  input.appName
 			chartUrl: input.deployRepository.url
+			cluster:  input.forkenv.cluster
 			envPath:  "env/" + input.forkenv.name + "/values.yaml"
 		}
 	}

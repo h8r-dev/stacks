@@ -13,7 +13,7 @@ cd /workdir/$REPOSITORY_NAME
 existed_in_remote=$(git ls-remote --heads origin ${ENV_NAME})
 if [[  -z ${existed_in_remote} ]]; then
     echo 'env not exists'
-    git checkout -b $ENV_NAME
+    git checkout -b $ENV_NAME origin/$FROM_BRANCH
 fi
 
 COMMIT_TAG="$(git rev-parse --short HEAD | tr -d '\n')"
