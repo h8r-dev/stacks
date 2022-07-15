@@ -70,6 +70,40 @@ import (
 	}
 }
 
+#PR: {
+	name:         string
+	organization: string
+	token:        string | dagger.#Secret
+	input:        dagger.#FS
+
+	_deps: docker.#Build & {
+		steps: [
+			base.#Image,
+			docker.#Copy & {
+				contents: input
+				dest:     "/workdir"
+			},
+		]
+	}
+	_sh: core.#Source & {
+		path: "."
+		include: ["pr.sh"]
+	}
+	_run: bash.#Run & {
+		input:   _deps.output
+		workdir: "/workdir"
+		env: {
+			NAME:         name
+			ORGANIZATION: organization
+			GH_TOKEN:     token
+		}
+		script: {
+			directory: _sh.output
+			filename:  "pr.sh"
+		}
+	}
+}
+
 #Init: {
 	input:  dagger.#FS
 	output: _run.export.directories."/workdir"

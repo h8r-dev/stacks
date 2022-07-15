@@ -65,6 +65,12 @@ import (
 		}
 		_code: output: _source.output
 		_wait: true
+		_pr:   git.#PR & {
+			input:          _assemble.export.directories."/workdir/source"
+			name:           service.name
+			"organization": organization
+			token:          githubToken
+		}
 	} | {
 		_isGenerated: true
 		_source:      code.#Source & {
@@ -81,6 +87,12 @@ import (
 			token:          githubToken
 		}
 		_wait: _createRepo.wait
+		_push: git.#Push & {
+			input:          _assemble.export.directories."/workdir/source"
+			name:           service.name
+			"organization": organization
+			token:          githubToken
+		}
 	}
 	_dockerfile: {
 		output:  _source.output
@@ -142,11 +154,5 @@ import (
 		key:            "PAT"
 		value:          githubToken
 		wait:           _wait
-	}
-	_push: git.#Push & {
-		input:          _assemble.export.directories."/workdir/source"
-		name:           service.name
-		"organization": organization
-		token:          githubToken
 	}
 }
