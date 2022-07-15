@@ -1,11 +1,11 @@
 package plans
 
 actions: up: args: {
-	application: name: "hello-world37"
+	application: name: "<app_name>"
 	service: [{
-		name: "hello-world37-backend"
+		name: "<app_name>-backend"
 		type: "backend"
-		url:  "https://github.com/lyzhang1999/hello-world37-backend"
+		url:  "https://github.com/<git_org>/<app_name>-backend"
 		env: [{
 			name:  "KEY"
 			value: "VALUE"
@@ -18,26 +18,26 @@ actions: up: args: {
 			value: "VALUE3"
 		}]
 	}, {
-		name: "hello-world37-frontend"
+		name: "<app_name>-frontend"
 		type: "frontend"
-		url:  "https://github.com/lyzhang1999/hello-world37-frontend"
+		url:  "https://github.com/<git_org>/<app_name>-frontend"
 		env: [{
 			name:  "KEY"
 			value: "VALUE"
 		}]
 	}]
 	deploy: {
-		name: "hello-world37-deploy"
-		url:  "https://github.com/lyzhang1999/hello-world37-deploy"
+		name: "<app_name>-deploy"
+		url:  "https://github.com/<git_org>/<app_name>-deploy"
 	}
 	forkenv: {
-		name:   "bug-fix1"
+		name:   "bug-fix"
 		from:   "main"
-		domain: "bug-fix-hello-world37.h8r.site"
+		domain: "bug-fix-<app_name>.h8r.site"
 	}
 	scm: {
 		name:         "github"
 		type:         "github"
-		organization: "lyzhang1999"
+		organization: "<git_org>"
 	}
 }
