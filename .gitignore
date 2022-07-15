@@ -11,3 +11,5 @@
 
 tmp/
 tars/
+
+**/plans/input.cue
