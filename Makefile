@@ -37,6 +37,10 @@ cuelint: cuefmt eval # Lint and format all cue files
 eval: vendor # Run cue eval to check all plans
 	@bash ./scripts/process_stacks.sh -e
 
+.PHONY: link
+link: # make a soft link of chain dir
+	@bash ./scripts/process_stacks.sh --link
+
 # Watch cuelib files change, and install new codes into stack cude.mod folder automatically.
 # Firstly: Execute `go install github.com/cosmtrek/air@latest` to install `air`.
 .PHONY: watch
