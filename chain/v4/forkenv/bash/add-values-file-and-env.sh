@@ -15,7 +15,6 @@ if [[  -z ${existed_in_remote} ]]; then
     echo 'env not exists'
     git checkout -b $ENV_NAME
 fi
-echo 'env exists'
 
 COMMIT_TAG="$(git rev-parse --short HEAD | tr -d '\n')"
 

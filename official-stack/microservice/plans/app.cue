@@ -5,7 +5,7 @@ actions: up: args: {
 		name: "my_db"
 		type: "postgres"
 		service: [
-			"<app_name>-backend",
+			"hello-world37-backend",
 		]
 		url:      "my_db.default.svc"
 		username: "admin"
@@ -15,7 +15,7 @@ actions: up: args: {
 		name: "redis"
 		type: "redis"
 		service: [
-			"<app_name>-backend",
+			"hello-world37-backend",
 		]
 		url:      "redis.default.svc"
 		username: "admin"
@@ -26,31 +26,31 @@ actions: up: args: {
 		name:         "github"
 		type:         "github"
 		token:        "ghp_xxxxxx"
-		organization: "<git_org>"
+		organization: "lyzhang1999"
 	}
 	image: {
 		name:     "github"
 		registry: "ghcr.io"
-		username: "<git_org>"
+		username: "lyzhang1999"
 		password: "password"
 	}
 	application: {
-		name:   "<app_name>"
-		domain: "<app_name>.h8r.site"
+		name:   "hello-world37"
+		domain: "hello-world37.h8r.site"
 		deploy: {
-			name:       "<app_name>-deploy"
-			url:        "https://github.com/<git_org>/<app_name>-deploy"
+			name:       "hello-world37-deploy"
+			url:        "https://github.com/lyzhang1999/hello-world37-deploy"
 			visibility: "private"
 		}
 		service: [{
-			name: "<app_name>-backend"
+			name: "hello-world37-backend"
 			type: "backend"
 			repo: {
-				url:        "https://github.com/<git_org>/<app_name>-backend"
+				url:        "https://github.com/lyzhang1999/hello-world37-backend"
 				visibility: "private"
 			}
 			image: {
-				repository: "ghcr.io/<git_org>/<app_name>-backend"
+				repository: "ghcr.io/lyzhang1999/hello-world37-backend"
 				tag:        ""
 			}
 			language: {
@@ -96,14 +96,14 @@ actions: up: args: {
 				}]
 			}
 		}, {
-			name: "<app_name>-frontend"
+			name: "hello-world37-frontend"
 			type: "frontend"
 			repo: {
-				url:        "https://github.com/<git_org>/<app_name>-frontend"
+				url:        "https://github.com/lyzhang1999/hello-world37-frontend"
 				visibility: "private"
 			}
 			image: {
-				repository: "ghcr.io/<git_org>/<app_name>-frontend"
+				repository: "ghcr.io/lyzhang1999/hello-world37-frontend"
 				tag:        ""
 			}
 			scaffold: true
