@@ -96,6 +96,17 @@ evalAllStack() {
   walkStacks evalStack
 }
 
+link() {
+  STACK_DIR=$1
+  DEST=${STACK_DIR}/cue.mod/pkg/github.com/h8r-dev/stacks/chain
+  rm -r ${DEST}
+  ln -s ../../../../../../../chain ${DEST}
+}
+
+linkAll() {
+  walkStacks link
+}
+
 usage() {
   echo "Usage:"
   echo "-i, --install-deps      Install dependencies for stacks"
@@ -125,6 +136,9 @@ for option in "$@"; do
       ;;
     -h|--help)
       usage
+      ;;
+    --link)
+      linkAll
       ;;
     -*|--*)
       echo "Unknown option $option"
