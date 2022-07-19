@@ -21,7 +21,6 @@ import (
 				input: {
 					name:    s.name
 					appName: args.application.name
-					domain:  args.application.domain
 					if s.framework == "gin" {
 						starter: "helm-starter/go/gin"
 					}
@@ -30,10 +29,16 @@ import (
 					}
 					repoURL:  s.repo.url
 					imageURL: s.image.repository
-					// FIXME: get info from ingress path
-					if s.type == "backend" {
-						ingressHostPath:        "/api"
-						rewriteIngressHostPath: true
+					if len(s.setting.expose) > 0 {
+						_expose:  s.setting.expose[0]
+						_ingress: chart.#Ingress & {
+							input: {
+								rewrite: _expose.rewrite
+								host:    args.application.domain
+								paths:   _expose.paths
+							}
+						}
+						ingressValue: yaml.Marshal(_ingress.info)
 					}
 					deploymentEnv: yaml.Marshal(s.setting.env)
 				}
