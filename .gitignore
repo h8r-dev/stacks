@@ -11,3 +11,6 @@
 
 tmp/
 tars/
+
+**/plans/input.cue
+**/plans/app.yaml

@@ -1,0 +1,9 @@
+module github.com/h8r-dev/stacks/official-stack/forkenv
+
+cue v0.4.0
+
+require (
+  github.com/h8r-dev/stacks/chain v0.0.0
+)
+
+replace github.com/h8r-dev/stacks/chain => ../../chain
