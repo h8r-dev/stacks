@@ -1,11 +1,13 @@
 package test
 
 import (
+	"encoding/yaml"
 	"dagger.io/dagger"
 	"github.com/h8r-dev/stacks/chain/v4/deploy/chart"
 	"github.com/h8r-dev/stacks/chain/v4/internal/base"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/helm"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/kubeconfig"
+	"github.com/h8r-dev/stacks/chain/v3/internal/utils/echo"
 )
 
 dagger.#Plan & {
@@ -45,12 +47,34 @@ dagger.#Plan & {
 		_createChart2: chart.#Create & {
 			input: {
 				name:     "chart2"
-				imageURL: "chart1"
-				repoURL:  "http://github.com/test"
+				repoURL:  "http://github.com/test/test"
 				appName:  "test"
 				starter:  "helm-starter/go/gin"
+				imageURL: "ghcr.io/test/test"
+				deploymentEnv: """
+					- name: HOST
+					  value: h8r.dev
+					- name: PASSWORD
+					  value: my_secret
+					"""
+				ingressValue: """
+					enabled: true
+					className: nginx
+					hosts:
+					  - host: foo.bar.com
+					    paths:
+					      - pathType: ImplementationSpecific
+					        path: /api(/|$)(.*)
+					      - pathType: ImplementationSpecific
+					        path: /v1/(/|$)(.*)
+					annotations:
+					  nginx.ingress.kubernetes.io/rewrite-target: /$2
+					tls: []
+					"""
 			}
 		}
+
+		testCreateChart: _createChart2
 
 		_subChartList: [_createChart1.output.chart, _createChart2.output.chart]
 
@@ -86,6 +110,23 @@ dagger.#Plan & {
 				chart:      _createEncryptedSecret.output.chart
 				kubeconfig: _kubeconfig
 			}
+		}
+
+		_ingress: chart.#Ingress & {
+			input: {
+				rewrite: true
+				host:    "foo.bar.com"
+				paths: [
+					{
+						path: "/api"
+					}, {
+						path: "/"
+					},
+				]
+			}
+		}
+		testIngress: echo.#Run & {
+			msg: yaml.Marshal(_ingress.info)
 		}
 	}
 }
