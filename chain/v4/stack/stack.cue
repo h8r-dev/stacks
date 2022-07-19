@@ -5,6 +5,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v4/deploy"
 	"github.com/h8r-dev/stacks/chain/v4/middleware"
 	"github.com/h8r-dev/stacks/chain/v4/service"
+	"github.com/h8r-dev/stacks/chain/v4/update"
 	"github.com/h8r-dev/stacks/chain/v3/internal/addon"                            // FIXME this is v3 pkg
 	utilsKubeconfig "github.com/h8r-dev/stacks/chain/v3/internal/utils/kubeconfig" // FIXME this is v3 pkg
 )
@@ -16,26 +17,34 @@ import (
 		imagePassword: dagger.#Secret
 	}
 
-	_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
-		input: kubeconfig: args.internal.kubeconfig
-	}
-	_kubeconfig: _transformKubeconfig.output.kubeconfig
+	if !args.isUpdate {
+		_transformKubeconfig: utilsKubeconfig.#TransformToInternal & {
+			input: kubeconfig: args.internal.kubeconfig
+		}
+		_kubeconfig: _transformKubeconfig.output.kubeconfig
 
-	_infra: addon.#ReadInfraConfig & {
-		input: kubeconfig: _kubeconfig
+		_infra: addon.#ReadInfraConfig & {
+			input: kubeconfig: _kubeconfig
+		}
+
+		_service: service.#Init & {
+			"args": args
+		}
+
+		_middleware: middleware.#Init & {
+			"args": args
+		}
+
+		_deploy: deploy.#Init & {
+			"args":     args
+			kubeconfig: _kubeconfig
+			cdVar:      _infra.argoCD
+		}
 	}
 
-	_service: service.#Init & {
-		"args": args
-	}
-
-	_middleware: middleware.#Init & {
-		"args": args
-	}
-
-	_deploy: deploy.#Init & {
-		"args":     args
-		kubeconfig: _kubeconfig
-		cdVar:      _infra.argoCD
+	if args.isUpdate {
+		_update: update.#Run & {
+			"args": args
+		}
 	}
 }
