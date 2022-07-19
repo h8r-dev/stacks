@@ -14,16 +14,11 @@ if [ -n "$HELM_SET" ]; then
   eval "$set"
 fi
 # set domain
-domain=$APPLICATION_DOMAIN
-path=$INGRESS_HOST_PATH
-if $REWRITE_INGRESS_HOST_PATH; then
-  path=$path"(/|$)(.*)"
-  # shellcheck disable=SC2016
-  yq -i '.ingress.annotations += {"nginx.ingress.kubernetes.io/rewrite-target": "/$2"}' "${NAME}/values.yaml"
+if [ -n "${DEPLOYMENT_ENV}" ]; then
+echo "${INGRESS_VALUE}" > ingress_value.yaml
+yq -i '.ingress = load("ingress_value.yaml")' "${NAME}/values.yaml"
+rm -rf ingress_value.yaml
 fi
-# TODO RUNNING ROOT USERS IS UNSAFE
-# set domain
-yq -i '.ingress.enabled = true | .ingress.className = "nginx" | .ingress.hosts[0].host="'$domain'" | .ingress.hosts[0].paths[0].path="'$path'" | .securityContext = {"runAsUser": 0}' "${NAME}/values.yaml"
 
 # set image
 # TODO: move set image pull secrets to #CreateImagePullSecret{}
@@ -41,7 +36,8 @@ if [ -f "${NAME}/conf/nocalhost.yaml" ] && [ -n "${GIT_URL}" ]; then
 fi
 
 # set env for deployment
-echo "${DEPLOYMENT_ENV}" > ex_env.yaml
-cat ex_env.yaml
-yq -i '.env = load("ex_env.yaml")' "${NAME}/values.yaml"
-rm -rf ex_env.yaml
+if [ -n "${DEPLOYMENT_ENV}" ]; then
+  echo "${DEPLOYMENT_ENV}" > ex_env.yaml
+  yq -i '.env = load("ex_env.yaml")' "${NAME}/values.yaml"
+  rm -rf ex_env.yaml
+fi

@@ -15,14 +15,12 @@ import (
 		// Format: '.image.repository = "rep" | .image.tag = "tag"'
 		set?: string | *""
 		// Helm starter
-		starter?:               string | *""
-		domain:                 string | *"h8r.site"
-		deploymentEnv:          string | *""
-		appName:                string
-		ingressHostPath:        string | *"/"
-		rewriteIngressHostPath: bool | *false
-		repoURL:                string
-		imageURL:               string
+		starter?:      string | *""
+		deploymentEnv: string | *""
+		appName:       string
+		repoURL:       string
+		imageURL:      string
+		ingressValue:  string | *""
 	}
 
 	output: {
@@ -51,13 +49,11 @@ import (
 			if input.starter != _|_ {
 				STARTER: input.starter
 			}
-			APP_NAME:                  input.appName
-			APPLICATION_DOMAIN:        input.domain
-			INGRESS_HOST_PATH:         input.ingressHostPath
-			REWRITE_INGRESS_HOST_PATH: "\(input.rewriteIngressHostPath)"
-			GIT_URL:                   input.repoURL
-			IMAGE_URL:                 input.imageURL
-			DEPLOYMENT_ENV:            input.deploymentEnv
+			APP_NAME:       input.appName
+			GIT_URL:        input.repoURL
+			IMAGE_URL:      input.imageURL
+			DEPLOYMENT_ENV: input.deploymentEnv
+			INGRESS_VALUE:  input.ingressValue
 		}
 		"input": _deps.output
 		workdir: "/helm"
