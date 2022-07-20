@@ -7,47 +7,71 @@ import (
 	"github.com/h8r-dev/stacks/chain/v3/internal/base"
 )
 
-#Input: {
-	name:               string
-	argoVar:            dagger.#Secret
-	repositoryPassword: dagger.#Secret | string
-	repositoryURL:      string
-	appPath:            string
-	waitFor:            bool | *true
-	appNamespace:       string
-	// Helm set values, such as "key1=value1,key2=value2"
-	set: string | *null
-}
-
-#CreateApp: {
-	input: #Input
+#SetRepoAuth: {
+	input: {
+		argoVar:            dagger.#Secret
+		repositoryPassword: dagger.#Secret | string
+		repositoryURL:      string
+		waitFor:            bool | *true
+	}
 
 	_deps: base.#Image
 
 	_sh: core.#Source & {
 		path: "."
-		include: ["create-app.sh"]
+		include: ["set-auth.sh"]
 	}
 
 	_run: bash.#Run & {
 		env: {
-			ARGO_VAR: input.argoVar
-			if input.set != null {
-				HELM_SET: input.set
-			}
-			APP_NAMESPACE: input.appNamespace
-			APP_SERVER:    "https://kubernetes.default.svc"
+			ARGO_VAR:      input.argoVar
 			REPO_URL:      input.repositoryURL
 			REPO_PASSWORD: input.repositoryPassword
-			APP_NAME:      input.name
-			APP_PATH:      input.appPath
 			WAIT_FOR:      "\(input.waitFor)"
 		}
 		"input": _deps.output
 		script: {
 			directory: _sh.output
-			filename:  "create-app.sh"
+			filename:  "set-auth.sh"
 		}
 	}
 	output: success: _run.success
+}
+
+#ApplicationCRD: {
+	input: {
+		appName:   string
+		chartUrl:  string
+		envPath:   string
+		namespace: string
+		cluster:   string | *"https://kubernetes.default.svc"
+		project:   string | *"default"
+	}
+	CRD: {
+		apiVersion: "argoproj.io/v1alpha1"
+		kind:       "Application"
+		metadata: {
+			name:      input.appName
+			namespace: "argocd"
+		}
+		spec: {
+			destination: {
+				namespace: input.namespace
+				server:    input.cluster
+			}
+			project: input.project
+			source: {
+				helm: valueFiles: [
+					input.envPath,
+				]
+				path:           input.appName
+				repoURL:        input.chartUrl
+				targetRevision: "HEAD"
+			}
+			syncPolicy: {
+				automated: {}
+				syncOptions: ["CreateNamespace=true"]
+			}
+		}
+	}
 }

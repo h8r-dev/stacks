@@ -71,7 +71,7 @@ import (
 		}
 	}
 
-	_crateRepo: github.#Push & {
+	_createRepo: github.#Push & {
 		input: {
 			repositoryName:      args.application.name + "-deploy" // FIXME
 			contents:            _createEncryptedSecret.output.chart
@@ -82,15 +82,29 @@ import (
 		}
 	}
 
-	_createApp: argocd.#CreateApp & {
+	_serRepoAuth: argocd.#SetRepoAuth & {
 		input: {
-			name:               args.application.name
-			repositoryPassword: args.internal.githubToken
-			repositoryURL:      args.application.deploy.url
-			appPath:            "\(name)"
 			argoVar:            cdVar
-			waitFor:            _crateRepo.output.success
-			appNamespace:       args.application.namespace
+			repositoryURL:      args.application.deploy.url
+			repositoryPassword: args.internal.githubToken
+			waitFor:            _createRepo.output.success
+		}
+	}
+
+	_createApp: kubectl.#Apply & {
+		_app: argocd.#ApplicationCRD & {
+			input: {
+				appName:   args.application.name
+				chartUrl:  args.application.deploy.url
+				envPath:   args.application.deploy.valuesFile
+				namespace: args.application.namespace
+			}
+		}
+		_contents: yaml.Marshal(_app.CRD)
+		input: {
+			"kubeconfig": kubeconfig
+			contents:     _contents
+			waitFor:      _serRepoAuth.output.success
 		}
 	}
 
