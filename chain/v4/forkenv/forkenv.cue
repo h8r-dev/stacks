@@ -64,6 +64,7 @@ import (
 			forkenv:          args.forkenv
 			scm:              args.scm
 			kubeconfig:       _kubeconfig
+			namespace:        args.application.namespace
 		}
 	}
 }
@@ -176,6 +177,7 @@ import (
 		gitUserName:      string | *"heighliner"
 		gitUserEmail:     string | *"heighliner@h8r.dev"
 		kubeconfig:       dagger.#Secret
+		namespace:        string
 	}
 
 	// heighliner env crd
@@ -183,7 +185,7 @@ import (
 		"input": {
 			envName:      input.forkenv.name
 			appName:      input.appName
-			namespace:    input.appName + "-" + input.forkenv.name
+			namespace:    input.namespace
 			chartUrl:     input.deployRepository.url
 			envPath:      "env/" + input.forkenv.name
 			envAccessUrl: input.forkenv.domain
@@ -199,11 +201,12 @@ import (
 	// argocd application crd
 	_ApplicationCRD: #ApplicationCRD & {
 		"input": {
-			envName:  input.forkenv.name
-			appName:  input.appName
-			chartUrl: input.deployRepository.url
-			cluster:  input.forkenv.cluster
-			envPath:  "env/" + input.forkenv.name + "/values.yaml"
+			envName:   input.forkenv.name
+			appName:   input.appName
+			chartUrl:  input.deployRepository.url
+			cluster:   input.forkenv.cluster
+			envPath:   "env/" + input.forkenv.name + "/values.yaml"
+			namespace: input.namespace
 		}
 	}
 	_applicationyamlContents: yaml.Marshal(_ApplicationCRD.CRD)
@@ -270,7 +273,7 @@ import (
 		appName:   string
 		chartUrl:  string
 		envPath:   string
-		namespace: string | *"argocd"
+		namespace: string
 		cluster:   string | *"https://kubernetes.default.svc"
 		project:   string | *"default"
 	}
@@ -283,7 +286,7 @@ import (
 		}
 		spec: {
 			destination: {
-				namespace: input.appName + "-" + input.envName
+				namespace: input.namespace
 				server:    input.cluster
 			}
 			project: input.project
