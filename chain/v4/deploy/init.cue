@@ -7,7 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/kubectl"
 	"github.com/h8r-dev/stacks/chain/v4/crd/forkmain"
 	"github.com/h8r-dev/stacks/chain/v3/component/scm/github" // FIXME: this is v3 pkg
-	"github.com/h8r-dev/stacks/chain/v4/cd/argocd"
+	// "github.com/h8r-dev/stacks/chain/v4/cd/argocd"
 )
 
 #Init: {
@@ -71,7 +71,7 @@ import (
 		}
 	}
 
-	_crateRepo: github.#Push & {
+	_createRepo: github.#Push & {
 		input: {
 			repositoryName:      args.application.name + "-deploy" // FIXME
 			contents:            _createEncryptedSecret.output.chart
@@ -82,15 +82,20 @@ import (
 		}
 	}
 
-	_createApp: argocd.#CreateApp & {
+	_createApp: kubectl.#Apply & {
+		_app: #ApplicationCRD & {
+			input: {
+				appName:   args.application.name
+				chartUrl:  args.application.deploy.url
+				envPath:   args.application.deploy.valuesFile
+				namespace: args.application.namespace
+			}
+		}
+		_contents: yaml.Marshal(_app.CRD)
 		input: {
-			name:               args.application.name
-			repositoryPassword: args.internal.githubToken
-			repositoryURL:      args.application.deploy.url
-			appPath:            "\(name)"
-			argoVar:            cdVar
-			waitFor:            _crateRepo.output.success
-			appNamespace:       args.application.namespace
+			"kubeconfig": kubeconfig
+			contents:     _contents
+			waitFor:      _createRepo.output.success
 		}
 	}
 
@@ -147,6 +152,44 @@ import (
 						waitFor:      _createApp.output.success
 					}
 				}
+			}
+		}
+	}
+}
+
+#ApplicationCRD: {
+	input: {
+		appName:   string
+		chartUrl:  string
+		envPath:   string
+		namespace: string
+		cluster:   string | *"https://kubernetes.default.svc"
+		project:   string | *"default"
+	}
+	CRD: {
+		apiVersion: "argoproj.io/v1alpha1"
+		kind:       "Application"
+		metadata: {
+			name:      input.appName
+			namespace: "argocd"
+		}
+		spec: {
+			destination: {
+				namespace: input.namespace
+				server:    input.cluster
+			}
+			project: input.project
+			source: {
+				helm: valueFiles: [
+					input.envPath,
+				]
+				path:           input.appName
+				repoURL:        input.chartUrl
+				targetRevision: "HEAD"
+			}
+			syncPolicy: {
+				automated: {}
+				syncOptions: ["CreateNamespace=true"]
 			}
 		}
 	}
