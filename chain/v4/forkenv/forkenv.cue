@@ -185,7 +185,7 @@ import (
 		"input": {
 			envName:      input.forkenv.name
 			appName:      input.appName
-			namespace:    input.appName + "-" + input.forkenv.name
+			namespace:    input.namespace
 			chartUrl:     input.deployRepository.url
 			envPath:      "env/" + input.forkenv.name
 			envAccessUrl: input.forkenv.domain
