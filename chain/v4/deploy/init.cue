@@ -82,6 +82,15 @@ import (
 		}
 	}
 
+	_serRepoAuth: argocd.#SetRepoAuth & {
+		input: {
+			argoVar:            cdVar
+			repositoryURL:      args.application.deploy.url
+			repositoryPassword: args.internal.githubToken
+			waitFor:            _createRepo.output.success
+		}
+	}
+
 	_createApp: kubectl.#Apply & {
 		_app: argocd.#ApplicationCRD & {
 			input: {
@@ -95,7 +104,7 @@ import (
 		input: {
 			"kubeconfig": kubeconfig
 			contents:     _contents
-			waitFor:      _createRepo.output.success
+			waitFor:      _serRepoAuth.output.success
 		}
 	}
 

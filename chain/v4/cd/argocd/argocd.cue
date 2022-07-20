@@ -1,5 +1,43 @@
 package argocd
 
+import (
+	"dagger.io/dagger"
+	"dagger.io/dagger/core"
+	"universe.dagger.io/bash"
+	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+)
+
+#SetRepoAuth: {
+	input: {
+		argoVar:            dagger.#Secret
+		repositoryPassword: dagger.#Secret | string
+		repositoryURL:      string
+		waitFor:            bool | *true
+	}
+
+	_deps: base.#Image
+
+	_sh: core.#Source & {
+		path: "."
+		include: ["set-auth.sh"]
+	}
+
+	_run: bash.#Run & {
+		env: {
+			ARGO_VAR:      input.argoVar
+			REPO_URL:      input.repositoryURL
+			REPO_PASSWORD: input.repositoryPassword
+			WAIT_FOR:      "\(input.waitFor)"
+		}
+		"input": _deps.output
+		script: {
+			directory: _sh.output
+			filename:  "set-auth.sh"
+		}
+	}
+	output: success: _run.success
+}
+
 #ApplicationCRD: {
 	input: {
 		appName:   string
