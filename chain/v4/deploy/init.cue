@@ -6,8 +6,8 @@ import (
 	"github.com/h8r-dev/stacks/chain/v4/deploy/chart"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/kubectl"
 	"github.com/h8r-dev/stacks/chain/v4/crd/forkmain"
-	"github.com/h8r-dev/stacks/chain/v3/component/scm/github"         // FIXME: this is v3 pkg
-	v3argocd "github.com/h8r-dev/stacks/chain/v3/component/cd/argocd" // FIXME: this is v3 pkg
+	"github.com/h8r-dev/stacks/chain/v3/component/scm/github" // FIXME: this is v3 pkg
+	"github.com/h8r-dev/stacks/chain/v4/cd/argocd"
 )
 
 #Init: {
@@ -82,7 +82,7 @@ import (
 		}
 	}
 
-	_createApp: v3argocd.#CreateApp & {
+	_createApp: argocd.#CreateApp & {
 		input: {
 			name:               args.application.name
 			repositoryPassword: args.internal.githubToken
@@ -90,6 +90,7 @@ import (
 			appPath:            "\(name)"
 			argoVar:            cdVar
 			waitFor:            _crateRepo.output.success
+			appNamespace:       args.application.namespace
 		}
 	}
 
@@ -117,7 +118,7 @@ import (
 					chartURL:     args.application.deploy.url
 					chartPath:    args.application.name
 					envAccessURL: args.application.domain
-					envNamespace: args.application.name + "-production"
+					envNamespace: args.application.namespace
 				}
 			}
 			_contents: yaml.Marshal(_env.CRD)
