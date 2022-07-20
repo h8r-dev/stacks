@@ -7,7 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/kubectl"
 	"github.com/h8r-dev/stacks/chain/v4/crd/forkmain"
 	"github.com/h8r-dev/stacks/chain/v3/component/scm/github" // FIXME: this is v3 pkg
-	// "github.com/h8r-dev/stacks/chain/v4/cd/argocd"
+	"github.com/h8r-dev/stacks/chain/v4/cd/argocd"
 )
 
 #Init: {
@@ -83,7 +83,7 @@ import (
 	}
 
 	_createApp: kubectl.#Apply & {
-		_app: #ApplicationCRD & {
+		_app: argocd.#ApplicationCRD & {
 			input: {
 				appName:   args.application.name
 				chartUrl:  args.application.deploy.url
@@ -152,44 +152,6 @@ import (
 						waitFor:      _createApp.output.success
 					}
 				}
-			}
-		}
-	}
-}
-
-#ApplicationCRD: {
-	input: {
-		appName:   string
-		chartUrl:  string
-		envPath:   string
-		namespace: string
-		cluster:   string | *"https://kubernetes.default.svc"
-		project:   string | *"default"
-	}
-	CRD: {
-		apiVersion: "argoproj.io/v1alpha1"
-		kind:       "Application"
-		metadata: {
-			name:      input.appName
-			namespace: "argocd"
-		}
-		spec: {
-			destination: {
-				namespace: input.namespace
-				server:    input.cluster
-			}
-			project: input.project
-			source: {
-				helm: valueFiles: [
-					input.envPath,
-				]
-				path:           input.appName
-				repoURL:        input.chartUrl
-				targetRevision: "HEAD"
-			}
-			syncPolicy: {
-				automated: {}
-				syncOptions: ["CreateNamespace=true"]
 			}
 		}
 	}
