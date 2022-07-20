@@ -3,7 +3,10 @@
 // Use this command to generate app.yaml `cue export app.cue --outfile app.yaml -f`
 
 actions: up: args: {
-	application: name: "hello-world38"
+	application: {
+		name:      "test28"
+		namespace: "test28-bug-fix"
+	}
 	service: [{
 		name: application.name + "-backend"
 		type: "backend"
@@ -35,8 +38,10 @@ actions: up: args: {
 		}
 	}]
 	deploy: {
-		name: application.name + "-deploy"
-		url:  "https://github.com/" + scm.organization + "/" + application.name + "-deploy"
+		name:       application.name + "-deploy"
+		url:        "https://github.com/" + scm.organization + "/" + application.name + "-deploy"
+		path:       application.name
+		valuesFile: "env" + "/" + forkenv.name + "/" + "values.yaml"
 	}
 	forkenv: {
 		name:    "bug-fix"
@@ -46,6 +51,6 @@ actions: up: args: {
 	scm: {
 		name:         "github"
 		type:         "github"
-		organization: "lyzhang1999"
+		organization: "hotdorg"
 	}
 }

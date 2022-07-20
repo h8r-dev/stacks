@@ -65,6 +65,7 @@ import (
 			scm:              args.scm
 			kubeconfig:       _kubeconfig
 			namespace:        args.application.namespace
+			valuesFile:       args.deploy.valuesFile
 		}
 	}
 }
@@ -178,6 +179,7 @@ import (
 		gitUserEmail:     string | *"heighliner@h8r.dev"
 		kubeconfig:       dagger.#Secret
 		namespace:        string
+		valuesFile:       string
 	}
 
 	// heighliner env crd
@@ -205,7 +207,7 @@ import (
 			appName:   input.appName
 			chartUrl:  input.deployRepository.url
 			cluster:   input.forkenv.cluster
-			envPath:   "env/" + input.forkenv.name + "/values.yaml"
+			envPath:   input.valuesFile
 			namespace: input.namespace
 		}
 	}
