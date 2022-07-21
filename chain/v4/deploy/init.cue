@@ -14,6 +14,7 @@ import (
 	args:       _
 	kubeconfig: dagger.#Secret
 	cdVar:      dagger.#Secret
+	middlewareCharts: [...dagger.#FS]
 
 	_createHelmChart: {
 		for s in args.application.service {
@@ -49,6 +50,9 @@ import (
 	_subChartList: [
 		for s in args.application.service {
 			_createHelmChart[(s.name)].output.chart
+		},
+		for m in middlewareCharts {
+			m
 		},
 	]
 
