@@ -4,7 +4,7 @@ import (
 	"dagger.io/dagger"
 	"github.com/h8r-dev/stacks/chain/v4/deploy"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/kubeconfig"
-	"github.com/h8r-dev/stacks/chain/v3/internal/addon" // FIXME this is v3 pkg
+	"github.com/h8r-dev/stacks/chain/v4/internal/addon"
 
 )
 

@@ -5,7 +5,7 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	"github.com/h8r-dev/stacks/chain/v4/internal/base"
 )
 
 #Pull: {

@@ -4,7 +4,7 @@ import (
 	"dagger.io/dagger"
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	"github.com/h8r-dev/stacks/chain/v4/internal/base"
 )
 
 #SetRepoAuth: {

@@ -7,7 +7,7 @@ import (
 	"github.com/h8r-dev/stacks/chain/v4/internal/base"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/helm"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/kubeconfig"
-	"github.com/h8r-dev/stacks/chain/v3/internal/utils/echo"
+	"github.com/h8r-dev/stacks/chain/v4/internal/echo"
 )
 
 dagger.#Plan & {
