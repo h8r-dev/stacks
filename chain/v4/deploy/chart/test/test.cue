@@ -51,6 +51,7 @@ dagger.#Plan & {
 				appName:  "test"
 				starter:  "helm-starter/go/gin"
 				imageURL: "ghcr.io/test/test"
+				port:     "8081"
 				deploymentEnv: """
 					- name: HOST
 					  value: h8r.dev
