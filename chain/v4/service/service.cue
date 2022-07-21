@@ -97,9 +97,10 @@ import (
 	_dockerfile: {
 		output:  _source.output
 		_source: dockerfile.#Generate & {
-			language: service.language.name
-			version:  service.language.version
-			setting:  service.setting
+			isGenerated: _isGenerated
+			language:    service.language.name
+			version:     service.language.version
+			setting:     service.setting
 		}
 	}
 	_workflow: {

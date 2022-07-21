@@ -9,8 +9,9 @@ import (
 )
 
 #Generate: {
-	output:    dagger.#FS & _evaluate.export.directories."/workdir"
-	_template: core.#Source & {
+	isGenerated: bool
+	output:      dagger.#FS & _evaluate.export.directories."/workdir"
+	_template:   core.#Source & {
 		path: "template"
 	}
 	_deps: docker.#Build & {
@@ -28,12 +29,25 @@ import (
 	}
 	{
 		language: "golang"
-		setting: {
-			extension: {
-				entryFile: string
+		setting:  _
+		{
+			isGenerated: false
+			setting: {
+				extension: {
+					entryFile: string
+					...
+				}
 				...
 			}
-			...
+		} | {
+			isGenerated: true
+			setting: {
+				extention: {
+					entryFile: "main.go"
+					...
+				}
+				...
+			}
 		}
 		_sh: core.#Source & {
 			path: "."
