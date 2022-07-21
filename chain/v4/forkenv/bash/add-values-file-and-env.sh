@@ -24,6 +24,11 @@ cd /workdir/$DEPLOY_NAME/$APP_NAME
 #mkdir -p env/$ENV_NAME/ && touch env/$ENV_NAME/values.yaml
 mkdir -p env/$ENV_NAME/
 
+# check first, if values.yaml file exist, delete it and recreate values.yaml file, each service will do this job by foreach, so just check first foreach step.
+if [[ -f env/$ENV_NAME/values.yaml && "$FIRST" == "true" ]]; then
+  rm env/$ENV_NAME/values.yaml
+fi
+
 # copy values to env values
 if [[ ! -f env/$ENV_NAME/values.yaml ]]; then
   cp values.yaml env/$ENV_NAME/values.yaml
