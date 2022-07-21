@@ -36,9 +36,10 @@ import (
 		}
 
 		_deploy: deploy.#Init & {
-			"args":     args
-			kubeconfig: _kubeconfig
-			cdVar:      _infra.argoCD
+			"args":           args
+			kubeconfig:       _kubeconfig
+			cdVar:            _infra.argoCD
+			middlewareCharts: _middleware.output.charts
 		}
 	}
 
