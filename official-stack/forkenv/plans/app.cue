@@ -6,37 +6,42 @@ actions: up: args: {
 	application: {
 		name:      "test28"
 		namespace: "test28-bug-fix"
+		domain:    forkenv.name + "-" + application.name + ".h8r.site"
+		service: [{
+			name: application.name + "-backend"
+			type: "backend"
+			repo: url: "https://github.com/" + scm.organization + "/" + application.name + "-backend"
+			setting: {
+				env: [{
+					name:  "KEY"
+					value: "VALUE"
+				}]
+				// add any values.yaml key
+				extra: key: [{
+					name:  "KEY"
+					value: "VALUE"
+				}]
+				fork: {
+					from: "main"
+					type: "branch"
+				}
+			}
+		}, {
+			name: application.name + "-frontend"
+			type: "frontend"
+			repo: url: "https://github.com/" + scm.organization + "/" + application.name + "-frontend"
+			setting: {
+				env: [{
+					name:  "KEY"
+					value: "VALUE"
+				}]
+				fork: {
+					from: "main"
+					type: "branch"
+				}
+			}
+		}]
 	}
-	service: [{
-		name: application.name + "-backend"
-		type: "backend"
-		url:  "https://github.com/" + scm.organization + "/" + application.name + "-backend"
-		env: [{
-			name:  "KEY"
-			value: "VALUE"
-		}]
-		// add any values.yaml key
-		extra: key: [{
-			name:  "KEY"
-			value: "VALUE"
-		}]
-		fork: {
-			from: "main"
-			type: "branch"
-		}
-	}, {
-		name: application.name + "-frontend"
-		type: "frontend"
-		url:  "https://github.com/" + scm.organization + "/" + application.name + "-frontend"
-		env: [{
-			name:  "KEY"
-			value: "VALUE"
-		}]
-		fork: {
-			from: "main"
-			type: "branch"
-		}
-	}]
 	deploy: {
 		name:       application.name + "-deploy"
 		url:        "https://github.com/" + scm.organization + "/" + application.name + "-deploy"
@@ -46,7 +51,6 @@ actions: up: args: {
 	forkenv: {
 		name:    "bug-fix"
 		cluster: "https://kubernetes.default.svc"
-		domain:  name + "-" + application.name + ".h8r.site"
 	}
 	scm: {
 		name:         "github"

@@ -23,7 +23,7 @@ import (
 	_kubeconfig: _transformKubeconfig.output.kubeconfig
 
 	_addValuesFile: {
-		for idx, f in args.service {
+		for idx, f in args.application.service {
 			"\(idx)": #AddValuesFileAndBranch & {
 				_first:  string | *"true"
 				_output: dagger.#FS | *null
@@ -35,18 +35,18 @@ import (
 					source:           _output
 					repositoryName:   f.name
 					repositoryType:   f.type
-					repositoryUrl:    f.url
+					repositoryUrl:    f.repo.url
 					deployRepository: args.deploy
 					forkenv:          args.forkenv
-					fork:             f.fork
+					fork:             f.setting.fork
 					scm:              args.scm
 					application:      args.application
 					first:            _first
-					if f.env != _|_ {
-						env: f.env
+					if f.setting.env != _|_ {
+						env: f.setting.env
 					}
-					if f.extra != _|_ {
-						extra: f.extra
+					if f.setting.extra != _|_ {
+						extra: f.setting.extra
 					}
 				}
 			}
@@ -65,6 +65,7 @@ import (
 			appName:          args.application.name
 			deployRepository: args.deploy
 			forkenv:          args.forkenv
+			domain:           args.application.domain
 			scm:              args.scm
 			kubeconfig:       _kubeconfig
 			namespace:        args.application.namespace
@@ -145,7 +146,7 @@ import (
 			GIT_USER_EMAIL:      input.gitUserEmail
 			ENV_NAME:            input.forkenv.name
 			FROM_BRANCH:         input.fork.from
-			DOMAIN:              input.forkenv.domain
+			DOMAIN:              input.application.domain
 			APP_NAME:            input.application.name
 			FIRST:               input.first
 		}
@@ -177,6 +178,7 @@ import (
 	input: {
 		source:           dagger.#FS | *null
 		appName:          string
+		domain:           string
 		deployRepository: _
 		forkenv:          _
 		scm:              _
@@ -195,7 +197,7 @@ import (
 			namespace:    input.namespace
 			chartUrl:     input.deployRepository.url
 			envPath:      "env/" + input.forkenv.name
-			envAccessUrl: input.forkenv.domain
+			envAccessUrl: input.domain
 		}
 	}
 	_yamlContents: yaml.Marshal(_envCRD.CRD)
