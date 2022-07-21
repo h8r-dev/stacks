@@ -40,6 +40,7 @@ import (
 							}
 						}
 						ingressValue: yaml.Marshal(_ingress.info)
+						port:         "\(_expose.port)"
 					}
 					deploymentEnv: yaml.Marshal(s.setting.env)
 				}

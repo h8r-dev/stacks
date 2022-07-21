@@ -21,6 +21,7 @@ import (
 		repoURL:       string
 		imageURL:      string
 		ingressValue:  string | *""
+		port:          string | *""
 	}
 
 	output: {
@@ -54,6 +55,7 @@ import (
 			IMAGE_URL:      input.imageURL
 			DEPLOYMENT_ENV: input.deploymentEnv
 			INGRESS_VALUE:  input.ingressValue
+			PORT:           input.port
 		}
 		"input": _deps.output
 		workdir: "/helm"

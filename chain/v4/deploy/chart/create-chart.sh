@@ -41,3 +41,8 @@ if [ -n "${DEPLOYMENT_ENV}" ]; then
   yq -i '.env = load("ex_env.yaml")' "${NAME}/values.yaml"
   rm -rf ex_env.yaml
 fi
+
+# set port
+if [ -n "${PORT}" ]; then
+  yq -i '.service.port = '"${PORT}"'' "${NAME}/values.yaml"
+fi
