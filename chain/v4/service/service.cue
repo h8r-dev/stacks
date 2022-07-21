@@ -5,15 +5,13 @@ import (
 	"dagger.io/dagger/core"
 	"universe.dagger.io/bash"
 	"universe.dagger.io/docker"
-	"github.com/h8r-dev/stacks/chain/v3/internal/base"
+	"github.com/h8r-dev/stacks/chain/v4/internal/base"
 	"github.com/h8r-dev/stacks/chain/v4/service/code"
 	"github.com/h8r-dev/stacks/chain/v4/service/dockerfile"
 	"github.com/h8r-dev/stacks/chain/v4/service/workflow"
 	"github.com/h8r-dev/stacks/chain/v4/service/repository"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/git"
 )
-
-// TODO set PAT, assemble codes and push codes
 
 #Init: {
 	args: _
