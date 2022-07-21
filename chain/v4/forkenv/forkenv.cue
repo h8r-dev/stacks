@@ -25,9 +25,11 @@ import (
 	_addValuesFile: {
 		for idx, f in args.service {
 			"\(idx)": #AddValuesFileAndBranch & {
+				_first:  string | *"true"
 				_output: dagger.#FS | *null
 				if idx > 0 {
 					_output: _addValuesFile["\(idx-1)"].output.repo // use pre fs
+					_first:  "false"
 				}
 				input: {
 					source:           _output
@@ -39,6 +41,7 @@ import (
 					fork:             f.fork
 					scm:              args.scm
 					application:      args.application
+					first:            _first
 					if f.env != _|_ {
 						env: f.env
 					}
@@ -83,6 +86,7 @@ import (
 		fork:             _
 		scm:              _
 		application:      _
+		first:            string
 		gitUserName:      string | *"heighliner"
 		gitUserEmail:     string | *"heighliner@h8r.dev"
 	}
@@ -143,6 +147,7 @@ import (
 			FROM_BRANCH:         input.fork.from
 			DOMAIN:              input.forkenv.domain
 			APP_NAME:            input.application.name
+			FIRST:               input.first
 		}
 		if input.env != null {
 			mounts: yaml: core.#Mount & {
