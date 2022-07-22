@@ -28,6 +28,9 @@ import (
 					if s.framework == "nextjs" {
 						starter: "helm-starter/nodejs/nextjs"
 					}
+					if s.framework == "spring-boot" {
+						starter: "helm-starter/java/spring-boot"
+					}
 					repoURL:  s.repo.url
 					imageURL: s.image.repository
 					if len(s.setting.expose) > 0 {

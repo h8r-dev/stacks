@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 TEMP=/source/nextjs.t
-VALUES=/source/nextjs.yaml
-gomplate -f ${TEMP} -d values=${VALUES} -o Dockerfile
+VALUES_FILE=/source/nextjs.yaml
+gomplate -f ${TEMP} -d values=${VALUES_FILE} -o Dockerfile

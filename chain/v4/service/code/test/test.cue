@@ -3,7 +3,7 @@ package test
 import (
 	"dagger.io/dagger"
 	"universe.dagger.io/bash"
-	"github.com/h8r-dev/stacks/chain/v4/service/dockerfile"
+	"github.com/h8r-dev/stacks/chain/v4/service/code"
 	"github.com/h8r-dev/stacks/chain/v4/pkg/k8s/kubeconfig"
 	"github.com/h8r-dev/stacks/chain/v4/internal/base"
 )
@@ -23,61 +23,31 @@ dagger.#Plan & {
 		}
 		_kubeconfig: _transformKubeconfig.output.kubeconfig
 		test: {
-			_gin:    gin
-			_nextjs: nextjs
-			_maven:  maven
+			_gin:   gin
+			_maven: maven
 		}
 		gin: {
-			_source: dockerfile.#Generate & {
-				isGenerated: false
-				language: {
-					name:    "golang"
-					version: "1.17"
-				}
+			_source: code.#Source & {
 				framework: "gin"
 			}
-			_check: #CatFile & {
+			_check: #LsFile & {
 				fs:   _source.output
-				path: "Dockerfile"
-			}
-		}
-		nextjs: {
-			_source: dockerfile.#Generate & {
-				isGenerated: true
-				language: {
-					name:    "typescript"
-					version: "4.7"
-				}
-				framework: "nextjs"
-			}
-			_check: #CatFile & {
-				fs:   _source.output
-				path: "Dockerfile"
+				path: "."
 			}
 		}
 		maven: {
-			_source: dockerfile.#Generate & {
-				isGenerated: true
-				language: {
-					name:    "java"
-					version: "11"
-				}
+			_source: code.#Source & {
 				framework: "spring-boot"
-				setting: {
-					extension: {
-						buildTool: "maven"
-					}
-				}
 			}
-			_check: #CatFile & {
+			_check: #LsFile & {
 				fs:   _source.output
-				path: "Dockerfile"
+				path: "."
 			}
 		}
 	}
 }
 
-#CatFile: {
+#LsFile: {
 	fs:    dagger.#FS
 	path:  string
 	_deps: base.#Image
@@ -90,6 +60,6 @@ dagger.#Plan & {
 			type:     "fs"
 			contents: fs
 		}
-		script: contents: "cat \(path)"
+		script: contents: "ls -lah \(path)"
 	}
 }
