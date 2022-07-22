@@ -96,8 +96,8 @@ import (
 		output:  _source.output
 		_source: dockerfile.#Generate & {
 			isGenerated: _isGenerated
-			language:    service.language.name
-			version:     service.language.version
+			language:    service.language
+			framework:   service.framework
 			setting:     service.setting
 		}
 	}

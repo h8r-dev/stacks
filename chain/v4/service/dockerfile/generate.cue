@@ -10,8 +10,13 @@ import (
 
 #Generate: {
 	isGenerated: bool
-	output:      dagger.#FS & _evaluate.export.directories."/workdir"
-	_template:   core.#Source & {
+	language: {
+		name:    string
+		version: string
+	}
+	framework: string
+	output:    dagger.#FS & _evaluate.export.directories."/workdir"
+	_template: core.#Source & {
 		path: "template"
 	}
 	_deps: docker.#Build & {
@@ -28,53 +33,58 @@ import (
 		...
 	}
 	{
-		language: "golang"
-		setting:  _
+		language: {
+			name:    "golang"
+			version: string | *"1.18"
+		}
+		framework:  "gin"
+		_entryFile: string
+		setting:    _
 		{
 			isGenerated: false
 			setting: {
 				extension: {
-					entryFile: string
+					entryFile: string | *"/"
 					...
 				}
 				...
 			}
+			_entryFile: setting.extension.entryFile
 		} | {
 			isGenerated: true
-			setting: {
-				extention: {
-					entryFile: "main.go"
-					...
-				}
-				...
-			}
+			_entryFile:  "/"
 		}
 		_sh: core.#Source & {
 			path: "."
-			include: ["go.sh"]
+			include: ["gin.sh"]
 		}
 		_evaluate: bash.#Run & {
 			input:   _deps.output
 			workdir: "/workdir"
+			env: {
+				VERSION:    language.version
+				ENTRY_FILE: _entryFile
+			}
 			script: {
 				directory: _sh.output
-				filename:  "go.sh"
+				filename:  "gin.sh"
 			}
 			export: directories: "/workdir": _
 		}
 		...
 	} | {
-		language: "typescript"
-		_sh:      core.#Source & {
+		language: name: "typescript"
+		framework: "nextjs"
+		_sh:       core.#Source & {
 			path: "."
-			include: ["ts.sh"]
+			include: ["nextjs.sh"]
 		}
 		_evaluate: bash.#Run & {
 			input:   _deps.output
 			workdir: "/workdir"
 			script: {
 				directory: _sh.output
-				filename:  "ts.sh"
+				filename:  "nextjs.sh"
 			}
 			export: directories: "/workdir": _
 		}

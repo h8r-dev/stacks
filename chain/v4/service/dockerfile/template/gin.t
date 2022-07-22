@@ -13,7 +13,7 @@ RUN go mod download
 
 COPY ./ ./
 
-RUN go build -o /app {{ (datasource "values").pkg }}
+RUN go build -o /app /workdir/{{ (datasource "values").entryFile }}
 
 ##
 ## Deploy
