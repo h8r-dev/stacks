@@ -63,11 +63,7 @@ dagger.#Plan & {
 					version: "11"
 				}
 				framework: "spring-boot"
-				setting: {
-					extension: {
-						buildTool: "maven"
-					}
-				}
+				setting: extension: buildTool: "maven"
 			}
 			_check: #CatFile & {
 				fs:   _source.output
