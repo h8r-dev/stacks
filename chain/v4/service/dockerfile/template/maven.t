@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM openjdk:11
+FROM openjdk:{{ (datasource "values").version }}
 
 WORKDIR /app
 

@@ -89,5 +89,33 @@ import (
 			export: directories: "/workdir": _
 		}
 		...
+	} | {
+		language: name: "java"
+		framework: "spring-boot"
+		setting: {
+			extension: {
+				buildTool: string
+				...
+			}
+			...
+		}
+		_buildTool: setting.extension.buildTool
+		_sh:        core.#Source & {
+			path: "."
+			include: ["java.sh"]
+		}
+		_evaluate: bash.#Run & {
+			input:   _deps.output
+			workdir: "/workdir"
+			env: {
+				VERSION:    language.version
+				BUILD_TOOL: _buildTool
+			}
+			script: {
+				directory: _sh.output
+				filename:  "java.sh"
+			}
+			export: directories: "/workdir": _
+		}
 	}
 }
