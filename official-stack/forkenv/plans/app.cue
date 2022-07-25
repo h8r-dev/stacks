@@ -41,12 +41,12 @@ actions: up: args: {
 				}
 			}
 		}]
-	}
-	deploy: {
-		name:       application.name + "-deploy"
-		url:        "https://github.com/" + scm.organization + "/" + application.name + "-deploy"
-		path:       application.name
-		valuesFile: "env" + "/" + forkenv.name + "/" + "values.yaml"
+		deploy: {
+			name:       application.name + "-deploy"
+			url:        "https://github.com/" + scm.organization + "/" + application.name + "-deploy"
+			path:       application.name
+			valuesFile: "env" + "/" + forkenv.name + "/" + "values.yaml"
+		}
 	}
 	forkenv: {
 		name:    "bug-fix"
