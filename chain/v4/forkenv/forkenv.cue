@@ -36,7 +36,7 @@ import (
 					repositoryName:   f.name
 					repositoryType:   f.type
 					repositoryUrl:    f.repo.url
-					deployRepository: args.deploy
+					deployRepository: args.application.deploy
 					forkenv:          args.forkenv
 					fork:             f.setting.fork
 					scm:              args.scm
@@ -63,13 +63,13 @@ import (
 		input: {
 			source:           _addValuesFileFS
 			appName:          args.application.name
-			deployRepository: args.deploy
+			deployRepository: args.application.deploy
 			forkenv:          args.forkenv
 			domain:           args.application.domain
 			scm:              args.scm
 			kubeconfig:       _kubeconfig
 			namespace:        args.application.namespace
-			valuesFile:       args.deploy.valuesFile
+			valuesFile:       args.application.deploy.valuesFile
 		}
 	}
 }
