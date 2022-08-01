@@ -32,7 +32,7 @@ import (
 					.auth.password = "\(mid.password)" |
 					.auth.database = "\(mid.database[0].name)" |
 					.primary.persistence.size = "\(mid.setting.storage)" |
-					.fullnameOverride = postgresql
+					.fullnameOverride = "postgresql"
 					"""
 				version: "11.6.17"
 				repo:    "https://charts.bitnami.com/bitnami"
