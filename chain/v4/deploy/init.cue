@@ -31,6 +31,9 @@ import (
 					if s.framework == "spring-boot" {
 						starter: "helm-starter/java/spring-boot"
 					}
+					set:      """
+						'.fullnameOverride = "\(s.name)"'
+						"""
 					repoURL:  s.repo.url
 					imageURL: s.image.repository
 					if len(s.setting.expose) > 0 {
