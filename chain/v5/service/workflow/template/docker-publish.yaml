@@ -1,0 +1,77 @@
+name: Create and Publish a Docker image
+on:
+  push:
+    branches: ["*"]
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  ORG: ""
+  HELM_REPO: ""
+  APP_NAME: ""
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set output
+        id: vars
+        run: |
+          echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+          echo ::set-output name=head_commit::$(git rev-parse --short HEAD)
+          echo ::set-output name=branch::${GITHUB_REF#refs/heads/}
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,enable=true,prefix=,format=short
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: .forkmain/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Checkout Helm chart repo
+        id: checkout_helm
+        uses: actions/checkout@master
+        with:
+          repository: ${{ env.ORG }}/${{ env.HELM_REPO }}
+          ref: refs/heads/main
+          persist-credentials: false
+          fetch-depth: 0
+          token: ${{ secrets.PAT }}
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "${{ env.APP_NAME }}/env/${{ steps.vars.outputs.branch }}/values.yaml"
+      - name: Update helm values
+        uses: mikefarah/yq@master
+        if: steps.check_files.outputs.files_exists == 'true'
+        with:
+          cmd: pathEnv=".${{ github.event.repository.name }}.image.tag" yq -i 'eval(strenv(pathEnv)) = "${{ steps.vars.outputs.head_commit }}"' ./${{ env.APP_NAME }}/env/${GITHUB_REF##*/}/values.yaml
+      - name: Update helm repo
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: |-
+          git config user.email "h8r@robot.dev"
+          git config user.name "h8r-robot"
+          git remote set-url origin https://${{ env.ORG }}:${{ secrets.PAT }}@github.com/${{ env.ORG }}/${{ env.HELM_REPO }}.git
+          git add .
+          git commit -m "Update image tag: ${{ steps.vars.outputs.head_commit }} for ${{ env.IMAGE_NAME }}" --allow-empty
+          git push
