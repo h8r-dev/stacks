@@ -69,9 +69,9 @@ dagger.#Plan & {
 				}
 				framework: "nextjs"
 				setting: extension: {
-					frontBuildCMD: "yarn install --frozen-locakfile && yarn build"
-					frontOutDir:   "/"
-					frontRunCMD:   "yarn start"
+					frontendBuildCMD: "yarn install --frozen-locakfile && yarn build"
+					frontendOutDir:   "/"
+					frontendRunCMD:   "yarn start"
 				}
 			}
 			_check: #CatFile & {
@@ -89,10 +89,10 @@ dagger.#Plan & {
 				}
 				framework: "previousjs"
 				setting: extension: {
-					frontBuildCMD: "npm install && npm run build"
-					frontOutDir:   "dist/"
-					frontAppType:  "Single-Page App"
-					front404Path:  "/404.html"
+					frontendBuildCMD: "npm install && npm run build"
+					frontendOutDir:   "dist/"
+					frontendAppType:  "Single-Page App"
+					frontend404Path:  "/404.html"
 				}
 			}
 			_check: #CatFile & {
