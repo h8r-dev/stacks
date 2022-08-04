@@ -78,9 +78,9 @@ import (
 		type: "frontend-cmd"
 		setting: {
 			extension: {
-				frontBuildCMD: string
-				frontOutDir:   string
-				frontRunCMD:   string
+				frontendBuildCMD: string
+				frontendOutDir:   string
+				frontendRunCMD:   string
 				...
 			}
 			...
@@ -93,9 +93,9 @@ import (
 			input:   _deps.output
 			workdir: "/workdir"
 			env: {
-				BUILD_CMD: setting.extension.frontBuildCMD
-				OUT_DIR:   setting.extension.frontOutDir
-				RUN_CMD:   setting.extension.frontRunCMD
+				BUILD_CMD: setting.extension.frontendBuildCMD
+				OUT_DIR:   setting.extension.frontendOutDir
+				RUN_CMD:   setting.extension.frontendRunCMD
 			}
 			script: {
 				directory: _sh.output
@@ -108,10 +108,10 @@ import (
 		type: "frontend-static"
 		setting: {
 			extension: {
-				frontBuildCMD: string
-				frontOutDir:   string
-				frontAppType:  string
-				front404Path:  string
+				frontendBuildCMD: string
+				frontendOutDir:   string
+				frontendAppType:  string
+				frontend404Path:  string
 				...
 			}
 			...
@@ -124,10 +124,10 @@ import (
 			input:   _deps.output
 			workdir: "/workdir"
 			env: {
-				BUILD_CMD: setting.extension.frontBuildCMD
-				OUT_DIR:   setting.extension.frontOutDir
-				APP_TYPE:  setting.extension.frontAppType
-				PATH404:   setting.extension.front404Path
+				BUILD_CMD: setting.extension.frontendBuildCMD
+				OUT_DIR:   setting.extension.frontendOutDir
+				APP_TYPE:  setting.extension.frontendAppType
+				PATH404:   setting.extension.frontend404Path
 			}
 			script: {
 				directory: _sh.output
