@@ -20,7 +20,7 @@ http {
         location / {
             root   /usr/share/nginx/html;
             index  index.html index.htm;
-            {{- if eq (datasource "values").appType "Single-Page App" }}
+            {{- if eq (datasource "values").appType "SPA" }}
             try_files $uri $uri/ /index.html;
             {{- end}}
         }
