@@ -61,13 +61,18 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: "${{ env.APP_NAME }}/env/${{ steps.vars.outputs.branch }}/values.yaml"
+      - name: Update main helm values
+        uses: mikefarah/yq@master
+        if: github.ref == 'refs/heads/main'
+        with:
+          cmd: pathEnv=".${{ github.event.repository.name }}.image.tag" yq -i 'eval(strenv(pathEnv)) = "${{ steps.vars.outputs.head_commit }}"' ./${{ env.APP_NAME }}/values.yaml
       - name: Update helm values
         uses: mikefarah/yq@master
-        if: steps.check_files.outputs.files_exists == 'true'
+        if: steps.check_files.outputs.files_exists == 'true' && github.ref != 'refs/heads/main'
         with:
           cmd: pathEnv=".${{ github.event.repository.name }}.image.tag" yq -i 'eval(strenv(pathEnv)) = "${{ steps.vars.outputs.head_commit }}"' ./${{ env.APP_NAME }}/env/${GITHUB_REF##*/}/values.yaml
       - name: Update helm repo
-        if: steps.check_files.outputs.files_exists == 'true'
+        if: steps.check_files.outputs.files_exists == 'true' || github.ref == 'refs/heads/main'
         run: |-
           git config user.email "h8r@robot.dev"
           git config user.name "h8r-robot"
