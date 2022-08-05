@@ -91,13 +91,13 @@ dagger.#Plan & {
 				setting: extension: {
 					frontendBuildCMD: "npm install && npm run build"
 					frontendOutDir:   "dist/"
-					frontendAppType:  "Single-Page App"
+					frontendAppType:  "MPA"
 					frontend404Path:  "/404.html"
 				}
 			}
 			_check: #CatFile & {
 				fs:   _source.output
-				path: "Dockerfile"
+				path: "nginx.conf"
 			}
 		}
 	}
