@@ -31,5 +31,10 @@ import (
 		_sourceCode: core.#Source & {
 			path: "vuejs"
 		}
+	} | {
+		framework:   "js"
+		_sourceCode: core.#Source & {
+			path: "vuejs"
+		}
 	}
 }

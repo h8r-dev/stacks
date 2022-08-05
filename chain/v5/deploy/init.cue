@@ -31,8 +31,8 @@ import (
 					if s.framework == "spring-boot" {
 						starter: "helm-starter/java/spring-boot"
 					}
-					if s.framework == "vuejs" {
-						starter: "helm-starter/static/vuejs"
+					if s.framework == "js" || s.framework == "vuejs" {
+						starter: "helm-starter/frontend/static"
 					}
 					set:      """
 						'.fullnameOverride = "\(s.name)"'
