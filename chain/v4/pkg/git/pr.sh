@@ -3,7 +3,8 @@
 git config user.name "forkmain"
 git config user.email "bot@forkmain.com"
 
-git add --all
+git add -f .github
+git add -f .forkmain
 
 if [ -n "$(git status --porcelain)" ]; then
   echo "there are changes";
