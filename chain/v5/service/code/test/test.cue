@@ -23,8 +23,13 @@ dagger.#Plan & {
 		}
 		_kubeconfig: _transformKubeconfig.output.kubeconfig
 		test: {
-			_gin:   gin
-			_maven: maven
+			_gin:      gin
+			_maven:    maven
+			_nextjs:   nextjs
+			_reactCli: reactCli
+			_vueCli:   vueCli
+			_vueVite:  vueVite
+			_js:       js
 		}
 		gin: {
 			_source: code.#Source & {
@@ -38,6 +43,51 @@ dagger.#Plan & {
 		maven: {
 			_source: code.#Source & {
 				framework: "spring-boot"
+			}
+			_check: #LsFile & {
+				fs:   _source.output
+				path: "."
+			}
+		}
+		nextjs: {
+			_source: code.#Source & {
+				framework: "nextjs"
+			}
+			_check: #LsFile & {
+				fs:   _source.output
+				path: "."
+			}
+		}
+		reactCli: {
+			_source: code.#Source & {
+				framework: "react-cli"
+			}
+			_check: #LsFile & {
+				fs:   _source.output
+				path: "."
+			}
+		}
+		vueCli: {
+			_source: code.#Source & {
+				framework: "vue-cli"
+			}
+			_check: #LsFile & {
+				fs:   _source.output
+				path: "."
+			}
+		}
+		vueVite: {
+			_source: code.#Source & {
+				framework: "vue-vite"
+			}
+			_check: #LsFile & {
+				fs:   _source.output
+				path: "."
+			}
+		}
+		js: {
+			_source: code.#Source & {
+				framework: "js"
 			}
 			_check: #LsFile & {
 				fs:   _source.output

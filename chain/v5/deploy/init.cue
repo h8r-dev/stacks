@@ -31,7 +31,7 @@ import (
 					if s.framework == "spring-boot" {
 						starter: "helm-starter/java/spring-boot"
 					}
-					if s.framework == "js" || s.framework == "vuejs" {
+					if s.type == "frontend-static" {
 						starter: "helm-starter/frontend/static"
 					}
 					set:      """
