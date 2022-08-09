@@ -27,14 +27,24 @@ import (
 			path: "nextjs"
 		}
 	} | {
-		framework:   "vuejs"
+		framework:   "react-cli"
 		_sourceCode: core.#Source & {
-			path: "vuejs"
+			path: "react-cli"
+		}
+	} | {
+		framework:   "vue-cli"
+		_sourceCode: core.#Source & {
+			path: "vue-cli"
+		}
+	} | {
+		framework:   "vue-vite"
+		_sourceCode: core.#Source & {
+			path: "vue-vite"
 		}
 	} | {
 		framework:   "js"
 		_sourceCode: core.#Source & {
-			path: "vuejs"
+			path: "vue-vite"
 		}
 	}
 }
