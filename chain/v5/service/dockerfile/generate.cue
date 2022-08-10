@@ -39,22 +39,35 @@ import (
 			name:    "golang"
 			version: string | *"1.18"
 		}
-		framework:  "gin"
-		_entryFile: string
-		setting:    _
+		framework: "gin"
+		setting: {
+			extension: {
+				goBuildCMD: string
+				goRunCMD:   string
+				...
+			}
+			...
+		}
 		{
 			isGenerated: false
 			setting: {
 				extension: {
-					entryFile: string | *"/"
+					goBuildCMD: string
+					goRunCMD:   string
 					...
 				}
 				...
 			}
-			_entryFile: setting.extension.entryFile
 		} | {
 			isGenerated: true
-			_entryFile:  "/"
+			setting: {
+				extension: {
+					goBuildCMD: string | "go build -o ./app main.go"
+					goRunCMD:   string | "./app"
+					...
+				}
+				...
+			}
 		}
 		_sh: core.#Source & {
 			path: "."
@@ -64,8 +77,9 @@ import (
 			input:   _deps.output
 			workdir: "/workdir"
 			env: {
-				VERSION:    language.version
-				ENTRY_FILE: _entryFile
+				VERSION:   language.version
+				BUILD_CMD: setting.extension.goBuildCMD
+				RUN_CMD:   setting.extension.goRunCMD
 			}
 			script: {
 				directory: _sh.output
