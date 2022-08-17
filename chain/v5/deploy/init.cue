@@ -25,11 +25,11 @@ import (
 					if s.framework == "gin" {
 						starter: "helm-starter/go/gin"
 					}
-					if s.framework == "nextjs" {
-						starter: "helm-starter/nodejs/nextjs"
-					}
 					if s.framework == "spring-boot" {
 						starter: "helm-starter/java/spring-boot"
+					}
+					if s.type == "frontend-cmd" {
+						starter: "helm-starter/nodejs/nextjs"
 					}
 					if s.type == "frontend-static" {
 						starter: "helm-starter/frontend/static"
