@@ -37,6 +37,10 @@ dagger.#Plan & {
 					version: "1.19"
 				}
 				framework: "gin"
+				setting: extension: {
+					goBuildCMD: "go build main.go -o app"
+					goRunCMD:   "./app"
+				}
 			}
 			_check: #CatFile & {
 				fs:   _source.output

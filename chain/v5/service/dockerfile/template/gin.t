@@ -1,29 +1,13 @@
 # syntax=docker/dockerfile:1
 
-##
-## Build
-##
-FROM golang:{{ (datasource "values").version }} AS build
+FROM golang:{{ (datasource "values").version }}
 
 WORKDIR /workdir
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
-
 COPY ./ ./
 
-RUN go build -o /app /workdir/{{ (datasource "values").entryFile }}
+RUN go mod download
 
-##
-## Deploy
-##
-FROM gcr.io/distroless/base-debian11
+RUN {{ (datasource "values").buildCMD }}
 
-WORKDIR /
-
-COPY --from=build /app /app
-
-EXPOSE 8080
-
-ENTRYPOINT ["/app"]
+CMD {{ (datasource "values").runCMD }}
